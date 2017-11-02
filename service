@@ -13,12 +13,14 @@ import importer
 
 CONFIG.restart_on_update()
 
-diff = datetime(2014,7,22,8,20,00) - datetime.utcnow() 
+diff = datetime(2014, 7, 22, 8, 20, 00) - datetime.utcnow()
+
 
 def current_time():
-    now = datetime.utcnow() # + diff
+    now = datetime.utcnow()  # + diff
     timestamp = timegm(now.timetuple()) + now.microsecond / 1000000.
     return now, timestamp
+
 
 def send_clock(now, ts):
     now = now.replace(tzinfo=pytz.utc)
@@ -31,6 +33,7 @@ def send_clock(now, ts):
     since_midnight = since_midnight.seconds + since_midnight.microseconds / 1000000.
     NODE.send('/clock/set:%f' % ts)
     NODE.send('/clock/midnight:%f' % since_midnight)
+
 
 def main():
     while 1:
@@ -46,24 +49,24 @@ def main():
         )
 
         if not has_events:
-            print >>sys.stderr, "no events" 
+            print >>sys.stderr, "no events"
             time.sleep(60)
             continue
 
         with file("schedule.json.new", "wb") as f:
             f.write(json.dumps([dict(
-                duration = event['duration'],
-                lang = event['lang'],
-                place = event['place'],
-                speakers = event['speakers'],
-                start_str = event['start_str'],
-                title = event['title'],
-                type = event['type'],
-                start_unix = event['start_unix'],
-                end_unix = event['end_unix'],
-            ) for event in sorted(events, key=itemgetter('start_unix'))], 
+                duration=event['duration'],
+                lang=event['lang'],
+                place=event['place'],
+                speakers=event['speakers'],
+                start_str=event['start_str'],
+                title=event['title'],
+                type=event['type'],
+                start_unix=event['start_unix'],
+                end_unix=event['end_unix'],
+            ) for event in sorted(events, key=itemgetter('start_unix'))],
                 ensure_ascii=False,
-                separators=(',',':')
+                separators=(',', ':')
             ).encode('utf8'))
         os.rename("schedule.json.new", "schedule.json")
 

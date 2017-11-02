@@ -35,47 +35,59 @@ import pyinotify
 
 types = {}
 
+
 def type(fn):
     types[fn.__name__] = fn
     return fn
+
 
 @type
 def color(value):
     return value
 
+
 @type
 def string(value):
     return value
+
 
 @type
 def text(value):
     return value
 
+
 @type
 def boolean(value):
     return value
+
 
 @type
 def select(value):
     return value
 
+
 @type
 def duration(value):
     return value
+
 
 @type
 def integer(value):
     return value
 
+
 @type
 def font(value):
     return value
+
 
 @type
 def resource(value):
     return value
 
+
 class Configuration(object):
+
     def __init__(self):
         self._restart = False
         self._options = []
@@ -103,7 +115,8 @@ class Configuration(object):
     def update_config(self):
         if self._restart:
             print >>sys.stderr, "[hosted.py] restarting service (restart_on_update set)"
-            import thread, time
+            import thread
+            import time
             thread.interrupt_main()
             time.sleep(100)
             return
@@ -132,7 +145,9 @@ class Configuration(object):
         return self._parsed[key]
 Configuration = Configuration()
 
+
 class EventHandler(pyinotify.ProcessEvent):
+
     def process_default(self, event):
         print >>sys.stderr, event
         basename = os.path.basename(event.pathname)
@@ -142,7 +157,8 @@ class EventHandler(pyinotify.ProcessEvent):
             Configuration.parse_config_json()
         elif basename == 'hosted.py':
             print >>sys.stderr, "[hosted.py] restarting service since hosted.py changed"
-            import thread, time
+            import thread
+            import time
             thread.interrupt_main()
             time.sleep(100)
 
@@ -159,7 +175,9 @@ print >>sys.stderr, "initialized hosted.py"
 
 CONFIG = Configuration
 
+
 class Node(object):
+
     def __init__(self, node):
         self._node = node
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -172,6 +190,7 @@ class Node(object):
         self.send_raw(self._node + data)
 
     class Sender(object):
+
         def __init__(self, node, path):
             self._node = node
             self._path = path
@@ -187,7 +206,9 @@ class Node(object):
         return self.Sender(self, self._node)(data)
 NODE = Node(os.environ['NODE'])
 
+
 class Upstream(object):
+
     def __init__(self):
         self._socket = None
 

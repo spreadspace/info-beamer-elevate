@@ -56,7 +56,7 @@
             ["Europe/Berlin", "Europa / Berlin"]
         ],
         "default": "UTC"
-    },  
+    },
 
     {
         "title": "Slides",
@@ -85,7 +85,7 @@
         "type": "duration",
         "hint": "How long to display room information",
         "default": 10
-    },  
+    },
 
     {
         "title": "Scheduling",

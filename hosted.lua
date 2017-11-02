@@ -2,7 +2,7 @@
 
   Part of info-beamer hosted. You can find the latest version
   of this file at:
-  
+
   https://github.com/info-beamer/package-sdk
 
   Copyright (c) 2014,2015,2016,2017 Florian Wesch <fw@dividuum.de>
@@ -13,12 +13,12 @@
   met:
 
       Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer. 
+      notice, this list of conditions and the following disclaimer.
 
       Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the
-      distribution.  
+      distribution.
 
   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
   IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,

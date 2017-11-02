@@ -8,12 +8,14 @@ from datetime import timedelta
 import dateutil.parser
 import defusedxml.ElementTree as ET
 
+
 def get_schedule(url, schedule_tz):
     def load_events(xml):
         def to_unixtimestamp(dt):
             dt = dt.astimezone(pytz.utc)
             ts = int(calendar.timegm(dt.timetuple()))
             return ts
+
         def text_or_empty(node, child_name):
             child = node.find(child_name)
             if child is None:
@@ -21,6 +23,7 @@ def get_schedule(url, schedule_tz):
             if child.text is None:
                 return u""
             return unicode(child.text)
+
         def parse_duration(value):
             h, m = map(int, value.split(':'))
             return timedelta(hours=h, minutes=m)
@@ -50,20 +53,20 @@ def get_schedule(url, schedule_tz):
                 persons = persons.findall('person')
 
             parsed_events.append(dict(
-                start_str = start.strftime('%H:%M'),
-                end_str = end.strftime('%H:%M'),
-                start_unix  = to_unixtimestamp(start),
-                end_unix = to_unixtimestamp(end),
-                duration = int(duration.total_seconds() / 60),
-                title = text_or_empty(event, 'title'),
-                place = text_or_empty(event, 'room'),
-                speakers = [
-                    unicode(person.text.strip()) 
+                start_str=start.strftime('%H:%M'),
+                end_str=end.strftime('%H:%M'),
+                start_unix=to_unixtimestamp(start),
+                end_unix=to_unixtimestamp(end),
+                duration=int(duration.total_seconds() / 60),
+                title=text_or_empty(event, 'title'),
+                place=text_or_empty(event, 'room'),
+                speakers=[
+                    unicode(person.text.strip())
                     for person in persons
                 ] if persons else [],
-                lang = text_or_empty(event, 'language') or "unk",
-                id = event.attrib["id"],
-                type = "talk",
+                lang=text_or_empty(event, 'language') or "unk",
+                id=event.attrib["id"],
+                type="talk",
             ))
         parsed_events.sort(key=itemgetter('start_unix'))
         return parsed_events

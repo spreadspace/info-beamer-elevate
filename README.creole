@@ -11,7 +11,7 @@ Scheduling information is imported from a https://frab.cccv.de/ export.
 
 == Logo (logo)
 
-Sets a logo. Size should be 280x100 pixel. Otherwise the image will be scaled to that size which 
+Sets a logo. Size should be 280x100 pixel. Otherwise the image will be scaled to that size which
 might lead to a reduced quality.
 
 == Other room display (other_rooms)
@@ -33,7 +33,7 @@ next talk.
 
 Shows information about the current room (irc channel, recommended hashtag).
 
-== Schedule URL (schedule_url) 
+== Schedule URL (schedule_url)
 
 Url where the running devices should fetch the schedule from. The schedule
 is expected to be in the frabs export format. This format looks something
@@ -59,7 +59,7 @@ like this:
 == Rooms (rooms)
 
 Here you can defined your rooms. You can use the same Setup for multiple
-rooms. 
+rooms.
 
 ==== Room name (name)
 
@@ -67,7 +67,7 @@ Sets the room name. This name must match the room name in the Schedule.
 
 === Short Room name (name_short)
 
-Sets the display name of the room. You can set a shorter name for a room 
+Sets the display name of the room. You can set a shorter name for a room
 since space on the display is limited.
 
 === Device Serial (serial)

@@ -1,6 +1,6 @@
 {
-    "name": "Conference Room Announcement",
-    "author": "fw@dividuum.de",
-    "desc": "Show information about upcoming talks",
-    "repository": "https://github.com/info-beamer/package-conference-room"
+    "name": "Elevate Festival",
+    "author": "equinox@elevate.at",
+    "desc": "Show Up-Next Info for Elevate Festival",
+    "repository": "https://github.com/spreadspace/info-beamer-elevate"
 }
