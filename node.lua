@@ -47,7 +47,7 @@ function check_next_talk()
     local now = get_now()
     local room_next = {}
     for idx, talk in ipairs(schedule) do
-        if rooms[talk.place] and not room_next[talk.place] and talk.start_unix + 25 * 60 > now then 
+        if rooms[talk.place] and not room_next[talk.place] and talk.start_unix + 25 * 60 > now then
             room_next[talk.place] = talk
         end
     end
@@ -75,7 +75,7 @@ function check_next_talk()
             all_talks[#all_talks + 1] = talk
         end
     end
-    table.sort(all_talks, function(a, b) 
+    table.sort(all_talks, function(a, b)
         if a.start_unix < b.start_unix then
             return true
         elseif a.start_unix > b.start_unix then
@@ -153,7 +153,7 @@ function switcher(get_screens)
 
     local old_screen
     local current_screen
-    
+
     local screens = get_screens()
 
     local function prepare()
@@ -195,7 +195,7 @@ function switcher(get_screens)
             mode = "show"
         end
     end
-    
+
     local function draw()
         local now = sys.now()
 
@@ -218,7 +218,7 @@ function switcher(get_screens)
                 current_screen:draw(0, 0, WIDTH, HEIGHT)
             end
             gl.popMatrix()
-        else 
+        else
             current.draw(current_state)
         end
     end
@@ -228,7 +228,7 @@ function switcher(get_screens)
     }
 end
 
-local content = switcher(function() 
+local content = switcher(function()
     return {{
         time = CONFIG.other_rooms,
         prepare = function()
@@ -365,25 +365,6 @@ local content = switcher(function()
                     CONFIG.font:write(400, 490 + 50 * i, speaker, 50, CONFIG.foreground_color.rgb_with_a(0.6))
                 end
             end
-        end
-    }, {
-        time = CONFIG.room_info,
-        prepare = function()
-        end;
-        draw = function(t)
-            CONFIG.font:write(400, 180, "Room information", 80, CONFIG.foreground_color.rgba())
-            spacer:draw(0, 280, WIDTH, 282, 0.6)
-            CONFIG.font:write(30, 300, "Audio", 50, CONFIG.foreground_color.rgba())
-            CONFIG.font:write(400, 300, "Dial " .. current_room.dect, 50, CONFIG.foreground_color.rgba())
-
-            CONFIG.font:write(30, 360, "Translation", 50, CONFIG.foreground_color.rgba())
-            CONFIG.font:write(400, 360, "Dial " .. current_room.translation, 50, CONFIG.foreground_color.rgba())
-
-            CONFIG.font:write(30, 460, "IRC", 50, CONFIG.foreground_color.rgba())
-            CONFIG.font:write(400, 460, current_room.irc, 50, CONFIG.foreground_color.rgba())
-
-            CONFIG.font:write(30, 520, "Hashtag", 50, CONFIG.foreground_color.rgba())
-            CONFIG.font:write(400, 520, current_room.hashtag, 50, CONFIG.foreground_color.rgba())
         end
     }}
 end)
