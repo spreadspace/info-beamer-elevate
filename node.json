@@ -77,14 +77,6 @@
         "type": "duration",
         "hint": "How long to display current talk information",
         "default": 15
-    }, {
-        "title": "Room info (seconds)",
-        "ui_width": 4,
-        "name": "room_info",
-        "doc_link": true,
-        "type": "duration",
-        "hint": "How long to display room information",
-        "default": 10
     },
 
     {
@@ -122,34 +114,6 @@
             "title": "Device Serial",
             "ui_width": 4,
             "name": "serial",
-            "doc_link": true,
-            "type": "string",
-            "default": ""
-        }, {
-            "title": "Dect",
-            "ui_width": 3,
-            "name": "dect",
-            "doc_link": true,
-            "type": "string",
-            "default": ""
-        }, {
-            "title": "Translation",
-            "ui_width": 3,
-            "name": "translation",
-            "doc_link": true,
-            "type": "string",
-            "default": ""
-        }, {
-            "title": "Hashtag",
-            "ui_width": 3,
-            "name": "hashtag",
-            "doc_link": true,
-            "type": "string",
-            "default": ""
-        }, {
-            "title": "IRC",
-            "ui_width": 3,
-            "name": "irc",
             "doc_link": true,
             "type": "string",
             "default": ""

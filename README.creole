@@ -29,10 +29,6 @@ case of a delayed start the screen will stil show useful information.
 After 25 minutes into the talk this screen will show information about the
 next talk.
 
-== Room info (room_info)
-
-Shows information about the current room (irc channel, recommended hashtag).
-
 == Schedule URL (schedule_url)
 
 Url where the running devices should fetch the schedule from. The schedule
@@ -74,22 +70,3 @@ since space on the display is limited.
 
 Enter the serial number of the device that is responsible for showing
 room information here.
-
-=== Dect (dect)
-
-Information about what number to dial to live audio feed.
-
-=== Translation (translation)
-
-Information about what number to dial to a live audio translation.
-
-=== Hashtag (hashtag)
-
-Information about the hashtag recommended for discussing the content
-of the current room.
-
-=== IRC (irc)
-
-Information about the recommended IRC channel to talk about the content
-of the current room.
-
