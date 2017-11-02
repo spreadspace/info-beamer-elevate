@@ -52,10 +52,9 @@
         "hint": "The timezone",
         "options": [
             ["UTC", "UTC"],
-            ["Europe/London", "Europa / London"],
-            ["Europe/Berlin", "Europa / Berlin"]
+            ["Europe/Vienna", "Europa / Wien"]
         ],
-        "default": "UTC"
+        "default": "Europe/Vienna"
     },
 
     {
