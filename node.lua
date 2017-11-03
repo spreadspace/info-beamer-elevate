@@ -235,7 +235,7 @@ local content = switcher(function()
 
             local function mk_spacer(y)
                 return function()
-                    spacer:draw(0, y, WIDTH, y+2, 0.6)
+                    spacer:draw(364, y, WIDTH, y+2, 0.6)
                 end
             end
 
@@ -321,7 +321,7 @@ local content = switcher(function()
         end;
         draw = function(content)
             CONFIG.font:write(400, 180, "Other talks", 80, CONFIG.foreground_color.rgba())
-            spacer:draw(0, 280, WIDTH, 282, 0.6)
+            spacer:draw(364, 280, WIDTH, 282, 0.6)
             for _, func in ipairs(content) do
                 func()
             end
@@ -375,8 +375,8 @@ function node.render()
     CONFIG.background.ensure_loaded():draw(0, 0, WIDTH, HEIGHT)
 
     util.draw_correct(CONFIG.logo.ensure_loaded(), 32, 32, 332, 332)
-    CONFIG.font:write(350, 32, current_room.name_short, 150, CONFIG.foreground_color.rgba())
-    CONFIG.font:write(WIDTH-350, 32, clock.get(), 130, CONFIG.foreground_color.rgba())
+    CONFIG.font:write(364, 182, current_room.name_short, 150, CONFIG.foreground_color.rgba())
+    CONFIG.font:write(WIDTH-300, 202, clock.get(), 130, CONFIG.foreground_color.rgba())
 
     local fov = math.atan2(HEIGHT, WIDTH*2) * 360 / math.pi
     gl.perspective(fov, WIDTH/2, HEIGHT/2, -WIDTH,
