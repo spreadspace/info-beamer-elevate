@@ -321,7 +321,7 @@ local content = switcher(function()
         end;
         draw = function(content)
             CONFIG.font:write(400, 180, "Other talks", 80, CONFIG.foreground_color.rgba())
-            spacer:draw(364, 280, WIDTH, 282, 0.6)
+            spacer:draw(364, 480, WIDTH, 482, 0.6)
             for _, func in ipairs(content) do
                 func()
             end
@@ -332,32 +332,32 @@ local content = switcher(function()
         end;
         draw = function()
             if not current_talk then
-                CONFIG.font:write(400, 180, "Next talk", 80, CONFIG.foreground_color.rgba())
-                spacer:draw(0, 300, WIDTH, 302, 0.6)
-                CONFIG.font:write(400, 310, "Nope. That's it.", 50, CONFIG.foreground_color.rgba())
+                CONFIG.font:write(400, 380, "Next talk", 80, CONFIG.foreground_color.rgba())
+                spacer:draw(0, 500, WIDTH, 502, 0.6)
+                CONFIG.font:write(400, 510, "Nope. That's it.", 50, CONFIG.foreground_color.rgba())
             else
                 local delta = current_talk.start_unix - get_now()
                 if delta > 0 then
-                    CONFIG.font:write(400, 180, "Next talk", 80, CONFIG.foreground_color.rgba())
+                    CONFIG.font:write(400, 380, "Next talk", 80, CONFIG.foreground_color.rgba())
                 else
-                    CONFIG.font:write(400, 180, "This talk", 80, CONFIG.foreground_color.rgba())
+                    CONFIG.font:write(400, 380, "This talk", 80, CONFIG.foreground_color.rgba())
                 end
-                spacer:draw(0, 280, WIDTH, 282, 0.6)
+                spacer:draw(0, 480, WIDTH, 482, 0.6)
 
-                CONFIG.font:write(130, 310, current_talk.start_str, 50, CONFIG.foreground_color.rgba())
+                CONFIG.font:write(130, 510, current_talk.start_str, 50, CONFIG.foreground_color.rgba())
                 if delta > 180*60 then
-                    CONFIG.font:write(130, 310 + 60, string.format("in %d h", math.floor(delta/3660)+1), 50, CONFIG.foreground_color.rgb_with_a(0.6))
+                    CONFIG.font:write(130, 510 + 60, string.format("in %d h", math.floor(delta/3660)+1), 50, CONFIG.foreground_color.rgb_with_a(0.6))
                 elseif delta > 0 then
-                    CONFIG.font:write(130, 310 + 60, string.format("in %d min", math.floor(delta/60)+1), 50, CONFIG.foreground_color.rgb_with_a(0.6))
+                    CONFIG.font:write(130, 510 + 60, string.format("in %d min", math.floor(delta/60)+1), 50, CONFIG.foreground_color.rgb_with_a(0.6))
                 end
                 for idx, line in ipairs(current_talk.slide_lines) do
                     if idx >= 5 then
                         break
                     end
-                    CONFIG.font:write(400, 310 - 60 + 60 * idx, line, 50, CONFIG.foreground_color.rgba())
+                    CONFIG.font:write(400, 510 - 60 + 60 * idx, line, 50, CONFIG.foreground_color.rgba())
                 end
                 for i, speaker in ipairs(current_talk.speakers) do
-                    CONFIG.font:write(400, 490 + 50 * i, speaker, 50, CONFIG.foreground_color.rgb_with_a(0.6))
+                    CONFIG.font:write(400, 690 + 50 * i, speaker, 50, CONFIG.foreground_color.rgb_with_a(0.6))
                 end
             end
         end
