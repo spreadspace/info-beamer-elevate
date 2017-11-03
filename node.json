@@ -38,7 +38,7 @@
         "doc_link": true,
         "type": "resource",
         "valid": ["image", "video", "child"],
-        "default": "empty.png"
+        "default": "logo.png"
     },
 
     {

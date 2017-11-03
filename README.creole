@@ -8,7 +8,7 @@ For now this is mostly a fork of the Conference Room Information package...
 
 == Logo (logo)
 
-Sets a logo. Size should be 280x100 pixel. Otherwise the image will be scaled to that size which
+Sets a logo. Size should be 300x300 pixel. Otherwise the image will be scaled to that size which
 might lead to a reduced quality.
 
 == Other room display (other_rooms)

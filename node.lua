@@ -374,7 +374,7 @@ function node.render()
     CONFIG.background_color.clear()
     CONFIG.background.ensure_loaded():draw(0, 0, WIDTH, HEIGHT)
 
-    util.draw_correct(CONFIG.logo.ensure_loaded(), 20, 20, 300, 120)
+    util.draw_correct(CONFIG.logo.ensure_loaded(), 32, 32, 332, 332)
     CONFIG.font:write(350, 32, current_room.name_short, 150, CONFIG.foreground_color.rgba())
     CONFIG.font:write(WIDTH-350, 32, clock.get(), 130, CONFIG.foreground_color.rgba())
 
