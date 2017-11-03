@@ -294,7 +294,7 @@ local content = switcher(function()
                 end
             end
 
-            local y = 300
+            local y = 500
             local time_sep = false
             if #all_talks > 0 then
                 for idx, talk in ipairs(all_talks) do
@@ -333,7 +333,7 @@ local content = switcher(function()
         draw = function()
             if not current_talk then
                 CONFIG.font:write(400, 380, "Next talk", 80, CONFIG.foreground_color.rgba())
-                spacer:draw(0, 500, WIDTH, 502, 0.6)
+                spacer:draw(364, 500, WIDTH, 502, 0.6)
                 CONFIG.font:write(400, 510, "Nope. That's it.", 50, CONFIG.foreground_color.rgba())
             else
                 local delta = current_talk.start_unix - get_now()
@@ -342,7 +342,7 @@ local content = switcher(function()
                 else
                     CONFIG.font:write(400, 380, "This talk", 80, CONFIG.foreground_color.rgba())
                 end
-                spacer:draw(0, 480, WIDTH, 482, 0.6)
+                spacer:draw(364, 480, WIDTH, 482, 0.6)
 
                 CONFIG.font:write(130, 510, current_talk.start_str, 50, CONFIG.foreground_color.rgba())
                 if delta > 180*60 then
