@@ -6,10 +6,6 @@ local json = require "json"
 local schedule
 local current_room
 
-util.resource_loader{
-    "progress.frag",
-}
-
 local white = resource.create_colored_texture(1,1,1)
 
 util.file_watch("schedule.json", function(content)
@@ -193,11 +189,6 @@ function switcher(get_screens)
 
     local function draw()
         local now = sys.now()
-
-        local percent = ((now - switched) / (switch - switched)) * 3.14129 * 2 - 3.14129
-        progress:use{percent = percent}
-        white:draw(WIDTH-50, HEIGHT-50, WIDTH-10, HEIGHT-10)
-        progress:deactivate()
 
         if mode == "switch" then
             local progress = (now - switched) / blend
