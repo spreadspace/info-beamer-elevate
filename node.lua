@@ -37,7 +37,6 @@ hosted_init()
 local base_time = N.base_time or 0
 local current_talk
 local all_talks = {}
-local day = 0
 
 function get_now()
     return base_time + sys.now()
@@ -133,10 +132,6 @@ util.data_mapper{
         N.base_time = base_time
         check_next_talk()
         print("UPDATED TIME", base_time)
-    end;
-    ["clock/day"] = function(new_day)
-        day = new_day
-        print("UPDATED DAY", new_day)
     end;
 }
 
@@ -380,9 +375,8 @@ function node.render()
     CONFIG.background.ensure_loaded():draw(0, 0, WIDTH, HEIGHT)
 
     util.draw_correct(CONFIG.logo.ensure_loaded(), 20, 20, 300, 120)
-    CONFIG.font:write(400, 32, current_room.name_short, 150, CONFIG.foreground_color.rgba())
-    CONFIG.font:write(WIDTH-600, 32, clock.get(), 130, CONFIG.foreground_color.rgba())
-    CONFIG.font:write(WIDTH-300, 32, string.format("Day %d", day), 130, CONFIG.foreground_color.rgba())
+    CONFIG.font:write(350, 32, current_room.name_short, 150, CONFIG.foreground_color.rgba())
+    CONFIG.font:write(WIDTH-350, 32, clock.get(), 130, CONFIG.foreground_color.rgba())
 
     local fov = math.atan2(HEIGHT, WIDTH*2) * 360 / math.pi
     gl.perspective(fov, WIDTH/2, HEIGHT/2, -WIDTH,
