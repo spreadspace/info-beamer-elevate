@@ -314,13 +314,13 @@ local content = switcher(function()
                     y = y + 62
                 end
             else
-                CONFIG.font:write(400, 330, "No other talks.", 50, CONFIG.foreground_color.rgba())
+                CONFIG.font:write(400, 530, "No other talks.", 50, CONFIG.foreground_color.rgba())
             end
 
             return content
         end;
         draw = function(content)
-            CONFIG.font:write(400, 180, "Other talks", 80, CONFIG.foreground_color.rgba())
+            CONFIG.font:write(400, 380, "Other talks", 80, CONFIG.foreground_color.rgba())
             spacer:draw(364, 480, WIDTH, 482, 0.6)
             for _, func in ipairs(content) do
                 func()
