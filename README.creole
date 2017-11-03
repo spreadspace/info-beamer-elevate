@@ -1,11 +1,8 @@
-= Conference Room Information
-
-{{example.jpg|Screenshot}}
+= Elevate Festival Information
 
 = Description
 
-Displays information about the next talk, talks in other rooms and generic room information.
-Scheduling information is imported from a https://frab.cccv.de/ export.
+For now this is mostly a fork of the Conference Room Information package...
 
 = Configuration
 
