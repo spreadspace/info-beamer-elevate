@@ -86,6 +86,11 @@ def resource(value):
     return value
 
 
+@type
+def device(value):
+    return value
+
+
 class Configuration(object):
 
     def __init__(self):
