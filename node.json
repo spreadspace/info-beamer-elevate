@@ -114,7 +114,7 @@
             "title": "Device",
             "ui_width": 4,
             "name": "serial",
-            "type": "device",
+            "type": "device"
         }, {
             "title": "Location ID",
             "ui_width": 4,
