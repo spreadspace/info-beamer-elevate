@@ -1,5 +1,5 @@
 {
-    "name": "Room Preview",
+    "name": "Location Preview",
     "permissions": {
         "network": "Has to fetch schedule from remote site"
     },
@@ -61,17 +61,17 @@
         "title": "Slides",
         "type": "section"
     }, {
-        "title": "Other Rooms (seconds)",
+        "title": "Other Locations (seconds)",
         "ui_width": 4,
-        "name": "other_rooms",
+        "name": "other_locations",
         "doc_link": true,
         "type": "duration",
-        "hint": "How long to display other room information",
+        "hint": "How long to display other location information",
         "default": 25
     }, {
-        "title": "Current Rooms (seconds)",
+        "title": "Current Locations (seconds)",
         "ui_width": 4,
-        "name": "current_room",
+        "name": "current_location",
         "doc_link": true,
         "type": "duration",
         "hint": "How long to display current talk information",
@@ -89,21 +89,21 @@
         "type": "string",
         "default": "http://localhost/"
     }, {
-        "title": "Rooms",
-        "name": "rooms",
+        "title": "Locations",
+        "name": "locations",
         "doc_link": true,
         "type": "list",
-        "itemname": "Room",
-        "hint": "Room definitions",
+        "itemname": "Location",
+        "hint": "Location definitions",
         "items": [{
-            "title": "Room Name",
+            "title": "Location Name",
             "ui_width": 4,
             "name": "name",
             "doc_link": true,
             "type": "string",
             "default": ""
         }, {
-            "title": "Room Short Name",
+            "title": "Location Short Name",
             "ui_width": 4,
             "name": "name_short",
             "doc_link": true,

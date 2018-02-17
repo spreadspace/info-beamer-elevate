@@ -2,7 +2,7 @@
 
 = Description
 
-For now this is mostly a fork of the Conference Room Information package...
+For now this is mostly a fork of the Conference Location Information package...
 
 = Configuration
 
@@ -11,59 +11,25 @@ For now this is mostly a fork of the Conference Room Information package...
 Sets a logo. Size should be 300x300 pixel. Otherwise the image will be scaled to that size which
 might lead to a reduced quality.
 
-== Other room display (other_rooms)
+== EIS URL (eis_url)
 
-How long to show information about talks in other rooms (in seconds)
+Url to EIS (event information system) where the running devices should fetch the schedule from.
 
-== Current room (current_room)
+== Locations (locations)
 
-How long to show information about the (upcoming) talk in the current room.
-Default is 15 seconds.
+Here you can defined your locations. You can use the same Setup for multiple
+locations.
 
-The current talk is displayed for the first 25 minutes of that talk. So in
-case of a delayed start the screen will stil show useful information.
+==== Location name (name)
 
-After 25 minutes into the talk this screen will show information about the
-next talk.
+Sets the location name. This name must match the location name in the Schedule.
 
-== Schedule URL (schedule_url)
+=== Short Location name (name_short)
 
-Url where the running devices should fetch the schedule from. The schedule
-is expected to be in the frabs export format. This format looks something
-like this:
-
-{{{
-<schedule>
-    <conference>
-        <title>EuroPython 2014</title>
-        <acronym>EP2014</acronym>
-        <start>2014-07-21</start>
-        <end>2014-07-27</end>
-        <days>7</days>
-        <timeslot_duration>00:15</timeslot_duration>
-    </conference>
-    <day date="2014-07-21" index="1">
-        <room name="C01">
-        <event id="118">
-    ...
-</schedule>
-}}}
-
-== Rooms (rooms)
-
-Here you can defined your rooms. You can use the same Setup for multiple
-rooms.
-
-==== Room name (name)
-
-Sets the room name. This name must match the room name in the Schedule.
-
-=== Short Room name (name_short)
-
-Sets the display name of the room. You can set a shorter name for a room
+Sets the display name of the location. You can set a shorter name for a location
 since space on the display is limited.
 
 === Device Serial (serial)
 
 Enter the serial number of the device that is responsible for showing
-room information here.
+location information here.
