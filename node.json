@@ -111,7 +111,7 @@
         "itemname": "Device",
         "hint": "Device definitions",
         "items": [{
-            "serial": "Device Serial",
+            "title": "Device Serial",
             "ui_width": 4,
             "name": "serial",
             "type": "string",
