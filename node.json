@@ -123,8 +123,8 @@
             "type": "string",
             "default": ""
         }, {
-            "title": "Fancy Background",
-            "ui_width": 2,
+            "title": "Fancy",
+            "ui_width": 3,
             "name": "fancybg",
             "hint": "Show animated background",
             "type": "boolean",
