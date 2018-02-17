@@ -6,7 +6,6 @@ import pytz
 import json
 from calendar import timegm
 from datetime import datetime
-from operator import itemgetter
 
 from hosted import CONFIG, NODE
 import importer
