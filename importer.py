@@ -22,7 +22,7 @@ def get_schedule(api_url, locations, devices, schedule_tz):
     e2 = {'title': 'Bernhard Fleischmann & Band', 'track': 'music'}
     e2['start'] = now_2h.strftime('%s')
     e2['end'] = now_3h.strftime('%s')
-    schedule['orhpeum'] = [e1, e2]
+    schedule['orpheum'] = [e1, e2]
 
     e3 = {'title': 'Meeting of the Secret-Society', 'track': 'discourse'}
     e3['start'] = now.strftime('%s')
