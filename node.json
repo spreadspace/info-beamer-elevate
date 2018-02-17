@@ -111,11 +111,10 @@
         "itemname": "Device",
         "hint": "Device definitions",
         "items": [{
-            "title": "Device Serial",
+            "title": "Device",
             "ui_width": 4,
             "name": "serial",
-            "type": "string",
-            "default": ""
+            "type": "device",
         }, {
             "title": "Location ID",
             "ui_width": 4,
