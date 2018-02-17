@@ -43,7 +43,7 @@ def main():
             continue
 
         schedule = importer.get_schedule(
-            CONFIG['schedule_url'],
+            CONFIG['eis_api_url'],
             CONFIG['locations'],
             pytz.timezone(CONFIG['timezone']),
         )

@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 import dateutil.parser
 
 
-def get_schedule(url, locations, schedule_tz):
+def get_schedule(api_url, locations, schedule_tz):
     schedule = {}
 
     now = datetime.now(schedule_tz).replace(minute=0, second=0)

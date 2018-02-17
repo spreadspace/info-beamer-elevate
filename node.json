@@ -28,6 +28,7 @@
         "title": "Background",
         "ui_width": 4,
         "name": "background",
+        "hint": "This is only used if fancy background is disabled for device"
         "type": "resource",
         "valid": ["image", "video", "child"],
         "default": "empty.png"
@@ -35,7 +36,6 @@
         "title": "Logo",
         "ui_width": 4,
         "name": "logo",
-        "doc_link": true,
         "type": "resource",
         "valid": ["image", "video", "child"],
         "default": "logo.png"
@@ -64,7 +64,6 @@
         "title": "Other Locations (seconds)",
         "ui_width": 4,
         "name": "other_locations",
-        "doc_link": true,
         "type": "duration",
         "hint": "How long to display other location information",
         "default": 25
@@ -72,7 +71,6 @@
         "title": "Current Locations (seconds)",
         "ui_width": 4,
         "name": "current_location",
-        "doc_link": true,
         "type": "duration",
         "hint": "How long to display current talk information",
         "default": 15
@@ -82,40 +80,55 @@
         "title": "Scheduling",
         "type": "section"
     }, {
-        "title": "XML Fahrplan Url",
+        "title": "EIS API Url",
         "ui_width": 10,
-        "name": "schedule_url",
-        "doc_link": true,
+        "name": "eis_api_url",
         "type": "string",
-        "default": "http://localhost/"
+        "default": "https://eis.elevate.at/API/rest/index"
     }, {
         "title": "Locations",
         "name": "locations",
-        "doc_link": true,
         "type": "list",
         "itemname": "Location",
         "hint": "Location definitions",
         "items": [{
+            "title": "Location ID",
+            "ui_width": 4,
+            "name": "id",
+            "type": "string",
+            "default": ""
+        }, {
             "title": "Location Name",
             "ui_width": 4,
             "name": "name",
-            "doc_link": true,
             "type": "string",
             "default": ""
-        }, {
-            "title": "Location Short Name",
-            "ui_width": 4,
-            "name": "name_short",
-            "doc_link": true,
-            "type": "string",
-            "default": ""
-        }, {
-            "title": "Device Serial",
+        }]
+    }, {
+        "title": "Devices",
+        "name": "devices",
+        "type": "list",
+        "itemname": "Device",
+        "hint": "Device definitions",
+        "items": [{
+            "serial": "Device Serial",
             "ui_width": 4,
             "name": "serial",
-            "doc_link": true,
             "type": "string",
             "default": ""
+        }, {
+            "title": "Location ID",
+            "ui_width": 4,
+            "name": "location",
+            "type": "string",
+            "default": ""
+        }, {
+            "title": "Fancy Background",
+            "ui_width": 4,
+            "name": "fancybg",
+            "hint": "Show animated background"
+            "type": "boolean",
+            "default": true
         }]
     }]
 }
