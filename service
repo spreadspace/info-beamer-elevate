@@ -45,7 +45,8 @@ def main():
         schedule = importer.get_schedule(
             CONFIG['eis_api_url'],
             CONFIG['locations'],
-            pytz.timezone(CONFIG['timezone']),
+            CONFIG['devices'],
+            pytz.timezone(CONFIG['timezone'])
         )
 
         if not schedule:

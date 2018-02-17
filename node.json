@@ -125,7 +125,7 @@
         }, {
             "title": "Fancy",
             "ui_width": 3,
-            "name": "fancybg",
+            "name": "fancy",
             "hint": "Show animated background",
             "type": "boolean",
             "default": true
