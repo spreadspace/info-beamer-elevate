@@ -99,7 +99,7 @@
             "default": ""
         }, {
             "title": "Location Name",
-            "ui_width": 4,
+            "ui_width": 6,
             "name": "name",
             "type": "string",
             "default": ""
@@ -124,7 +124,7 @@
             "default": ""
         }, {
             "title": "Fancy Background",
-            "ui_width": 4,
+            "ui_width": 2,
             "name": "fancybg",
             "hint": "Show animated background",
             "type": "boolean",
