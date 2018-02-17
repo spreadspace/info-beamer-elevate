@@ -28,7 +28,7 @@
         "title": "Background",
         "ui_width": 4,
         "name": "background",
-        "hint": "This is only used if fancy background is disabled for device"
+        "hint": "This is only used if fancy background is disabled for device",
         "type": "resource",
         "valid": ["image", "video", "child"],
         "default": "empty.png"
@@ -126,7 +126,7 @@
             "title": "Fancy Background",
             "ui_width": 4,
             "name": "fancybg",
-            "hint": "Show animated background"
+            "hint": "Show animated background",
             "type": "boolean",
             "default": true
         }]
