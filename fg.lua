@@ -1,5 +1,6 @@
 local yield = coroutine.yield
 local tqnew = require "tq"
+local json = require "json"
 
 -- register self
 local fg = rawget(_G, "fg") 

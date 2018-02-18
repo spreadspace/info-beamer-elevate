@@ -1,5 +1,9 @@
 util.init_hosted()
-gl.setup(1920, 1080)
+
+NATIVE_WIDTH = NATIVE_WIDTH or 1920
+NATIVE_HEIGHT = NATIVE_HEIGHT or 1080
+
+gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
 
 local json = require "json"
 local tqnew = require "tq"
