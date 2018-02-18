@@ -20,6 +20,7 @@ if not state.tq then
     state.tq = tqnew()
 end
 
+
 local bgtex
 local function makebgtex()
     bgtex = resource.create_colored_texture(CONFIG.background_color.rgb_with_a(1))
@@ -45,7 +46,7 @@ end)
 util.data_mapper{
     ["clock/set"] = function(tm)
         fg.onUpdateTime(tm)
-    end
+    end,
 }
 
 
@@ -102,8 +103,13 @@ local function drawheader(aspect)
     --CONFIG.font:write(0, 0.9, "UNTEN", 50, CONFIG.background_color.rgb_with_a(alpha))
     
     local fcol = CONFIG.foreground_color
-    drawfont(CONFIG.font, 0.15, 0.05, fg.locname, 0.1, fcol.rgb_with_a(alpha))
-    drawfont(CONFIG.font, 0.15, 0.55, fg.locname, 0.1, fcol.rgb_with_a(alpha))
+    local hy = 0.05
+    
+    drawfont(CONFIG.font, 0.15, hy, fg.locname, 0.1, fcol.rgb_with_a(alpha))
+    drawfont(CONFIG.font, 0.15, hy + 0.5, fg.locname, 0.1, fcol.rgb_with_a(alpha))
+    
+    -- time
+    drawfont(CONFIG.font, 0.9, hy, fg.gettimestr(), 0.06, fcol.rgb_with_a(alpha))
 end
 
 

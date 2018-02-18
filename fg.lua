@@ -1,6 +1,9 @@
 local yield = coroutine.yield
 local tqnew = require "tq"
 local json = require "json"
+local floor = math.floor
+
+local NO_LOCATION = { id = "unk", name = "Unknown location" }
 
 -- register self
 local fg = rawget(_G, "fg") 
@@ -8,7 +11,10 @@ if not fg then
     fg = {}
     rawset(_G, "fg", fg)
     fg.base_time = 0
-    fg.locname = "Unknown location"
+    fg.locname = NO_LOCATION.name
+    fg.locdef = NO_LOCATION
+    fg.lasttimeupdate = 0
+    fg.slides = {}
 end
 
 local SERIAL = assert(sys.get_env("SERIAL"), "SERIAL not set! Please set INFOBEAMER_ENV_SERIAL")
@@ -61,10 +67,32 @@ function SLIDE:draw()
 end
 
 
-
+-- current time, time passed since last update was received
 function fg.getts()
-    return fg.base_time + sys.now()
+    local now = sys.now()
+    return fg.base_time + now, now - fg.lasttimeupdate
 end
+
+-- interpolates since last update received
+function fg.gettimestr()
+    local off = sys.now() - fg.lasttimeupdate
+    local h, m, s = fg.timeh, fg.timem, fg.times
+    local ds, dm, dh
+    if not (h and m and s) then
+        return "--:--"
+    end
+    local rem
+    ds = floor(((s + off) % 60))
+    rem = (s + off) / 60
+    dm = floor((m + rem) % 60)
+    rem = (m + rem) / 60
+    dh = floor((h + rem) % 24)
+    
+    return ("%d:%d"):format(dh, dm)
+end
+
+
+
 function fg.location()
     return fg.DEVICE and fg.DEVICE.location
 end
@@ -90,6 +118,7 @@ function fg.onUpdateConfig(config)
         for _, loc in pairs(config.locations) do
             if loc.id == myloc then
                 fg.locname = loc.name
+                fg.locdef = loc
                 break
             end
         end
@@ -243,24 +272,41 @@ function fg.onUpdateSchedule(sch)
 end
 
 function fg.onUpdateTime(tm)
-    fg.base_time = tonumber(tm) - sys.now()
-    print("UPDATED TIME", fg.base_time, "; NOW: ", fg.getts())
+    local now = sys.now()
+    fg.lasttimeupdate = now
+    local u,h,m,s =tm:match("([%d%.]+),(%d+),(%d+),([%d%.]+)")
+    fg.timeh = tonumber(h)
+    fg.timem = tonumber(m)
+    fg.times = tonumber(s)
+    fg.base_time = tonumber(u) - now
+    print("UPDATED TIME", fg.base_time, "; NOW: ", fg.getts(), fg.gettimestr())
 end
+
+local function _makebacksupslides()
+    print("Generating backup slide")
+    local location = fg.locdef or NO_LOCATION
+    local slide = SLIDE.newLocal(1, location, {})
+    return {slide}
+end
+
 
 local function _slideiter(slides)
     yield()
-    while true do
-        for _, slide in pairs(slides) do
-            yield(slide)
-        end
+    for _, slide in ipairs(slides) do
+        yield(slide)
     end
 end
 
 function fg.newSlideIter()
-    -- TODO: backup slide if empty
-    assert(fg.slides and #fg.slides > 0, "no slides present")
+    local slides
+    if fg.slides and #fg.slides > 0 then
+        slides = fg.slides
+    else
+        slides = _makebackupslides()
+    end
+
     local co = coroutine.wrap(_slideiter)
-    co(fg.slides)
+    co(slides)
     return co
 end
 
