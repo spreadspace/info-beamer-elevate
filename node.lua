@@ -9,6 +9,8 @@ local json = require "json"
 local tqnew = require "tq"
 local fg = require "fg"
 local res = util.auto_loader()
+local min = math.min
+local max = math.max
 
 -- persistent state, survives file reloads
 local state = rawget(_G, "._state")
@@ -146,28 +148,62 @@ local function draweventabs(x, y, event)
     end
     
     -- DRAW SUBTITLE
-    local h2 = h * 0.6 -- font size subtitle
-    local sa = event.subtitle:wrap(wrapfactor(yspace, h2))
-    local linespacing = HEIGHT*0.01
-    for i = 1, #sa do
-        _, liney = drawfont(font, fx, liney, sa[i], h2, fgcol.rgba()) 
-        liney = liney + linespacing
+    if event.subtitle then
+        local h2 = h * 0.6 -- font size subtitle
+        local sa = event.subtitle:wrap(wrapfactor(yspace, h2))
+        local linespacing = HEIGHT*0.01
+        for i = 1, #sa do
+            _, liney = drawfont(font, fx, liney, sa[i], h2, fgcol.rgba()) 
+            liney = liney + linespacing
+        end
     end
+    
+    return liney -- where we are
+        + yo     -- shift to bottom of line
+        + HEIGHT*0.04 -- leave some extra space
 end
 
 -- ry = position relative to [sy..HEIGHT]
 local function draweventrel(sx, sy, ry, event)
     local y = math.rescale(ry, 0, 1, sy, HEIGHT)
-    return draweventabs(sx, y, event)
+    local yabs = draweventabs(sx, y, event)
+    return math.rescale(yabs, sy, HEIGHT, 0, 1)
 end
 
 
 local function drawslide(slide, sx, sy) -- start positions after header
+    local evs = slide.events
     if slide.here then
         local beginy = sy+HEIGHT*0.02
         res.gradient:draw(sx, beginy, sx+WIDTH*0.008, HEIGHT)
         
-        draweventrel(sx, sy, 0.5, slide.events[1])
+        local MAXEVENTS =4
+        
+        local N = min(MAXEVENTS, #evs)
+        local ystart = math.rescale(N, 1, MAXEVENTS, 0.38, 0.07) -- more events -> start higher (guesstimate)
+        local yend = 0.85 -- hopefully safe
+        
+        local mints = evs[1].startts
+        local maxts = evs[#evs].endts
+        local span
+        if mints and maxts then
+            span = maxts - mints
+        end
+        
+        local yrel = ystart
+        for i = 1, N do -- draw up to this many events
+            local ev = evs[i]
+            if span and i > 1 and ev.startts then
+                --local pause = evs[i].startts - evs[i-1].endts
+                local yfit = math.rescale(ev.startts, mints, maxts, ystart, yend)
+                if yrel < yfit then
+                    yrel = yfit
+                end
+            end
+            
+            yrel = draweventrel(sx, sy, yrel, evs[i])
+        end
+        
     else
         local where = ("%s / %s"):format(slide.track.name, slide.location.name)
         CONFIG.font:write(30, 30, where, 50, CONFIG.foreground_color.rgb_with_a(alpha))

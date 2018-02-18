@@ -177,6 +177,8 @@ local function mangleEvent(ev, ts, locid)
         evc.prio = prio
         evc.status = status
         evc.locid = locid
+        evc.startts = tonumber(evc.startts)
+        evc.endts = tonumber(evc.endts)
         return evc
     end
 end
