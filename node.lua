@@ -37,6 +37,18 @@ node.event("config_update", function()
     makebgtex()
 end)
 
+util.file_watch("schedule.json", function(content)
+    local schedule = json.decode(content)
+    fg.onUpdateSchedule(schedule)
+end)
+
+util.data_mapper{
+    ["clock/set"] = function(tm)
+        fg.onUpdateTime(tm)
+    end
+}
+
+
 makebgtex()
 
 

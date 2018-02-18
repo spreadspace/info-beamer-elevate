@@ -241,17 +241,11 @@ function fg.onUpdateSchedule(sch)
     local slides = _scheduleToSlides(locations, tracks, sch)
     fg.slides = slides
 end
-util.file_watch("schedule.json", function(content)
-    local schedule = json.decode(content)
-    fg.onUpdateSchedule(schedule)
-end)
 
-util.data_mapper{
-    ["clock/set"] = function(tm)
-        fg.base_time = tonumber(tm) - sys.now()
-        --print("UPDATED TIME", fg.base_time, "; NOW: ", fg.getts())
-    end
-}
+function fg.onUpdateTime(tm)
+    fg.base_time = tonumber(tm) - sys.now()
+    print("UPDATED TIME", fg.base_time, "; NOW: ", fg.getts())
+end
 
 local function _slideiter(slides)
     yield()
