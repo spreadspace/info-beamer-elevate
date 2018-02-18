@@ -22,7 +22,10 @@ def current_time():
 
 
 def send_clock(now, ts):
+    now = now.replace(tzinfo=pytz.utc)
+    now = now.astimezone(pytz.timezone(CONFIG['timezone']))
     NODE.send('/clock/set:%f' % ts)
+    NODE.send('/clock/formatted:%s' % now.strftime("%H:%M"))
 
 
 def main():
