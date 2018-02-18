@@ -4,8 +4,9 @@ local json = require "json"
 local floor = math.floor
 
 -- FOR TESTING --
-local NO_REMOTE_EVENTS = true
+local NO_REMOTE_EVENTS = false
 local NO_LOCAL_EVENTS = false
+local ALWAYS_PUSH_EMPTY = true
 -----------------
 
 local NO_LOCATION = { id = "unk", name = "Unknown location" }
@@ -183,6 +184,12 @@ local function mangleEvent(ev, ts, locid)
     end
 end
 
+local function _makebackupslide()
+    print("Generating backup slide")
+    local location = fg.locdef or NO_LOCATION
+    return SLIDE.newLocal(1, location, {})
+end
+
 
 local _autoextendmeta0 =
 {
@@ -251,8 +258,8 @@ local function _scheduleToSlides(locations, tracks, tab)
     
     print("Found " .. nevents .. " events, generating slides...")
     
+    local slideid = 0
     if not NO_LOCAL_EVENTS then
-        local slideid = 0
         if myloc then
             print("I have " .. #localevents .. " events upcoming here [" .. myloc .. "]")
             table.sort(localevents, _eventorder)
@@ -274,6 +281,10 @@ local function _scheduleToSlides(locations, tracks, tab)
                 end
             end
         end
+    end
+    
+    if ALWAYS_PUSH_EMPTY then
+        table.insert(slides, _makebackupslide())
     end
     
     print("Generated " .. #slides .. " slides")
@@ -300,14 +311,6 @@ function fg.onUpdateTime(tm)
     print("UPDATED TIME", fg.base_time, "; NOW: ", fg.getts(), fg.gettimestr())
 end
 
-local function _makebackupslides()
-    print("Generating backup slide")
-    local location = fg.locdef or NO_LOCATION
-    local slide = SLIDE.newLocal(1, location, {})
-    return {slide}
-end
-
-
 local function _slideiter(slides)
     yield()
     for _, slide in ipairs(slides) do
@@ -320,7 +323,7 @@ function fg.newSlideIter()
     if fg.slides and #fg.slides > 0 then
         slides = fg.slides
     else
-        slides = _makebackupslides()
+        slides = {_makebackupslides()}
     end
 
     local co = coroutine.wrap(_slideiter)

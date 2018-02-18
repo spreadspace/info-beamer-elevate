@@ -3,6 +3,9 @@ util.init_hosted()
 NATIVE_WIDTH = NATIVE_WIDTH or 1920
 NATIVE_HEIGHT = NATIVE_HEIGHT or 1080
 
+local LOCAL_SLIDE_TIME = 3
+local REMOTE_SLIDE_TIME = 1
+
 gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
 
 local json = require "json"
@@ -75,8 +78,17 @@ local function nextslide()
         state.slide = it()
     end
     
+    local t = 1
+    if state.slide then
+        if state.slide.here then
+            t = LOCAL_SLIDE_TIME
+        else
+            t = REMOTE_SLIDE_TIME
+        end
+    end
+    
     -- schedule next slide
-    state.tq:push(1, nextslide)
+    state.tq:push(t, nextslide)
 end
 
 -- takes x, y, sz in resolution-independent coords
@@ -127,18 +139,24 @@ end
 
 
 -- absolute positions
-local function draweventabs(x, y, event)
+local function draweventabs(x, y, event, islocal)
     local font = CONFIG.font
     local fgcol = CONFIG.foreground_color
-    local xo = 0.05 * WIDTH
+
     local h = HEIGHT*0.07 -- font size time + title
     local yo = h / 2 -- center font on line 
     local liney = y-yo -- always line y pos
-    local _, fy = drawfont(font, x+xo, liney, event.start .. "   ", h, fgcol.rgba()) -- write time
-    fgtex:draw(x-xo*0.5, y-yo*0.15, x+xo*0.5, y+yo*0.15) -- draw tick
+    
+    local xo = 0 
+    if islocal then
+        xo = 0.05 * WIDTH  
+        fgtex:draw(x-xo*0.5, y-yo*0.15, x+xo*0.5, y+yo*0.15)
+    end
+    
+    local fxt, fy = drawfont(font, x+xo, liney, event.start .. "   ", h, fgcol.rgba()) -- write time
     
     -- DRAW TITLE
-    local fx = x + xo *3.5 -- x start of title
+    local fx = max(fxt, x+0.1*WIDTH)   -- x start of title
     local yspace = WIDTH - fx -- how much space is left on the right?
     local sa = event.title:wrap(wrapfactor(yspace, h)) -- somehow figure out how to wrap
     local linespacing = HEIGHT*0.01
@@ -147,8 +165,10 @@ local function draweventabs(x, y, event)
         liney = liney + linespacing
     end
     
+    local extraspace = yo -- shift to bottom of line
+    
     -- DRAW SUBTITLE
-    if event.subtitle then
+    if islocal and event.subtitle then
         local h2 = h * 0.6 -- font size subtitle
         local sa = event.subtitle:wrap(wrapfactor(yspace, h2))
         local linespacing = HEIGHT*0.01
@@ -156,57 +176,81 @@ local function draweventabs(x, y, event)
             _, liney = drawfont(font, fx, liney, sa[i], h2, fgcol.rgba()) 
             liney = liney + linespacing
         end
+        extraspace = extraspace + HEIGHT*0.04 -- leave some more extra space
     end
     
     return liney -- where we are
-        + yo     -- shift to bottom of line
-        + HEIGHT*0.04 -- leave some extra space
+        + extraspace
 end
 
 -- ry = position relative to [sy..HEIGHT]
-local function draweventrel(sx, sy, ry, event)
+local function draweventrel(sx, sy, ry, ...)
     local y = math.rescale(ry, 0, 1, sy, HEIGHT)
-    local yabs = draweventabs(sx, y, event)
+    local yabs = draweventabs(sx, y, ...)
     return math.rescale(yabs, sy, HEIGHT, 0, 1)
 end
 
+local function drawlocalslide(slide, sx, sy)
+    local evs = slide.events
+    local beginy = sy+HEIGHT*0.02
+    res.gradient:draw(sx, beginy, sx+WIDTH*0.008, HEIGHT)
+    
+    local MAXEVENTS = 4
+    
+    local N = min(MAXEVENTS, #evs)-- draw up to this many events
+    local ystart = math.rescale(N, 1, MAXEVENTS, 0.38, 0.07) -- more events -> start higher (guesstimate)
+    local yend = 0.85 -- hopefully safe
+    
+    local mints = evs[1].startts
+    local maxts = evs[#evs].endts
+    local span
+    if mints and maxts then
+        span = maxts - mints
+    end
+    
+    local yrel = ystart
+    for i = 1, N do
+        local ev = evs[i]
+        if span and i > 1 and ev.startts then
+            --local pause = evs[i].startts - evs[i-1].endts
+            local yfit = math.rescale(ev.startts, mints, maxts, ystart, yend)
+            if yrel < yfit then
+                yrel = yfit
+            end
+        end
+
+        
+        yrel = draweventrel(sx, sy, yrel, evs[i], true)
+    end
+end
+
+local function drawremoteslide(slide, sx, sy)
+    local evs = slide.events
+    local font = CONFIG.font
+    local beginy = sy+HEIGHT*0.02
+    
+    local wheresize = HEIGHT*0.06
+    local where = ("%s / %s"):format(slide.track.name, slide.location.name)
+    drawfont(font, sx, beginy, where, wheresize, CONFIG.foreground_color.rgb_with_a(alpha))
+    
+    local MAXEVENTS = 8
+    local N = min(MAXEVENTS, #evs)
+    local ystart = 0.3
+    local yend = 0.92 -- hopefully safe
+    local yrel = ystart
+    for i = 1, N do -- draw up to this many events
+        yrel = draweventrel(sx, sy, yrel, evs[i], false)
+        if yrel > yend+0.01 then -- safeguard -- bail out if it likely won't fit
+            break
+        end
+    end
+end
 
 local function drawslide(slide, sx, sy) -- start positions after header
-    local evs = slide.events
     if slide.here then
-        local beginy = sy+HEIGHT*0.02
-        res.gradient:draw(sx, beginy, sx+WIDTH*0.008, HEIGHT)
-        
-        local MAXEVENTS =4
-        
-        local N = min(MAXEVENTS, #evs)
-        local ystart = math.rescale(N, 1, MAXEVENTS, 0.38, 0.07) -- more events -> start higher (guesstimate)
-        local yend = 0.85 -- hopefully safe
-        
-        local mints = evs[1].startts
-        local maxts = evs[#evs].endts
-        local span
-        if mints and maxts then
-            span = maxts - mints
-        end
-        
-        local yrel = ystart
-        for i = 1, N do -- draw up to this many events
-            local ev = evs[i]
-            if span and i > 1 and ev.startts then
-                --local pause = evs[i].startts - evs[i-1].endts
-                local yfit = math.rescale(ev.startts, mints, maxts, ystart, yend)
-                if yrel < yfit then
-                    yrel = yfit
-                end
-            end
-            
-            yrel = draweventrel(sx, sy, yrel, evs[i])
-        end
-        
+        return drawlocalslide(slide, sx, sy)
     else
-        local where = ("%s / %s"):format(slide.track.name, slide.location.name)
-        CONFIG.font:write(30, 30, where, 50, CONFIG.foreground_color.rgb_with_a(alpha))
+        return drawremoteslide(slide, sx, sy)
     end
 end
 
