@@ -51,12 +51,15 @@ local SLIDE = {}
 SLIDE.__index = SLIDE
 
 function SLIDE.newLocal(id, locdef, events)
+    local empty
     if not events or #events == 0 then
         events = {NO_EVENT}
+        empty = true
     end
     local self = { id = id, here = true,
         location = assert(locdef),
-        events = assert(events)
+        events = assert(events),
+        empty = empty
     }
     return setmetatable(self, SLIDE)
 end

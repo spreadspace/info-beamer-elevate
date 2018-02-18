@@ -80,7 +80,9 @@ local function nextslide()
     
     local t = 1
     if state.slide then
-        if state.slide.here then
+        if state.slide.empty then
+            t = 3
+        elseif state.slide.here then
             t = LOCAL_SLIDE_TIME
         else
             t = REMOTE_SLIDE_TIME
