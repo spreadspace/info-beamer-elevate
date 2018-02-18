@@ -23,6 +23,7 @@ def current_time():
 
 def send_clock(now, ts):
     NODE.send('/clock/set:%f' % ts)
+    NODE.send('/clock/formatted:%s' % now.strftime("%H:%M"))
 
 
 def main():
