@@ -3,7 +3,21 @@ local tqnew = require "tq"
 local json = require "json"
 local floor = math.floor
 
+-- FOR TESTING --
+local NO_REMOTE_EVENTS = true
+local NO_LOCAL_EVENTS = false
+-----------------
+
 local NO_LOCATION = { id = "unk", name = "Unknown location" }
+
+local NO_EVENT = {
+    start = "404 -",
+    --title = "Event not found blah rofl lolo omg wtf long title right let's see where this goes or otherwise things might break",
+    title = "Event not found",
+    --subtitle = "There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along." }
+    subtitle = "There is currently no event to display. Move along."
+}
+
 
 -- register self
 local fg = rawget(_G, "fg") 
@@ -36,6 +50,9 @@ local SLIDE = {}
 SLIDE.__index = SLIDE
 
 function SLIDE.newLocal(id, locdef, events)
+    if not events or #events == 0 then
+        events = {NO_EVENT}
+    end
     local self = { id = id, here = true,
         location = assert(locdef),
         events = assert(events)
@@ -60,10 +77,6 @@ function SLIDE:print()
     for i, ev in ipairs(self.events) do
         printevent(ev)
     end
-end
-
-function SLIDE:draw()
-    --CONFIG.font:write(30, 30, self.location.name, 50, CONFIG.foreground_color.rgb_with_a(alpha))
 end
 
 
@@ -236,24 +249,27 @@ local function _scheduleToSlides(locations, tracks, tab)
     
     print("Found " .. nevents .. " events, generating slides...")
     
-    local slideid = 0
-    if myloc then
-        print("I have " .. #localevents .. " events upcoming here [" .. myloc .. "]")
-        table.sort(localevents, _eventorder)
-        slideid = slideid + 1
-        local slide = SLIDE.newLocal(slideid, loclut[myloc], localevents)
-        table.insert(slides, slide)
+    if not NO_LOCAL_EVENTS then
+        local slideid = 0
+        if myloc then
+            print("I have " .. #localevents .. " events upcoming here [" .. myloc .. "]")
+            table.sort(localevents, _eventorder)
+            slideid = slideid + 1
+            local slide = SLIDE.newLocal(slideid, loclut[myloc], localevents)
+            table.insert(slides, slide)
+        end
     end
-    
-    for _, tr in ipairs(tracks) do
-        for _, loc in ipairs(locations) do
-            local evs = trackloc[tr.id][loc.id]
-            if evs and #evs > 0 then
-                table.sort(evs, _eventorder)
-                slideid = slideid + 1
-                print("GEN SLIDE[" .. slideid .. "]: track[" .. tr.id .. "] loc[" .. loc.id .. "] = " .. #evs .. " events")
-                local slide = SLIDE.newRemote(slideid, tr, loc, evs)
-                table.insert(slides, slide)
+    if not NO_REMOTE_EVENTS then
+        for _, tr in ipairs(tracks) do
+            for _, loc in ipairs(locations) do
+                local evs = trackloc[tr.id][loc.id]
+                if evs and #evs > 0 then
+                    table.sort(evs, _eventorder)
+                    slideid = slideid + 1
+                    print("GEN SLIDE[" .. slideid .. "]: track[" .. tr.id .. "] loc[" .. loc.id .. "] = " .. #evs .. " events")
+                    local slide = SLIDE.newRemote(slideid, tr, loc, evs)
+                    table.insert(slides, slide)
+                end
             end
         end
     end
@@ -282,7 +298,7 @@ function fg.onUpdateTime(tm)
     print("UPDATED TIME", fg.base_time, "; NOW: ", fg.getts(), fg.gettimestr())
 end
 
-local function _makebacksupslides()
+local function _makebackupslides()
     print("Generating backup slide")
     local location = fg.locdef or NO_LOCATION
     local slide = SLIDE.newLocal(1, location, {})
@@ -307,13 +323,13 @@ function fg.newSlideIter()
 
     local co = coroutine.wrap(_slideiter)
     co(slides)
-    return co
+    return co, #slides
 end
 
 
 
 
-function string.wrap(str, limit, indent, indent1)
+function string.wrap(str, limit)
     limit = limit or 72
     local here = 1
     local wrapped = str:gsub("(%s+)()(%S+)()", function(sp, st, word, fi)
@@ -327,6 +343,15 @@ function string.wrap(str, limit, indent, indent1)
         splitted[#splitted + 1] = token
     end
     return splitted
+end
+
+-- scale t from [lower, upper] into [rangeMin, rangeMax]
+function math.rescale(t, lower, upper, rangeMin, rangeMax)
+    if upper == lower then
+        return rangeMin
+    end
+
+    return (((t - lower) / (upper - lower)) * (rangeMax - rangeMin)) + rangeMin
 end
 
 
