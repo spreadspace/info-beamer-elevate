@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 import dateutil.parser
 
 
-def get_schedule(api_url, locations, devices, schedule_tz):
+def get_schedule(api_url, tracks, locations, devices, schedule_tz):
     schedule = {}
 
     def __hour_min(t):
@@ -30,13 +30,17 @@ def get_schedule(api_url, locations, devices, schedule_tz):
     now_3h = now + timedelta(hours=3)
     now_4h = now + timedelta(hours=4)
 
-    e1 = __new_event('Eroeffnungsshow', 'discourse', now, now_1h)
-    e2 = __new_event('Bernhard Fleischmann & Band', 'music', now_2h, now_3h)
+    e1 = __new_event("Eroeffnungsshow", 'discourse', now, now_1h)
+    e1['subtitle'] = "Welcome to the Elevate Festival 2018"
+    e2 = __new_event("Bernhard Fleischmann & Band", 'music', now_2h, now_3h)
     schedule['orpheum'] = [e1, e2]
 
-    e3 = __new_event('Meeting of the Secret-Society', 'discourse', now, now_2h)
-    e4 = __new_event('Nothing to see here!', 'arts', now_2h, now_3h)
-    e5 = __new_event('Kann das Weg?', 'arts', now_3h, now_4h)
+    e3 = __new_event("Meeting of the Secret-Society", 'discourse', now, now_2h)
+    e3['subtitle'] = "don't tell Donald Trump!!!!"
+    e4 = __new_event("Nothing to see here!", 'arts', now_2h, now_3h)
+    e4['subtitle'] = "this subtitle left intentionally blank"
+    e5 = __new_event("Ist das Kunst?", 'arts', now_3h, now_4h)
+    e5['subtitle'] = "... oder kann das Weg?"
     schedule['forum'] = [e3, e4, e5]
 
     return schedule

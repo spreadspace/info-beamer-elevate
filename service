@@ -22,16 +22,7 @@ def current_time():
 
 
 def send_clock(now, ts):
-    now = now.replace(tzinfo=pytz.utc)
-    now = now.astimezone(pytz.timezone(CONFIG['timezone']))
-    now = now.replace(tzinfo=None)
-    since_midnight = (
-        now -
-        now.replace(hour=0, minute=0, second=0, microsecond=0)
-    )
-    since_midnight = since_midnight.seconds + since_midnight.microseconds / 1000000.
     NODE.send('/clock/set:%f' % ts)
-    NODE.send('/clock/midnight:%f' % since_midnight)
 
 
 def main():
@@ -44,6 +35,7 @@ def main():
 
         schedule = importer.get_schedule(
             CONFIG['eis_api_url'],
+            CONFIG['tracks'],
             CONFIG['locations'],
             CONFIG['devices'],
             pytz.timezone(CONFIG['timezone'])
