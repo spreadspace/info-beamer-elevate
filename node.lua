@@ -130,7 +130,7 @@ local function drawheader(aspect)
     local hy = 0.05
     
     -- time
-    drawfontrel(CONFIG.font, 0.9, hy, fg.gettimestr(), 0.06, fcol.rgb_with_a(1))
+    drawfontrel(CONFIG.font, 0.85, hy, fg.gettimestr(), 0.06, fcol.rgb_with_a(1))
     
     return drawfontrel(CONFIG.font, 0.15, hy, fg.locname, 0.1, fcol.rgb_with_a(1))
 end
@@ -195,7 +195,8 @@ end
 local function drawlocalslide(slide, sx, sy)
     local evs = slide.events
     local beginy = sy+HEIGHT*0.02
-    res.gradient:draw(sx, beginy, sx+WIDTH*0.008, HEIGHT)
+    local thickness = WIDTH*0.008
+    res.gradient:draw(sx - thickness/2, beginy, sx + thickness/2, HEIGHT)
     
     local MAXEVENTS = 4
     

@@ -105,7 +105,7 @@ function fg.gettimestr()
     rem = (m + rem) / 60
     dh = floor((h + rem) % 24)
     
-    return ("%d:%d"):format(dh, dm)
+    return ("%02d:%02d"):format(dh, dm)
 end
 
 
