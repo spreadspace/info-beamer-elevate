@@ -30,12 +30,19 @@ local SLIDE = {}
 SLIDE.__index = SLIDE
 
 function SLIDE.newLocal(id, locdef, events)
-    local self = { id = id, here = true, location = assert(locdef), events = assert(events) }
+    local self = { id = id, here = true,
+        location = assert(locdef),
+        events = assert(events)
+    }
     return setmetatable(self, SLIDE)
 end
 
 function SLIDE.newRemote(id, trackdef, locdef, events)
-    local self = { id = id, track = assert(trackdef), location = assert(locdef), events = assert(events) }
+    local self = { id = id,
+        track = assert(trackdef),
+        location = assert(locdef),
+        events = assert(events)
+    }
     return setmetatable(self, SLIDE)
 end
 
@@ -210,15 +217,13 @@ local function _scheduleToSlides(locations, tracks, tab)
     end
     
     for _, tr in ipairs(tracks) do
-        local trackdef = assert(tracklut[tr.id])
         for _, loc in ipairs(locations) do
-            local locdef = loclut[loc.id]
             local evs = trackloc[tr.id][loc.id]
             if evs and #evs > 0 then
                 table.sort(evs, _eventorder)
                 slideid = slideid + 1
                 print("GEN SLIDE[" .. slideid .. "]: track[" .. tr.id .. "] loc[" .. loc.id .. "] = " .. #evs .. " events")
-                local slide = SLIDE.newRemote(slideid, trackdef, locdef, events)
+                local slide = SLIDE.newRemote(slideid, tr, loc, evs)
                 table.insert(slides, slide)
             end
         end
