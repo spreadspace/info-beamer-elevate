@@ -25,6 +25,12 @@
         "type": "font",
         "default": "silkscreen.ttf"
     }, {
+        "title": "Font Bold",
+        "ui_width": 4,
+        "name": "font-bold",
+        "type": "font",
+        "default": ""
+    }, {
         "title": "Background",
         "ui_width": 4,
         "name": "background",
