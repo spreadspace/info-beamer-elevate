@@ -28,8 +28,8 @@ end
 
 local bgtex, fgtex
 local function maketex()
-    bgtex = resource.create_colored_texture(CONFIG.background_color.rgb_with_a(1))
-    fgtex = resource.create_colored_texture(CONFIG.foreground_color.rgb_with_a(1))
+    bgtex = resource.create_colored_texture(CONFIG.background_color.rgba())
+    fgtex = resource.create_colored_texture(CONFIG.foreground_color.rgba())
 end
 
 
@@ -126,26 +126,28 @@ end
 
 local function drawheader(aspect)
     local font = CONFIG.font
+    local fontbold = CONFIG.font_bold
     local fcol = CONFIG.foreground_color
     local hy = 0.05
     
     -- time
-    drawfontrel(CONFIG.font, 0.85, hy, fg.gettimestr(), 0.06, fcol.rgb_with_a(1))
+    drawfontrel(fontbold, 0.83, hy, fg.gettimestr(), 0.08, fcol.rgba())
     
-    return drawfontrel(CONFIG.font, 0.15, hy, fg.locname, 0.1, fcol.rgb_with_a(1))
+    return drawfontrel(font, 0.15, hy, fg.locname, 0.1, fcol.rgba())
 end
 
 local function wrapfactor(yspace, h) -- how many chars until wrap
-    return math.floor(2.2 * yspace / h) -- i don't even
+    return math.floor(2.15 * yspace / h) -- i don't even
 end
 
 
 -- absolute positions
-local function draweventabs(x, y, event, islocal)
+local function draweventabs(x, y, event, islocal, fontscale1, fontscale2)
     local font = CONFIG.font
+    local fontbold = CONFIG.font_bold
     local fgcol = CONFIG.foreground_color
 
-    local h = HEIGHT*0.07 -- font size time + title
+    local h = HEIGHT*fontscale1 -- font size time + title
     local yo = h / 2 -- center font on line 
     local liney = y-yo -- always line y pos
     
@@ -155,7 +157,7 @@ local function draweventabs(x, y, event, islocal)
         fgtex:draw(x-xo*0.5, y-yo*0.15, x+xo*0.5, y+yo*0.15)
     end
     
-    local fxt, fy = drawfont(font, x+xo, liney, event.start .. "   ", h, fgcol.rgba()) -- write time
+    local fxt, fy = drawfont(fontbold, x+xo, liney, event.start .. "   ", h, fgcol.rgba()) -- write time
     
     -- DRAW TITLE
     local fx = max(fxt, x+0.1*WIDTH)   -- x start of title
@@ -171,7 +173,7 @@ local function draweventabs(x, y, event, islocal)
     
     -- DRAW SUBTITLE
     if islocal and event.subtitle then
-        local h2 = h * 0.6 -- font size subtitle
+        local h2 = HEIGHT*fontscale2 -- font size subtitle
         local sa = event.subtitle:wrap(wrapfactor(yspace, h2))
         local linespacing = HEIGHT*0.01
         for i = 1, #sa do
@@ -195,13 +197,13 @@ end
 local function drawlocalslide(slide, sx, sy)
     local evs = slide.events
     local beginy = sy+HEIGHT*0.02
-    local thickness = WIDTH*0.008
+    local thickness = WIDTH*0.006
     res.gradient:draw(sx - thickness/2, beginy, sx + thickness/2, HEIGHT)
     
     local MAXEVENTS = 4
     
     local N = min(MAXEVENTS, #evs)-- draw up to this many events
-    local ystart = math.rescale(N, 1, MAXEVENTS, 0.38, 0.07) -- more events -> start higher (guesstimate)
+    local ystart = math.rescale(N, 1, MAXEVENTS, 0.35, 0.07) -- more events -> start higher (guesstimate)
     local yend = 0.85 -- hopefully safe
     
     local mints = evs[1].startts
@@ -215,15 +217,20 @@ local function drawlocalslide(slide, sx, sy)
     for i = 1, N do
         local ev = evs[i]
         if span and i > 1 and ev.startts then
-            --local pause = evs[i].startts - evs[i-1].endts
-            local yfit = math.rescale(ev.startts, mints, maxts, ystart, yend)
+            --[[local yfit = math.rescale(ev.startts, mints, maxts, ystart, yend)
             if yrel < yfit then
                 yrel = yfit
-            end
+            end]]
         end
-
         
-        yrel = draweventrel(sx, sy, yrel, evs[i], true)
+        local fontscale1 = 0.065
+        local fontscale2 = 0.042
+        if i == 1 then
+            fontscale1 = fontscale1 * 1.2
+            fontscale2 = fontscale2 * 1.2
+        end
+        
+        yrel = draweventrel(sx, sy, yrel, evs[i], true, fontscale1, fontscale2)
     end
 end
 
@@ -234,7 +241,7 @@ local function drawremoteslide(slide, sx, sy)
     
     local wheresize = HEIGHT*0.06
     local where = ("%s / %s"):format(slide.track.name, slide.location.name)
-    drawfont(font, sx, beginy, where, wheresize, CONFIG.foreground_color.rgb_with_a(alpha))
+    drawfont(font, sx, beginy, where, wheresize, CONFIG.foreground_color.rgba())
     
     local MAXEVENTS = 8
     local N = min(MAXEVENTS, #evs)
@@ -242,7 +249,10 @@ local function drawremoteslide(slide, sx, sy)
     local yend = 0.92 -- hopefully safe
     local yrel = ystart
     for i = 1, N do -- draw up to this many events
-        yrel = draweventrel(sx, sy, yrel, evs[i], false)
+        local fontscale1 = 0.07
+        local fontscale2 = 0.045
+        yrel = draweventrel(sx, sy, yrel, evs[i], false, fontscale1, fontscale2)
+        yrel = yrel + 0.04 -- some more space
         if yrel > yend+0.01 then -- safeguard -- bail out if it likely won't fit
             break
         end

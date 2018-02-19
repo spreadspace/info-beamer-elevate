@@ -15,8 +15,8 @@ local NO_EVENT = {
     start = "404 -",
     --title = "Event not found blah rofl lolo omg wtf long title right let's see where this goes or otherwise things might break",
     title = "Event not found",
-    --subtitle = "There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along." }
-    subtitle = "There is currently no event to display. Move along."
+    --subtitle = "There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along.",
+    subtitle = "There is currently no event to display. Move along.",
 }
 
 
