@@ -27,7 +27,7 @@
     }, {
         "title": "Font Bold",
         "ui_width": 4,
-        "name": "font-bold",
+        "name": "font_bold",
         "type": "font",
         "default": ""
     }, {
