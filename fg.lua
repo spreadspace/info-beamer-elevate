@@ -12,7 +12,7 @@ local ALWAYS_PUSH_EMPTY = true
 local NO_LOCATION = { id = "unk", name = "Unknown location" }
 
 local NO_EVENT = {
-    start = "404 -",
+    start = "404",
     --title = "Event not found blah rofl lolo omg wtf long title right let's see where this goes or otherwise things might break",
     title = "Event not found",
     --subtitle = "There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along.",
@@ -114,6 +114,14 @@ function fg.location()
     return fg.DEVICE and fg.DEVICE.location
 end
 
+function fg.isfancy()
+    return fg.DEVICE and fg.DEVICE.fancy
+end
+
+function fg.gettrack(id)
+    return fg._trackLUT[id]
+end
+
 
 function fg.onUpdateConfig(config)
     config = assert(config or CONFIG, "no CONFIG passed or found")
@@ -129,6 +137,10 @@ function fg.onUpdateConfig(config)
         end
     end
     
+    fg._trackLUT = {}
+    for i, track in pairs(config.tracks) do
+        fg._trackLUT[track.id] = track
+    end
     
     if fg.DEVICE then
         local myloc = fg.location()
@@ -360,6 +372,13 @@ function math.rescale(t, lower, upper, rangeMin, rangeMax)
     end
 
     return (((t - lower) / (upper - lower)) * (rangeMax - rangeMin)) + rangeMin
+end
+
+function table.clear(t)
+    for k in pairs(t) do
+        t[k] = nil
+    end
+    return t
 end
 
 

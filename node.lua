@@ -26,10 +26,16 @@ if not state.tq then
 end
 
 
-local bgtex, fgtex
-local function maketex()
-    bgtex = resource.create_colored_texture(CONFIG.background_color.rgba())
-    fgtex = resource.create_colored_texture(CONFIG.foreground_color.rgba())
+local _tmptex = setmetatable({}, { __mode = "kv" })
+local function getcolortex(col)
+    assert(col, "COLOR MISSING")
+    local tex = _tmptex[col]
+    if not tex then
+        tex = resource.create_colored_texture(col.rgba())
+        _tmptex[col] = tex
+    end
+    assert(tex, "OOPS - TEX MISSING")
+    return tex
 end
 
 
@@ -41,7 +47,7 @@ end)
 
 node.event("config_update", function()
     fg.onUpdateConfig()
-    maketex()
+    table.clear(_tmptex)
 end)
 
 util.file_watch("schedule.json", function(content)
@@ -54,9 +60,6 @@ util.data_mapper{
         fg.onUpdateTime(tm)
     end,
 }
-
-
-maketex()
 
 
 local function nextslide()
@@ -96,24 +99,26 @@ end
 -- takes x, y, sz in resolution-independent coords
 -- (0, 0) = upper left corner, (1, 1) = lower right corner
 -- sz == 0.5 -> half as high as the screen
-local function drawfontrel(font, x, y, text, sz, ...)
+local function drawfontrel(font, x, y, text, sz, fgcol, bgcol)
     local xx = x * WIDTH
     local yy = y * HEIGHT
     local zz = sz * HEIGHT
     local yborder = 0.01 * HEIGHT
     local xborder = 0.02 * HEIGHT -- intentionally HEIGHT, not a typo
-    local w = font:write(xx, yy, text, zz, ...)
+    local w = font:write(xx, yy, text, zz, fgcol:rgba())
+    local bgtex = getcolortex(bgcol)
     bgtex:draw(xx-xborder, yy-yborder, xx+w+xborder, yy+zz+yborder)
-    font:write(xx, yy, text, zz, ...)
+    font:write(xx, yy, text, zz, fgcol:rgba())
     return xx, yy+zz, w
 end
 
-local function drawfont(font, x, y, text, sz, ...)
+local function drawfont(font, x, y, text, sz, fgcol, bgcol)
     local yborder = 0.01 * HEIGHT
     local xborder = 0.02 * HEIGHT -- intentionally HEIGHT, not a typo
-    local w = font:write(x, y, text, sz, ...)
+    local w = font:write(x, y, text, sz, fgcol:rgba())
+    local bgtex = getcolortex(bgcol)
     bgtex:draw(x-xborder, y-yborder, x+w+xborder, y+sz+yborder)
-    font:write(x, y, text, sz, ...)
+    font:write(x, y, text, sz, fgcol:rgba())
     return x+w, y+sz
 end
 
@@ -124,16 +129,41 @@ local function drawbg(aspect)
     CONFIG.logo.ensure_loaded():draw(0, 0, logosz/aspect, logosz)
 end
 
-local function drawheader(aspect)
+local function drawheader(aspect, slide) -- slide possibly nil (unlikely)
     local font = CONFIG.font
     local fontbold = CONFIG.font_bold
-    local fcol = CONFIG.foreground_color
+    local fgcol = CONFIG.foreground_color
+    local bgcol = CONFIG.background_color
     local hy = 0.05
     
     -- time
-    drawfontrel(fontbold, 0.83, hy, fg.gettimestr(), 0.08, fcol.rgba())
+    drawfontrel(fontbold, 0.83, hy, fg.gettimestr(), 0.08, fgcol, bgcol)
     
-    return drawfontrel(font, 0.15, hy, fg.locname, 0.1, fcol.rgba())
+    local xpos = 0.15
+    local titlesize = 0.06
+    drawfontrel(font, xpos, hy, "Elevate Infoscreen", titlesize, fgcol, bgcol)
+    
+    hy = hy + titlesize + 0.02
+    
+    
+    local wheresize
+    if slide then
+        local where
+        local fgcol2 = fgcol
+        local bgcol2 = bgcol
+        if slide.here then
+            where = slide.location.name
+            wheresize = 0.1
+        else
+            wheresize = 0.06
+            where = ("%s / %s"):format(slide.track.name, slide.location.name)
+            fgcol2 = slide.track.foreground_color
+            bgcol2 = slide.track.background_color
+        end
+        drawfontrel(font, xpos, hy, where, wheresize, fgcol2, bgcol2)
+    end
+    
+    return WIDTH*xpos, hy + wheresize + HEIGHT*0.25
 end
 
 local function wrapfactor(yspace, h) -- how many chars until wrap
@@ -142,30 +172,40 @@ end
 
 
 -- absolute positions
-local function draweventabs(x, y, event, islocal, fontscale1, fontscale2)
+local function draweventabs(x, titlestartx, y, event, islocal, fontscale1, fontscale2)
     local font = CONFIG.font
     local fontbold = CONFIG.font_bold
-    local fgcol = CONFIG.foreground_color
+    local track = fg.gettrack(event.track)
+    local fgcol = assert((track and track.foreground_color) or CONFIG.foreground_color)
+    local bgcol = assert((track and track.background_color) or CONFIG.background_color)
+    local fgtex = getcolortex(fgcol)
+    --local bgtex = getcolortex(bgcol)
+
 
     local h = HEIGHT*fontscale1 -- font size time + title
     local yo = h / 2 -- center font on line 
     local liney = y-yo -- always line y pos
     
+    
     local xo = 0 
+    
+    -- DRAW TICK
     if islocal then
-        xo = 0.05 * WIDTH  
+        xo = 0.05 * WIDTH
         fgtex:draw(x-xo*0.5, y-yo*0.15, x+xo*0.5, y+yo*0.15)
     end
     
-    local fxt, fy = drawfont(fontbold, x+xo, liney, event.start .. "   ", h, fgcol.rgba()) -- write time
+    -- DRAW TIME
+    local fxt, fy = drawfont(fontbold, x+xo, liney, event.start, h, fgcol, bgcol)
+    fxt = fxt + 0.02*WIDTH -- leave some space after the time
     
     -- DRAW TITLE
-    local fx = max(fxt, x+0.1*WIDTH)   -- x start of title
+    local fx = titlestartx or max(fxt, x+0.1*WIDTH)   -- x start of title
     local yspace = WIDTH - fx -- how much space is left on the right?
     local sa = event.title:wrap(wrapfactor(yspace, h)) -- somehow figure out how to wrap
     local linespacing = HEIGHT*0.01
     for i = 1, #sa do -- draw each line after wrapping
-        _, liney = drawfont(font, fx, liney, sa[i], h, fgcol.rgba()) 
+        _, liney = drawfont(font, fx, liney, sa[i], h, fgcol, bgcol) 
         liney = liney + linespacing
     end
     
@@ -177,21 +217,22 @@ local function draweventabs(x, y, event, islocal, fontscale1, fontscale2)
         local sa = event.subtitle:wrap(wrapfactor(yspace, h2))
         local linespacing = HEIGHT*0.01
         for i = 1, #sa do
-            _, liney = drawfont(font, fx, liney, sa[i], h2, fgcol.rgba()) 
+            _, liney = drawfont(font, fx, liney, sa[i], h2, fgcol, bgcol) 
             liney = liney + linespacing
         end
         extraspace = extraspace + HEIGHT*0.04 -- leave some more extra space
     end
     
     return liney -- where we are
-        + extraspace
+        + extraspace,
+        fx -- where title starts
 end
 
 -- ry = position relative to [sy..HEIGHT]
-local function draweventrel(sx, sy, ry, ...)
+local function draweventrel(sx, titlestartx, sy, ry, ...)
     local y = math.rescale(ry, 0, 1, sy, HEIGHT)
-    local yabs = draweventabs(sx, y, ...)
-    return math.rescale(yabs, sy, HEIGHT, 0, 1)
+    local yabs, titlestartx = draweventabs(sx, titlestartx, y, ...)
+    return math.rescale(yabs, sy, HEIGHT, 0, 1), titlestartx
 end
 
 local function drawlocalslide(slide, sx, sy)
@@ -214,6 +255,7 @@ local function drawlocalslide(slide, sx, sy)
     end
     
     local yrel = ystart
+    local titlestartx -- initially nil is fine
     for i = 1, N do
         local ev = evs[i]
         if span and i > 1 and ev.startts then
@@ -230,7 +272,7 @@ local function drawlocalslide(slide, sx, sy)
             fontscale2 = fontscale2 * 1.2
         end
         
-        yrel = draweventrel(sx, sy, yrel, evs[i], true, fontscale1, fontscale2)
+        yrel, titlestartx = draweventrel(sx, titlestartx, sy, yrel, evs[i], true, fontscale1, fontscale2)
     end
 end
 
@@ -238,10 +280,8 @@ local function drawremoteslide(slide, sx, sy)
     local evs = slide.events
     local font = CONFIG.font
     local beginy = sy+HEIGHT*0.02
-    
-    local wheresize = HEIGHT*0.06
-    local where = ("%s / %s"):format(slide.track.name, slide.location.name)
-    drawfont(font, sx, beginy, where, wheresize, CONFIG.foreground_color.rgba())
+    local fgcol = CONFIG.foreground_color
+    local bgcol = CONFIG.background_color
     
     local MAXEVENTS = 8
     local N = min(MAXEVENTS, #evs)
@@ -251,7 +291,7 @@ local function drawremoteslide(slide, sx, sy)
     for i = 1, N do -- draw up to this many events
         local fontscale1 = 0.07
         local fontscale2 = 0.045
-        yrel = draweventrel(sx, sy, yrel, evs[i], false, fontscale1, fontscale2)
+        yrel = draweventrel(sx, nil, sy, yrel, evs[i], false, fontscale1, fontscale2)
         yrel = yrel + 0.04 -- some more space
         if yrel > yend+0.01 then -- safeguard -- bail out if it likely won't fit
             break
@@ -282,13 +322,13 @@ function node.render()
         gl.scale(WIDTH, HEIGHT)
         drawbg(aspect)
     gl.popMatrix()
-    
-    local hx, hy, hw = drawheader(aspect)
-    
-    
+
     if not state.slide then
         nextslide()
     end
+    
+    local hx, hy = drawheader(aspect, state.slide) -- returns where header ends
+    
     if state.slide then
         gl.pushMatrix()
             drawslide(state.slide, hx, hy)
