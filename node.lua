@@ -239,6 +239,7 @@ local function drawlocalslide(slide, sx, sy)
     local evs = slide.events
     local beginy = sy+HEIGHT*0.02
     local thickness = WIDTH*0.006
+    local empty = slide.empty
     res.gradient:draw(sx - thickness/2, beginy, sx + thickness/2, HEIGHT)
     
     local MAXEVENTS = 4
@@ -267,7 +268,10 @@ local function drawlocalslide(slide, sx, sy)
         
         local fontscale1 = 0.065
         local fontscale2 = 0.042
-        if i == 1 then
+        if empty then -- draw empty slide (usually has 1 dummy event really large)
+            fontscale1 = fontscale1 * 1.5
+            fontscale2 = fontscale2 * 1.5
+        elseif i == 1 then -- draw first event a bit larger
             fontscale1 = fontscale1 * 1.2
             fontscale2 = fontscale2 * 1.2
         end
@@ -277,9 +281,9 @@ local function drawlocalslide(slide, sx, sy)
 end
 
 local function drawremoteslide(slide, sx, sy)
+    sy = sy - 0.15*HEIGHT -- HACK: move up a bit more
     local evs = slide.events
     local font = CONFIG.font
-    local beginy = sy+HEIGHT*0.02
     local fgcol = CONFIG.foreground_color
     local bgcol = CONFIG.background_color
     
