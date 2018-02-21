@@ -145,6 +145,7 @@ local function drawheader(aspect, slide) -- slide possibly nil (unlikely)
 
     local wheresize
     if slide then
+        local font = CONFIG.font_bold
         local where
         local fgcol2 = fgcol
         local bgcol2 = bgcol
@@ -152,7 +153,7 @@ local function drawheader(aspect, slide) -- slide possibly nil (unlikely)
             where = slide.location.name
             wheresize = 0.1
         else
-            wheresize = 0.06
+            wheresize = 0.08
             where = ("%s / %s"):format(slide.track.name, slide.location.name)
             fgcol2 = slide.track.foreground_color
             bgcol2 = slide.track.background_color
