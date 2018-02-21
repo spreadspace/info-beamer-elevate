@@ -166,7 +166,7 @@
             "type": "select",
             "options": [
                ["static", "static background (no animation)"],
-               ["minimal", "minimal animation (needs minimal GPU power)"]
+               ["minimal", "minimal animation (needs minimal GPU power)"],
                ["fancy", "full animation (needs lots of GPU power)"]
             ],
             "default": true
