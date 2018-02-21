@@ -154,7 +154,7 @@ local function drawheader(aspect, slide) -- slide possibly nil (unlikely)
             wheresize = 0.1
         else
             wheresize = 0.08
-            where = ("%s / %s"):format(slide.track.name, slide.location.name):upper()
+            where = ("%s / %s"):format(slide.location.name, slide.track.name):upper()
             fgcol2 = slide.track.foreground_color
             bgcol2 = slide.track.background_color
         end
