@@ -3,12 +3,18 @@ util.init_hosted()
 NATIVE_WIDTH = NATIVE_WIDTH or 1920
 NATIVE_HEIGHT = NATIVE_HEIGHT or 1080
 
+sys.set_flag("no_clear")
+
 gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
 
 local json = require "json"
 local tqnew = require "tq"
 local fg = require "fg"
 local res = util.auto_loader()
+
+local fancy = require"fancy"
+fancy.res = res
+
 local min = math.min
 local max = math.max
 
@@ -117,13 +123,6 @@ local function drawfont(font, x, y, text, sz, fgcol, bgcol)
     bgtex:draw(x-xborder, y-yborder, x+w+xborder, y+sz+yborder)
     font:write(x, y, text, sz, fgcol:rgba())
     return x+w, y+sz
-end
-
-local function drawbg(aspect)
-    CONFIG.background_color.clear()
-    CONFIG.background.ensure_loaded():draw(0, 0, 1, 1)
-    local logosz = 0.3
-    CONFIG.logo.ensure_loaded():draw(0, 0, logosz/aspect, logosz)
 end
 
 local function drawheader(aspect, slide) -- slide possibly nil (unlikely)
@@ -310,21 +309,45 @@ local function drawslide(slide, sx, sy) -- start positions after header
     end
 end
 
+local function drawbg(aspect, bgstyle)
+    if bgstyle == "minimal" or bgstyle == "static" then
+        gl.pushMatrix()
+            gl.scale(WIDTH, HEIGHT)
+            CONFIG.background.ensure_loaded():draw(0, 0, 1, 1)
+        gl.popMatrix()
+    end
+end
+
+local function drawlogo(aspect)
+    gl.pushMatrix()
+        gl.scale(WIDTH, HEIGHT)
+        local logosz = 0.3
+        CONFIG.logo.ensure_loaded():draw(0, 0, logosz/aspect, logosz)
+    gl.popMatrix()
+end
 
 function node.render()
+    CONFIG.background_color.clear()
+    
+    local bgstyle = fg.getbgstyle()
+    
+    local aspect = WIDTH / HEIGHT
+
+    gl.ortho()
+    drawbg(aspect, bgstyle)
+    
+    if bgstyle ~= "static" then
+        fancy.render(bgstyle) -- resets the matrix
+        gl.ortho()
+    end
+    
+    drawlogo(aspect)
+    
     local now = sys.now()
     local dt = (state.lastnow and now - state.lastnow) or 0
     state.lastnow = now
 
     state.tq:update(dt)
-
-    local aspect = WIDTH / HEIGHT
-    gl.ortho()
-
-    gl.pushMatrix()
-        gl.scale(WIDTH, HEIGHT)
-        drawbg(aspect)
-    gl.popMatrix()
 
     if not state.slide then
         nextslide()
@@ -333,8 +356,6 @@ function node.render()
     local hx, hy = drawheader(aspect, state.slide) -- returns where header ends
 
     if state.slide then
-        gl.pushMatrix()
-            drawslide(state.slide, hx, hy)
-        gl.popMatrix()
+        drawslide(state.slide, hx, hy)
     end
 end

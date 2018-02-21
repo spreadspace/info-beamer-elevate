@@ -114,8 +114,8 @@ function fg.location()
     return fg.DEVICE and fg.DEVICE.location
 end
 
-function fg.isfancy()
-    return fg.DEVICE and fg.DEVICE.fancy
+function fg.getbgstyle()
+    return (fg.DEVICE and fg.DEVICE.bg_style)
 end
 
 function fg.gettrack(id)
