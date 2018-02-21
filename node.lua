@@ -242,10 +242,10 @@ local function drawlocalslide(slide, sx, sy)
     local empty = slide.empty
     res.gradient:draw(sx - thickness/2, beginy, sx + thickness/2, HEIGHT)
 
-    local MAXEVENTS = 3
+    local MAXEVENTS = 4
 
     local N = min(MAXEVENTS, #evs)-- draw up to this many events
-    local ystart = math.rescale(N, 1, MAXEVENTS, 0.45, 0.07) -- more events -> start higher (guesstimate)
+    local ystart = math.rescale(N, 1, MAXEVENTS, 0.35, 0.07) -- more events -> start higher (guesstimate)
     local yend = 0.85 -- hopefully safe
 
     local mints = evs[1].startts
