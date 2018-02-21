@@ -277,6 +277,7 @@ local function drawlocalslide(slide, sx, sy)
         end
 
         yrel, titlestartx = draweventrel(sx, titlestartx, sy, yrel, evs[i], true, fontscale1, fontscale2)
+        yrel = yrel + 0.04 -- some more space
     end
 end
 
