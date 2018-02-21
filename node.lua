@@ -102,20 +102,20 @@ local function drawfontrel(font, x, y, text, sz, fgcol, bgcol)
     local zz = sz * HEIGHT
     local yborder = 0.01 * HEIGHT
     local xborder = 0.02 * HEIGHT -- intentionally HEIGHT, not a typo
-    local w = font:write(xx, yy, text:upper(), zz, fgcol:rgba())
+    local w = font:write(xx, yy, text, zz, fgcol:rgba())
     local bgtex = getcolortex(bgcol)
     bgtex:draw(xx-xborder, yy-yborder, xx+w+xborder, yy+zz+yborder)
-    font:write(xx, yy, text:upper(), zz, fgcol:rgba())
+    font:write(xx, yy, text, zz, fgcol:rgba())
     return xx, yy+zz, w
 end
 
 local function drawfont(font, x, y, text, sz, fgcol, bgcol)
     local yborder = 0.01 * HEIGHT
     local xborder = 0.02 * HEIGHT -- intentionally HEIGHT, not a typo
-    local w = font:write(x, y, text:upper(), sz, fgcol:rgba())
+    local w = font:write(x, y, text, sz, fgcol:rgba())
     local bgtex = getcolortex(bgcol)
     bgtex:draw(x-xborder, y-yborder, x+w+xborder, y+sz+yborder)
-    font:write(x, y, text:upper(), sz, fgcol:rgba())
+    font:write(x, y, text, sz, fgcol:rgba())
     return x+w, y+sz
 end
 
@@ -138,7 +138,7 @@ local function drawheader(aspect, slide) -- slide possibly nil (unlikely)
 
     local xpos = 0.15
     local titlesize = 0.06
-    drawfontrel(font, xpos, hy, "Elevate Infoscreen", titlesize, fgcol, bgcol)
+    drawfontrel(font, xpos, hy, "ELEVATE INFOSCREEN", titlesize, fgcol, bgcol)
 
     hy = hy + titlesize + 0.02
 
@@ -150,11 +150,11 @@ local function drawheader(aspect, slide) -- slide possibly nil (unlikely)
         local fgcol2 = fgcol
         local bgcol2 = bgcol
         if slide.here then
-            where = slide.location.name
+            where = slide.location.name:upper()
             wheresize = 0.1
         else
             wheresize = 0.08
-            where = ("%s / %s"):format(slide.track.name, slide.location.name)
+            where = ("%s / %s"):format(slide.track.name, slide.location.name):upper()
             fgcol2 = slide.track.foreground_color
             bgcol2 = slide.track.background_color
         end
@@ -200,7 +200,7 @@ local function draweventabs(x, titlestartx, y, event, islocal, fontscale1, fonts
     -- DRAW TITLE
     local fx = titlestartx or max(fxt, x+0.1*WIDTH)   -- x start of title
     local yspace = WIDTH - fx -- how much space is left on the right?
-    local sa = event.title:wrap(wrapfactor(yspace, h)) -- somehow figure out how to wrap
+    local sa = event.title:upper():wrap(wrapfactor(yspace, h)) -- somehow figure out how to wrap
     local linespacing = HEIGHT*0.01
     for i = 1, #sa do -- draw each line after wrapping
         _, liney = drawfont(font, fx, liney, sa[i], h, fgcol, bgcol)
