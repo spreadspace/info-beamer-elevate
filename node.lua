@@ -102,20 +102,20 @@ local function drawfontrel(font, x, y, text, sz, fgcol, bgcol)
     local zz = sz * HEIGHT
     local yborder = 0.01 * HEIGHT
     local xborder = 0.02 * HEIGHT -- intentionally HEIGHT, not a typo
-    local w = font:write(xx, yy, text, zz, fgcol:rgba())
+    local w = font:write(xx, yy, text:upper(), zz, fgcol:rgba())
     local bgtex = getcolortex(bgcol)
     bgtex:draw(xx-xborder, yy-yborder, xx+w+xborder, yy+zz+yborder)
-    font:write(xx, yy, text, zz, fgcol:rgba())
+    font:write(xx, yy, text:upper(), zz, fgcol:rgba())
     return xx, yy+zz, w
 end
 
 local function drawfont(font, x, y, text, sz, fgcol, bgcol)
     local yborder = 0.01 * HEIGHT
     local xborder = 0.02 * HEIGHT -- intentionally HEIGHT, not a typo
-    local w = font:write(x, y, text, sz, fgcol:rgba())
+    local w = font:write(x, y, text:upper(), sz, fgcol:rgba())
     local bgtex = getcolortex(bgcol)
     bgtex:draw(x-xborder, y-yborder, x+w+xborder, y+sz+yborder)
-    font:write(x, y, text, sz, fgcol:rgba())
+    font:write(x, y, text:upper(), sz, fgcol:rgba())
     return x+w, y+sz
 end
 
