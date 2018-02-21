@@ -39,7 +39,7 @@ def get_schedule(api_url, tracks, locations, devices, schedule_tz):
     e1 = __new_event("Eröffnungsshow", 'discourse', now, now_2h)
     e1['subtitle'] = "Welcome to the Elevate Festival 2018"
     e2 = __new_event("Pushmann", 'music', now_3h, now_4h)
-    e3 = __new_event(u"Wälder", 'music', now_4h, now_5h)
+    e3 = __new_event("Wælder", 'music', now_4h, now_5h)
     e4 = __new_event("Bernhard Fleischmann & Band", 'music', now_5h, now_6h)
     schedule['orpheum'] = [e1, e2, e3, e4]
 
