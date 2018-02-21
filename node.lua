@@ -3,9 +3,6 @@ util.init_hosted()
 NATIVE_WIDTH = NATIVE_WIDTH or 1920
 NATIVE_HEIGHT = NATIVE_HEIGHT or 1080
 
-local LOCAL_SLIDE_TIME = 3
-local REMOTE_SLIDE_TIME = 1
-
 gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
 
 local json = require "json"
@@ -86,9 +83,9 @@ local function nextslide()
         if state.slide.empty then
             t = 3
         elseif state.slide.here then
-            t = LOCAL_SLIDE_TIME
+            t = CONFIG.current_location
         else
-            t = REMOTE_SLIDE_TIME
+            t = CONFIG.other_locations
         end
     end
 
