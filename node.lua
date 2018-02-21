@@ -1,3 +1,7 @@
+local TOP_TITLE = "ELEVATE INFOSCREEN"
+
+
+
 util.init_hosted()
 
 NATIVE_WIDTH = NATIVE_WIDTH or 1920
@@ -137,7 +141,7 @@ local function drawheader(aspect, slide) -- slide possibly nil (unlikely)
 
     local xpos = 0.15
     local titlesize = 0.06
-    drawfontrel(font, xpos, hy, "ELEVATE INFOSCREEN", titlesize, fgcol, bgcol)
+    drawfontrel(font, xpos, hy, TOP_TITLE, titlesize, fgcol, bgcol)
 
     hy = hy + titlesize + 0.02
 
@@ -290,10 +294,11 @@ local function drawremoteslide(slide, sx, sy)
     local ystart = 0.3
     local yend = 0.92 -- hopefully safe
     local yrel = ystart
+    local titlestartx
     for i = 1, N do -- draw up to this many events
         local fontscale1 = 0.07
         local fontscale2 = 0.045
-        yrel = draweventrel(sx, nil, sy, yrel, evs[i], false, fontscale1, fontscale2)
+        yrel, titlestartx = draweventrel(sx, titlestartx, sy, yrel, evs[i], false, fontscale1, fontscale2)
         yrel = yrel + 0.04 -- some more space
         if yrel > yend+0.01 then -- safeguard -- bail out if it likely won't fit
             break
