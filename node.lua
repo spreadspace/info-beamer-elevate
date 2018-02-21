@@ -80,7 +80,7 @@ local function nextslide()
     if not state.slide then
         state.slide = it()
     end
-    
+
     local t = 1
     if state.slide then
         if state.slide.empty then
@@ -91,7 +91,7 @@ local function nextslide()
             t = REMOTE_SLIDE_TIME
         end
     end
-    
+
     -- schedule next slide
     state.tq:push(t, nextslide)
 end
@@ -135,17 +135,17 @@ local function drawheader(aspect, slide) -- slide possibly nil (unlikely)
     local fgcol = CONFIG.foreground_color
     local bgcol = CONFIG.background_color
     local hy = 0.05
-    
+
     -- time
     drawfontrel(fontbold, 0.83, hy, fg.gettimestr(), 0.08, fgcol, bgcol)
-    
+
     local xpos = 0.15
     local titlesize = 0.06
     drawfontrel(font, xpos, hy, "Elevate Infoscreen", titlesize, fgcol, bgcol)
-    
+
     hy = hy + titlesize + 0.02
-    
-    
+
+
     local wheresize
     if slide then
         local where
@@ -162,7 +162,7 @@ local function drawheader(aspect, slide) -- slide possibly nil (unlikely)
         end
         drawfontrel(font, xpos, hy, where, wheresize, fgcol2, bgcol2)
     end
-    
+
     return WIDTH*xpos, hy + wheresize + HEIGHT*0.25
 end
 
@@ -183,46 +183,46 @@ local function draweventabs(x, titlestartx, y, event, islocal, fontscale1, fonts
 
 
     local h = HEIGHT*fontscale1 -- font size time + title
-    local yo = h / 2 -- center font on line 
+    local yo = h / 2 -- center font on line
     local liney = y-yo -- always line y pos
-    
-    
-    local xo = 0 
-    
+
+
+    local xo = 0
+
     -- DRAW TICK
     if islocal then
         xo = 0.05 * WIDTH
         fgtex:draw(x-xo*0.5, y-yo*0.15, x+xo*0.5, y+yo*0.15)
     end
-    
+
     -- DRAW TIME
     local fxt, fy = drawfont(fontbold, x+xo, liney, event.start, h, fgcol, bgcol)
     fxt = fxt + 0.02*WIDTH -- leave some space after the time
-    
+
     -- DRAW TITLE
     local fx = titlestartx or max(fxt, x+0.1*WIDTH)   -- x start of title
     local yspace = WIDTH - fx -- how much space is left on the right?
     local sa = event.title:wrap(wrapfactor(yspace, h)) -- somehow figure out how to wrap
     local linespacing = HEIGHT*0.01
     for i = 1, #sa do -- draw each line after wrapping
-        _, liney = drawfont(font, fx, liney, sa[i], h, fgcol, bgcol) 
+        _, liney = drawfont(font, fx, liney, sa[i], h, fgcol, bgcol)
         liney = liney + linespacing
     end
-    
+
     local extraspace = yo -- shift to bottom of line
-    
+
     -- DRAW SUBTITLE
     if islocal and event.subtitle then
         local h2 = HEIGHT*fontscale2 -- font size subtitle
         local sa = event.subtitle:wrap(wrapfactor(yspace, h2))
         local linespacing = HEIGHT*0.01
         for i = 1, #sa do
-            _, liney = drawfont(font, fx, liney, sa[i], h2, fgcol, bgcol) 
+            _, liney = drawfont(font, fx, liney, sa[i], h2, fgcol, bgcol)
             liney = liney + linespacing
         end
         extraspace = extraspace + HEIGHT*0.04 -- leave some more extra space
     end
-    
+
     return liney -- where we are
         + extraspace,
         fx -- where title starts
@@ -241,20 +241,20 @@ local function drawlocalslide(slide, sx, sy)
     local thickness = WIDTH*0.006
     local empty = slide.empty
     res.gradient:draw(sx - thickness/2, beginy, sx + thickness/2, HEIGHT)
-    
+
     local MAXEVENTS = 4
-    
+
     local N = min(MAXEVENTS, #evs)-- draw up to this many events
     local ystart = math.rescale(N, 1, MAXEVENTS, 0.35, 0.07) -- more events -> start higher (guesstimate)
     local yend = 0.85 -- hopefully safe
-    
+
     local mints = evs[1].startts
     local maxts = evs[#evs].endts
     local span
     if mints and maxts then
         span = maxts - mints
     end
-    
+
     local yrel = ystart
     local titlestartx -- initially nil is fine
     for i = 1, N do
@@ -265,7 +265,7 @@ local function drawlocalslide(slide, sx, sy)
                 yrel = yfit
             end]]
         end
-        
+
         local fontscale1 = 0.065
         local fontscale2 = 0.042
         if empty then -- draw empty slide (usually has 1 dummy event really large)
@@ -275,7 +275,7 @@ local function drawlocalslide(slide, sx, sy)
             fontscale1 = fontscale1 * 1.2
             fontscale2 = fontscale2 * 1.2
         end
-        
+
         yrel, titlestartx = draweventrel(sx, titlestartx, sy, yrel, evs[i], true, fontscale1, fontscale2)
     end
 end
@@ -286,7 +286,7 @@ local function drawremoteslide(slide, sx, sy)
     local font = CONFIG.font
     local fgcol = CONFIG.foreground_color
     local bgcol = CONFIG.background_color
-    
+
     local MAXEVENTS = 8
     local N = min(MAXEVENTS, #evs)
     local ystart = 0.3
@@ -316,12 +316,12 @@ function node.render()
     local now = sys.now()
     local dt = (state.lastnow and now - state.lastnow) or 0
     state.lastnow = now
-    
+
     state.tq:update(dt)
 
     local aspect = WIDTH / HEIGHT
     gl.ortho()
-    
+
     gl.pushMatrix()
         gl.scale(WIDTH, HEIGHT)
         drawbg(aspect)
@@ -330,9 +330,9 @@ function node.render()
     if not state.slide then
         nextslide()
     end
-    
+
     local hx, hy = drawheader(aspect, state.slide) -- returns where header ends
-    
+
     if state.slide then
         gl.pushMatrix()
             drawslide(state.slide, hx, hy)
