@@ -159,11 +159,16 @@
             "type": "string",
             "default": ""
         }, {
-            "title": "Fancy",
+            "title": "BG Style",
             "ui_width": 3,
-            "name": "fancy",
-            "hint": "Show animated background",
-            "type": "boolean",
+            "name": "bg_style",
+            "hint": "Background animation style",
+            "type": "select",
+            "options": [
+               ["static", "static background (no animation)"],
+               ["minimal", "minimal animation (needs minimal GPU power)"]
+               ["fancy", "full animation (needs lots of GPU power)"]
+            ],
             "default": true
         }]
     }]
