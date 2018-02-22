@@ -322,6 +322,8 @@ local function drawbg(aspect, bgstyle)
             gl.scale(WIDTH, HEIGHT)
             CONFIG.background.ensure_loaded():draw(0, 0, 1, 1)
         gl.popMatrix()
+    else
+        CONFIG.background_color.clear()
     end
 end
 
@@ -334,7 +336,6 @@ local function drawlogo(aspect)
 end
 
 function node.render()
-    CONFIG.background_color.clear()
     
     local bgstyle = fg.getbgstyle()
     
