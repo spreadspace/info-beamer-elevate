@@ -10,7 +10,7 @@ local RADTODEG = 180.0 / 3.14159265359
 local DEGTORAD = 3.14159265359 / 180.0
 local ROT1 = RADTODEG * PI
 
-local QSIZE = 0.115
+local QSIZE = 0.12
 local QPOSX, QPOSY = 0.4, 0.3   -- querulant base position [(0,0) = center, (1,1) = bottom right corner]
 local QMOVESCALE = 0.20
 local QROTSPEED = 1.0
