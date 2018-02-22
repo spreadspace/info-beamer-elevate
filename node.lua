@@ -197,7 +197,9 @@ local function draweventabs(x, titlestartx, y, event, islocal, fontscale1, fonts
     end
 
     -- DRAW TIME
-    local fxt, fy = drawfont(fontbold, x+xo, liney, event.start, h, fgcol, bgcol)
+    local timelen = fontbold:width(event.start, h)
+    local fxt = x+xo+timelen
+    local _, fy = drawfont(fontbold, x+xo, liney, event.start .. "        ", h, fgcol, bgcol) -- HACK: kill gaps
     fxt = fxt + 0.02*WIDTH -- leave some space after the time
 
     -- DRAW TITLE
