@@ -153,11 +153,11 @@ local function drawheader(aspect, slide) -- slide possibly nil (unlikely)
         local fgcol2 = fgcol
         local bgcol2 = bgcol
         if slide.here then
-            where = slide.location.name:upper()
+            where = slide.location.name
             wheresize = 0.1
         else
             wheresize = 0.08
-            where = ("%s / %s"):format(slide.location.name, slide.track.name):upper()
+            where = ("%s / %s"):format(slide.location.name, slide.track.name)
             fgcol2 = slide.track.foreground_color
             bgcol2 = slide.track.background_color
         end
@@ -205,7 +205,7 @@ local function draweventabs(x, titlestartx, y, event, islocal, fontscale1, fonts
     -- DRAW TITLE
     local fx = titlestartx or max(fxt, x+0.1*WIDTH)   -- x start of title
     local yspace = WIDTH - fx -- how much space is left on the right?
-    local sa = event.title:upper():wrap(wrapfactor(yspace, h)) -- somehow figure out how to wrap
+    local sa = event.title:wrap(wrapfactor(yspace, h)) -- somehow figure out how to wrap
     local linespacing = HEIGHT*0.01
     for i = 1, #sa do -- draw each line after wrapping
         _, liney = drawfont(font, fx, liney, sa[i], h, fgcol, bgcol)
