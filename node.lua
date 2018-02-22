@@ -266,7 +266,7 @@ local function drawlocalslide(slide, sx, sy)
             --[[local yfit = math.rescale(ev.startts, mints, maxts, ystart, yend)
             if yrel < yfit then
                 yrel = yfit
-            end ]]
+            end]]
         end
 
         local fontscale1 = 0.065
@@ -326,8 +326,8 @@ end
 local function drawlogo(aspect)
     gl.pushMatrix()
         gl.scale(WIDTH, HEIGHT)
-        local logosz = 0.2
-        CONFIG.logo.ensure_loaded():draw(0.05, 0.1, logosz/aspect, logosz)
+        local logosz = 0.3
+        CONFIG.logo.ensure_loaded():draw(0, 0, logosz/aspect, logosz)
     gl.popMatrix()
 end
 
