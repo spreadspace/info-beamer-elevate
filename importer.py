@@ -19,7 +19,7 @@ def get_schedule(api_url, tracks, locations, devices, schedule_tz):
         return int(t.strftime("%s"))
 
     def __new_event(title, track, start, end):
-        e = {'title':  title, 'track': track}
+        e = {'title': title.upper(), 'track': track}
         e['start'] = __hour_min(start)
         e['startts'] = __unix_ts(start)
         e['end'] = __hour_min(end)
