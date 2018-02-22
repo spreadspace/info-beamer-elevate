@@ -326,8 +326,8 @@ end
 local function drawlogo(aspect)
     gl.pushMatrix()
         gl.scale(WIDTH, HEIGHT)
-        local logosz = 0.2
-        CONFIG.logo.ensure_loaded():draw(0.05, 0.1, logosz/aspect, logosz)
+        local logosz = 0.27
+        CONFIG.logo.ensure_loaded():draw(0.01, 0.01, logosz/aspect, logosz)
     gl.popMatrix()
 end
 
