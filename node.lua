@@ -316,15 +316,11 @@ local function drawslide(slide, sx, sy) -- start positions after header
     end
 end
 
-local function drawbg(aspect, bgstyle)
-    if bgstyle == "minimal" or bgstyle == "static" then
-        gl.pushMatrix()
-            gl.scale(WIDTH, HEIGHT)
-            CONFIG.background.ensure_loaded():draw(0, 0, 1, 1)
-        gl.popMatrix()
-    else
-        CONFIG.background_color.clear()
-    end
+local function drawbgstatic(aspect, bgstyle)
+    gl.pushMatrix()
+        gl.scale(WIDTH, HEIGHT)
+        CONFIG.background.ensure_loaded():draw(0, 0, 1, 1)
+    gl.popMatrix()
 end
 
 local function drawlogo(aspect)
@@ -336,21 +332,21 @@ local function drawlogo(aspect)
 end
 
 function node.render()
-    
+
     local bgstyle = fg.getbgstyle()
-    
+
     local aspect = WIDTH / HEIGHT
 
     gl.ortho()
-    drawbg(aspect, bgstyle)
-    
-    if bgstyle ~= "static" then
+    if bgstyle == "static" then
+        drawbgstatic()
+    else
         fancy.render(bgstyle) -- resets the matrix
         gl.ortho()
     end
-    
+
     drawlogo(aspect)
-    
+
     local now = sys.now()
     local dt = (state.lastnow and now - state.lastnow) or 0
     state.lastnow = now

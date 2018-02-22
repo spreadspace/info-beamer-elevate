@@ -10,7 +10,7 @@ local RADTODEG = 180.0 / 3.14159265359
 local DEGTORAD = 3.14159265359 / 180.0
 local ROT1 = RADTODEG * PI
 
-local QSIZE = 0.12
+local QSIZE = 0.115
 local QPOSX, QPOSY = 0.4, 0.3   -- querulant base position [(0,0) = center, (1,1) = bottom right corner]
 local QMOVESCALE = 0.20
 local QROTSPEED = 1.0
@@ -160,8 +160,13 @@ end
 function fancy.render(mode)
     local aspect = WIDTH / HEIGHT
     local now = sys.now()
-    
-    if mode == "fancy" then
+    local res = fancy.res
+
+    if mode == "minimal" then
+        res.fancy_minimalbg:draw(0, 0, WIDTH, HEIGHT)
+    elseif  mode == "fancy" then
+        res.fancy_bgcolor:draw(0, 0, WIDTH, HEIGHT)
+
         local fov = math.atan2(HEIGHT, WIDTH*2) * 360 / math.pi
         gl.perspective(fov, WIDTH/2, HEIGHT/2, -WIDTH,
                         WIDTH/2, HEIGHT/2, 0)
