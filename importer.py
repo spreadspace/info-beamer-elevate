@@ -36,21 +36,21 @@ def get_schedule(api_url, tracks, locations, devices, schedule_tz):
     now_7h = now + timedelta(hours=7)
     now_8h = now + timedelta(hours=8)
 
-    e1 = __new_event("Eröffnungsshow", 'discourse', now, now_2h)
-    e1['subtitle'] = "Welcome to the Elevate Festival 2018"
-    e2 = __new_event("Pushmann", 'music', now_3h, now_4h)
-    e3 = __new_event("Wælder", 'music', now_4h, now_5h)
-    e4 = __new_event("Bernhard Fleischmann & Band", 'music', now_5h, now_6h)
+    e1 = __new_event(u"Eröffnungsshow", 'discourse', now, now_2h)
+    e1['subtitle'] = u"Welcome to the Elevate Festival 2018"
+    e2 = __new_event(u"Pushmann", 'music', now_3h, now_4h)
+    e3 = __new_event(u"Wælder", 'music', now_4h, now_5h)
+    e4 = __new_event(u"Bernhard Fleischmann & Band", 'music', now_5h, now_6h)
     schedule['orpheum'] = [e1, e2, e3, e4]
 
-    e11 = __new_event("Meeting of the Secret-Society", 'discourse', now, now_1h)
-    e11['subtitle'] = "don't tell Donald Trump!!!!"
-    e12 = __new_event("WTF is going on?", 'discourse', now_1h, now_2h)
-    e12['subtitle'] = "the title is rather self-explanatory"
-    e13 = __new_event("Nothing to see here!", 'arts', now_2h, now_3h)
-    e13['subtitle'] = "this subtitle left intentionally blank"
-    e14 = __new_event("Ist das Kunst?", 'arts', now_3h, now_4h)
-    e14['subtitle'] = "... oder kann das Weg?"
+    e11 = __new_event(u"Meeting of the Secret-Society", 'discourse', now, now_1h)
+    e11['subtitle'] = u"don't tell Donald Trump!!!!"
+    e12 = __new_event(u"WTF is going on?", 'discourse', now_1h, now_2h)
+    e12['subtitle'] = u"the title is rather self-explanatory"
+    e13 = __new_event(u"Nothing to see here!", 'arts', now_2h, now_3h)
+    e13['subtitle'] = u"this subtitle left intentionally blank"
+    e14 = __new_event(u"Ist das Kunst?", 'arts', now_3h, now_4h)
+    e14['subtitle'] = u"... oder kann das Weg?"
     schedule['forum'] = [e11, e12, e13, e14]
 
     return schedule
