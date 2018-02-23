@@ -1,5 +1,7 @@
 local TOP_TITLE = "ELEVATE INFOSCREEN"
 
+local SCREEN_ASPECT = 16 / 9
+
 
 
 util.init_hosted()
@@ -7,11 +9,12 @@ util.init_hosted()
 NATIVE_WIDTH = NATIVE_WIDTH or 1920
 NATIVE_HEIGHT = NATIVE_HEIGHT or 1080
 
-local USEWIDTH
+local FAKEWIDTH
 
 sys.set_flag("no_clear")
 
-gl.setup(1024, 768)
+gl.setup(1920, 1080)
+
 
 local json = require "json"
 local tqnew = require "tq"
@@ -109,7 +112,7 @@ end
 -- (0, 0) = upper left corner, (1, 1) = lower right corner
 -- sz == 0.5 -> half as high as the screen
 local function drawfontrel(font, x, y, text, sz, fgcol, bgcol)
-    local xx = x * WIDTH
+    local xx = x * FAKEWIDTH
     local yy = y * HEIGHT
     local zz = sz * HEIGHT
     local yborder = 0.01 * HEIGHT
@@ -131,7 +134,7 @@ local function drawfont(font, x, y, text, sz, fgcol, bgcol)
     return x+w, y+sz
 end
 
-local function drawheader(aspect, slide) -- slide possibly nil (unlikely)
+local function drawheader(slide) -- slide possibly nil (unlikely)
     local font = CONFIG.font
     local fontbold = CONFIG.font_bold
     local fgcol = CONFIG.foreground_color
@@ -211,8 +214,8 @@ local function draweventabs(x, titlestartx, y, event, islocal, fontscale1, fonts
 
     -- DRAW TITLE
     local fx = titlestartx or max(fxt, x+0.1*WIDTH)   -- x start of title
-    local yspace = USEWIDTH - fx -- how much space is left on the right?
-    local sa = event.title:fwrap(font, h, fx, USEWIDTH) -- somehow figure out how to wrap
+    local yspace = WIDTH - fx -- how much space is left on the right?
+    local sa = event.title:fwrap(font, h, fx, FAKEWIDTH) -- somehow figure out how to wrap
     local linespacing = HEIGHT*0.01
     for i = 1, #sa do -- draw each line after wrapping
         _, liney = drawfont(font, fx, liney, sa[i], h, fgcol, bgcol)
@@ -224,7 +227,7 @@ local function draweventabs(x, titlestartx, y, event, islocal, fontscale1, fonts
     -- DRAW SUBTITLE
     if islocal and event.subtitle then
         local h2 = HEIGHT*fontscale2 -- font size subtitle
-        local sa = event.subtitle:fwrap(font, h2, fx, USEWIDTH)
+        local sa = event.subtitle:fwrap(font, h2, fx, FAKEWIDTH)
         local linespacing = HEIGHT*0.01
         for i = 1, #sa do
             _, liney = drawfont(font, fx, liney, sa[i], h2, fgcol, bgcol)
@@ -324,9 +327,7 @@ local function drawslide(slide, sx, sy) -- start positions after header
 end
 
 local function fixaspect(aspect)
-    if fg.DEVICE.aspect_ratio ~= 0 then
-        gl.scale(1 / aspect, 1)
-    end
+    gl.scale(1 / (SCREEN_ASPECT / aspect), 1)
 end
 fancy.fixaspect = fixaspect
 
@@ -345,20 +346,12 @@ local function drawlogo(aspect)
 end
 
 
-
 function node.render()
-    local aspect = fg.getaspect()
+    local aspect = WIDTH / HEIGHT
     local bgstyle = fg.getbgstyle()
     
-    if not USEWIDTH then
-        fg.ORIGINAL_WIDTH = WIDTH
-        if fg.DEVICE.aspect_ratio ~= 0 then
-            USEWIDTH = WIDTH * aspect
-        else
-            USEWIDTH = WIDTH
-        end
-    end
-
+    FAKEWIDTH = HEIGHT * SCREEN_ASPECT
+    
     gl.ortho()
     
     if bgstyle == "static" then
@@ -383,9 +376,10 @@ function node.render()
         nextslide()
     end
 
-    local hx, hy = drawheader(aspect, state.slide) -- returns where header ends
+    local hx, hy = drawheader(state.slide) -- returns where header ends
 
     if state.slide then
         drawslide(state.slide, hx, hy)
     end
 end
+

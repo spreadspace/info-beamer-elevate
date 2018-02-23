@@ -122,14 +122,6 @@ function fg.gettrack(id)
     return fg._trackLUT[id]
 end
 
-function fg.getaspect()
-    local asp = fg.DEVICE and fg.DEVICE.aspect_ratio
-    if not asp or asp == 0 then
-        asp = (fg.ORIGINAL_WIDTH or WIDTH) / HEIGHT
-    end
-    return asp
-end
-
 
 function fg.onUpdateConfig(config)
     config = assert(config or CONFIG, "no CONFIG passed or found")
@@ -354,24 +346,6 @@ function fg.newSlideIter()
     return co, #slides
 end
 
-
-
-
-function string.wrap(str, limit)
-    limit = limit or 72
-    local here = 1
-    local wrapped = str:gsub("(%s+)()(%S+)()", function(sp, st, word, fi)
-        if fi-here > limit then
-            here = st
-            return "\n"..word
-        end
-    end)
-    local splitted = {}
-    for token in string.gmatch(wrapped, "[^\n]+") do
-        splitted[#splitted + 1] = token
-    end
-    return splitted
-end
 
 function string.fwrap(str, font, h, xpos, width)
     width = width or WIDTH
