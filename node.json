@@ -160,7 +160,7 @@
             "default": ""
         }, {
             "title": "BG Style",
-            "ui_width": 6,
+            "ui_width": 7,
             "name": "bg_style",
             "hint": "Background animation style",
             "type": "select",
@@ -170,8 +170,8 @@
                ["fancy", "fancy animation (needs lots of GPU power)"]
             ]
         }, {
-            "title": "Aspect",
-            "ui_width": 4,
+            "title": "forced aspect ratio",
+            "ui_width": 3,
             "name": "aspect_ratio",
             "type": "select",
             "options": [
