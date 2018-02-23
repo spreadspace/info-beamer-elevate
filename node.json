@@ -154,7 +154,7 @@
             "type": "device"
         }, {
             "title": "Location ID",
-            "ui_width": 4,
+            "ui_width": 3,
             "name": "location",
             "type": "string",
             "default": ""
@@ -169,6 +169,13 @@
                ["minimal", "minimal animation (needs minimal GPU power)"],
                ["fancy", "fancy animation (needs lots of GPU power)"]
             ]
+        }, {
+            "title": "Aspect",
+            "ui_width": 2,
+            "name": "aspect_ratio",
+            "hint": "set to 0 for auto-detection",
+            "type": "float",
+            "default": 0
         }]
     }]
 }
