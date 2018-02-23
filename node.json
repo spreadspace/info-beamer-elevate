@@ -149,18 +149,18 @@
         "hint": "Device definitions",
         "items": [{
             "title": "Device",
-            "ui_width": 4,
+            "ui_width": 6,
             "name": "serial",
             "type": "device"
         }, {
             "title": "Location ID",
-            "ui_width": 3,
+            "ui_width": 5,
             "name": "location",
             "type": "string",
             "default": ""
         }, {
             "title": "BG Style",
-            "ui_width": 3,
+            "ui_width": 6,
             "name": "bg_style",
             "hint": "Background animation style",
             "type": "select",
@@ -171,11 +171,14 @@
             ]
         }, {
             "title": "Aspect",
-            "ui_width": 2,
+            "ui_width": 4,
             "name": "aspect_ratio",
-            "hint": "set to 0 for auto-detection",
-            "type": "float",
-            "default": 0
+            "type": "select",
+            "options": [
+               [0.0, "auto"],
+               [1,777777778, "16:9"],
+               [1,333333333, "4:3"]
+            ]
         }]
     }]
 }
