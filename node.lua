@@ -7,9 +7,11 @@ util.init_hosted()
 NATIVE_WIDTH = NATIVE_WIDTH or 1920
 NATIVE_HEIGHT = NATIVE_HEIGHT or 1080
 
+local USEWIDTH
+
 sys.set_flag("no_clear")
 
-gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
+gl.setup(1024, 768)
 
 local json = require "json"
 local tqnew = require "tq"
@@ -135,9 +137,14 @@ local function drawheader(aspect, slide) -- slide possibly nil (unlikely)
     local fgcol = CONFIG.foreground_color
     local bgcol = CONFIG.background_color
     local hy = 0.05
+    
+    local timesize = 0.08
+    local timestr = fg.gettimestr()
+    local timew = fontbold:width(timestr, timesize)
+    local timex = 1.0 - timew
 
     -- time
-    drawfontrel(fontbold, 0.83, hy, fg.gettimestr(), 0.08, fgcol, bgcol)
+    drawfontrel(fontbold, timex, hy, timestr, timesize, fgcol, bgcol)
 
     local xpos = 0.15
     local titlesize = 0.06
@@ -167,9 +174,9 @@ local function drawheader(aspect, slide) -- slide possibly nil (unlikely)
     return WIDTH*xpos, hy + wheresize + HEIGHT*0.25
 end
 
-local function wrapfactor(yspace, h) -- how many chars until wrap
+--[[local function wrapfactor(yspace, h) -- how many chars until wrap
     return math.floor(2.15 * yspace / h) -- i don't even
-end
+end]]
 
 
 -- absolute positions
@@ -204,8 +211,8 @@ local function draweventabs(x, titlestartx, y, event, islocal, fontscale1, fonts
 
     -- DRAW TITLE
     local fx = titlestartx or max(fxt, x+0.1*WIDTH)   -- x start of title
-    local yspace = WIDTH - fx -- how much space is left on the right?
-    local sa = event.title:wrap(wrapfactor(yspace, h)) -- somehow figure out how to wrap
+    local yspace = USEWIDTH - fx -- how much space is left on the right?
+    local sa = event.title:fwrap(font, h, fx, USEWIDTH) -- somehow figure out how to wrap
     local linespacing = HEIGHT*0.01
     for i = 1, #sa do -- draw each line after wrapping
         _, liney = drawfont(font, fx, liney, sa[i], h, fgcol, bgcol)
@@ -217,7 +224,7 @@ local function draweventabs(x, titlestartx, y, event, islocal, fontscale1, fonts
     -- DRAW SUBTITLE
     if islocal and event.subtitle then
         local h2 = HEIGHT*fontscale2 -- font size subtitle
-        local sa = event.subtitle:wrap(wrapfactor(yspace, h2))
+        local sa = event.subtitle:fwrap(font, h2, fx, USEWIDTH)
         local linespacing = HEIGHT*0.01
         for i = 1, #sa do
             _, liney = drawfont(font, fx, liney, sa[i], h2, fgcol, bgcol)
@@ -248,8 +255,8 @@ local function drawlocalslide(slide, sx, sy)
     local MAXEVENTS = 3
 
     local N = min(MAXEVENTS, #evs)-- draw up to this many events
-    local ystart = math.rescale(N, 1, MAXEVENTS, 0.35, 0.17) -- more events -> start higher (guesstimate)
-    local yend = 0.85 -- hopefully safe
+    local ystart = math.rescale(N, 1, MAXEVENTS, 0.35, 0.15) -- more events -> start higher (guesstimate)
+    local yend = 0.77 -- hopefully safe
 
     local mints = evs[1].startts
     local maxts = evs[#evs].endts
@@ -316,9 +323,15 @@ local function drawslide(slide, sx, sy) -- start positions after header
     end
 end
 
-local function drawbgstatic(aspect, bgstyle)
+local function fixaspect(aspect)
+    if fg.DEVICE.aspect_ratio ~= 0 then
+        gl.scale(1 / aspect, 1)
+    end
+end
+fancy.fixaspect = fixaspect
+
+local function drawbgstatic()
     gl.pushMatrix()
-        gl.scale(WIDTH, HEIGHT)
         CONFIG.background.ensure_loaded():draw(0, 0, 1, 1)
     gl.popMatrix()
 end
@@ -326,26 +339,39 @@ end
 local function drawlogo(aspect)
     gl.pushMatrix()
         gl.scale(WIDTH, HEIGHT)
-        local logosz = 0.27
-        CONFIG.logo.ensure_loaded():draw(0.01, 0.01, logosz/aspect, logosz)
+        local logosz = 0.23
+        CONFIG.logo.ensure_loaded():draw(-0.01, 0.01, logosz/aspect, logosz)
     gl.popMatrix()
 end
 
+
+
 function node.render()
-
+    local aspect = fg.getaspect()
     local bgstyle = fg.getbgstyle()
-
-    local aspect = WIDTH / HEIGHT
+    
+    if not USEWIDTH then
+        fg.ORIGINAL_WIDTH = WIDTH
+        if fg.DEVICE.aspect_ratio ~= 0 then
+            USEWIDTH = WIDTH * aspect
+        else
+            USEWIDTH = WIDTH
+        end
+    end
 
     gl.ortho()
+    
     if bgstyle == "static" then
         drawbgstatic()
     else
-        fancy.render(bgstyle) -- resets the matrix
+        fancy.render(bgstyle, aspect) -- resets the matrix
         gl.ortho()
     end
 
+    fixaspect(aspect)
     drawlogo(aspect)
+
+
 
     local now = sys.now()
     local dt = (state.lastnow and now - state.lastnow) or 0

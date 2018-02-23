@@ -122,6 +122,14 @@ function fg.gettrack(id)
     return fg._trackLUT[id]
 end
 
+function fg.getaspect()
+    local asp = fg.DEVICE and fg.DEVICE.aspect_ratio
+    if not asp or asp == 0 then
+        asp = (fg.ORIGINAL_WIDTH or WIDTH) / HEIGHT
+    end
+    return asp
+end
+
 
 function fg.onUpdateConfig(config)
     config = assert(config or CONFIG, "no CONFIG passed or found")
@@ -355,6 +363,26 @@ function string.wrap(str, limit)
     local wrapped = str:gsub("(%s+)()(%S+)()", function(sp, st, word, fi)
         if fi-here > limit then
             here = st
+            return "\n"..word
+        end
+    end)
+    local splitted = {}
+    for token in string.gmatch(wrapped, "[^\n]+") do
+        splitted[#splitted + 1] = token
+    end
+    return splitted
+end
+
+function string.fwrap(str, font, h, xpos, width)
+    width = width or WIDTH
+    xpos = xpos or 0
+    local xstart = xpos
+    local wrapped = str:gsub("(%s*)([^%s%-%,%.%;]+)", function(sp, word)
+        local ws = font:width(sp, h)
+        local ww = font:width(word, h)
+        xpos = xpos + ws + ww
+        if xpos > width then
+            xpos = xstart
             return "\n"..word
         end
     end)

@@ -157,8 +157,8 @@ end
 
 
 -- modes: "minimal", fancy".
-function fancy.render(mode)
-    local aspect = WIDTH / HEIGHT
+function fancy.render(mode, aspect)
+    aspect = aspect or (WIDTH / HEIGHT)
     local now = sys.now()
     local res = fancy.res
 
@@ -173,6 +173,9 @@ function fancy.render(mode)
 
         gl.translate(WIDTH/2, HEIGHT/2)
         gl.scale(WIDTH * (1/aspect), HEIGHT)
+        if fancy.fixaspect then
+            fancy.fixaspect(aspect)
+        end
         drawpillars(now)
     end
 
@@ -180,6 +183,9 @@ function fancy.render(mode)
         gl.ortho()
         gl.translate(WIDTH/2, HEIGHT/2)
         gl.scale(WIDTH * (1/aspect), HEIGHT)
+        if fancy.fixaspect then
+            fancy.fixaspect(aspect)
+        end
         drawqueru(now)
     end
 end
