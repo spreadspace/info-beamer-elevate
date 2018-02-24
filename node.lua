@@ -333,6 +333,7 @@ fancy.fixaspect = fixaspect
 
 local function drawbgstatic()
     gl.pushMatrix()
+        gl.scale(WIDTH, HEIGHT)
         CONFIG.background.ensure_loaded():draw(0, 0, 1, 1)
     gl.popMatrix()
 end
