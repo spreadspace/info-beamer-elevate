@@ -169,16 +169,6 @@
                ["minimal", "minimal animation (needs minimal GPU power)"],
                ["fancy", "fancy animation (needs lots of GPU power)"]
             ]
-        }, {
-            "title": "forced aspect ratio",
-            "ui_width": 3,
-            "name": "aspect_ratio",
-            "type": "select",
-            "options": [
-               [0.0, "auto"],
-               [1.777777778, "16:9"],
-               [1.333333333, "4:3"]
-            ]
         }]
     }]
 }
