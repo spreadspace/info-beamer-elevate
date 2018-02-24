@@ -256,7 +256,7 @@ local function drawlocalslide(slide, sx, sy)
     local beginy = 0.15 * HEIGHT
     local thickness = WIDTH*0.006
     local empty = slide.empty
-    local gx = sx - 0.03 * FAKEWIDTH
+    local gx = sx - 0.035 * FAKEWIDTH
     res.gradient:draw(gx - thickness/2, beginy, gx + thickness/2, HEIGHT)
 
     local MAXEVENTS = 3
@@ -308,7 +308,7 @@ local function drawremoteslide(slide, sx, sy)
     local MAXEVENTS = 6
     local N = min(MAXEVENTS, #evs)
     local ystart = 0.3
-    local yend = 0.92 -- hopefully safe
+    local yend = 0.88 -- hopefully safe
     local yrel = ystart
     local titlestartx
     for i = 1, N do -- draw up to this many events
