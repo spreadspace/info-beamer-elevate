@@ -203,8 +203,9 @@ local function draweventabs(x, titlestartx, y, event, islocal, fontscale1, fonts
     -- DRAW TICK
     if islocal then
         local gxo = 0.04 * WIDTH
+        local gyo = HEIGHT * 0.004
         --xo = gxo
-        fgtex:draw(gradx-gxo*0.5, y-yo*0.15, gradx+gxo*0.5, y+yo*0.15)
+        fgtex:draw(gradx-gxo*0.5, y-gyo, gradx+gxo*0.5, y+gyo)
     end
 
     -- DRAW TIME

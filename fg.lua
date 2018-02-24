@@ -16,7 +16,7 @@ local NO_EVENT = {
     --title = "Event not found blah rofl lolo omg wtf long title right let's see where this goes or otherwise things might break",
     title = "Event not found",
     --subtitle = "There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along.",
-    subtitle = "There is currently no event to display. Move along.",
+    subtitle = "There is currently no event to display.\nMove along.",
 }
 
 
@@ -355,7 +355,7 @@ function string.fwrap(str, font, h, xpos, width)
         local ws = font:width(sp, h)
         local ww = font:width(word, h)
         xpos = xpos + ws + ww
-        if xpos > width then
+        if xpos > width or sp:find("\n", 1, true) then -- always wrap when there's a newline
             xpos = xstart
             return "\n"..word
         end
