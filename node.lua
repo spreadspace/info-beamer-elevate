@@ -256,7 +256,7 @@ local function drawlocalslide(slide, sx, sy)
     local beginy = 0.15 * HEIGHT
     local thickness = WIDTH*0.006
     local empty = slide.empty
-    local gx = sx - 0.04 * FAKEWIDTH
+    local gx = sx - 0.03 * FAKEWIDTH
     res.gradient:draw(gx - thickness/2, beginy, gx + thickness/2, HEIGHT)
 
     local MAXEVENTS = 3
