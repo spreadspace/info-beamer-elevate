@@ -13,7 +13,7 @@ local FAKEWIDTH
 
 sys.set_flag("no_clear")
 
-gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
+gl.setup(1920, 1080)
 
 
 local json = require "json"
@@ -143,7 +143,7 @@ local function drawheader(slide) -- slide possibly nil (unlikely)
     
     local timesize = 0.08
     local timestr = fg.gettimestr()
-    local timew = fontbold:width(timestr, timesize)
+    local timew = fontbold:width(timestr .. "     ", timesize*HEIGHT) / FAKEWIDTH
     local timex = 1.0 - timew
 
     -- time
