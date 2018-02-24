@@ -174,7 +174,7 @@ local function drawheader(slide) -- slide possibly nil (unlikely)
         drawfontrel(font, xpos, hy, where, wheresize, fgcol2, bgcol2)
     end
 
-    return WIDTH*xpos, hy + wheresize + HEIGHT*0.25
+    return FAKEWIDTH*xpos, hy + wheresize + HEIGHT*0.25
 end
 
 --[[local function wrapfactor(yspace, h) -- how many chars until wrap
@@ -183,7 +183,7 @@ end]]
 
 
 -- absolute positions
-local function draweventabs(x, titlestartx, y, event, islocal, fontscale1, fontscale2)
+local function draweventabs(x, titlestartx, y, event, islocal, fontscale1, fontscale2, gradx)
     local font = CONFIG.font
     local fontbold = CONFIG.font_bold
     local track = fg.gettrack(event.track)
@@ -202,8 +202,9 @@ local function draweventabs(x, titlestartx, y, event, islocal, fontscale1, fonts
 
     -- DRAW TICK
     if islocal then
-        xo = 0.05 * WIDTH
-        fgtex:draw(x-xo*0.5, y-yo*0.15, x+xo*0.5, y+yo*0.15)
+        local gxo = 0.04 * WIDTH
+        --xo = gxo
+        fgtex:draw(gradx-gxo*0.5, y-yo*0.15, gradx+gxo*0.5, y+yo*0.15)
     end
 
     -- DRAW TIME
@@ -250,10 +251,12 @@ end
 
 local function drawlocalslide(slide, sx, sy)
     local evs = slide.events
-    local beginy = sy+HEIGHT*0.02
+    --local beginy = sy+HEIGHT*0.02
+    local beginy = 0.15 * HEIGHT
     local thickness = WIDTH*0.006
     local empty = slide.empty
-    res.gradient:draw(sx - thickness/2, beginy, sx + thickness/2, HEIGHT)
+    local gx = sx - 0.04 * FAKEWIDTH
+    res.gradient:draw(gx - thickness/2, beginy, gx + thickness/2, HEIGHT)
 
     local MAXEVENTS = 3
 
@@ -289,7 +292,7 @@ local function drawlocalslide(slide, sx, sy)
             fontscale2 = fontscale2 * 1.2
         end
 
-        yrel, titlestartx = draweventrel(sx, titlestartx, sy, yrel, evs[i], true, fontscale1, fontscale2)
+        yrel, titlestartx = draweventrel(sx, titlestartx, sy, yrel, evs[i], true, fontscale1, fontscale2, gx)
         yrel = yrel + 0.04 -- some more space
     end
 end
