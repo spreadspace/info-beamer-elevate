@@ -13,7 +13,7 @@ local FAKEWIDTH
 
 sys.set_flag("no_clear")
 
-gl.setup(1920, 1080)
+gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
 
 
 local json = require "json"
