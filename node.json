@@ -165,7 +165,8 @@
             "ui_width": 8,
             "name": "image",
             "type": "resource",
-            "valid": ["image"]
+            "valid": ["image"],
+            "default": ""
         }]
     }, {
         "title": "Devices",
