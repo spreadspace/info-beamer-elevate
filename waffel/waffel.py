@@ -56,6 +56,13 @@ class Waffel:
 
         return self.__fetch_objects("events", url)
 
+    def get_locations(self, year, track=None):
+        url = '%s?method=Location.detail&lang=en&year=%d' % (self.api_url, year)
+        if track:
+            url = '%s&track=%s' % (url, track)
+
+        return self.__fetch_objects("locations", url)
+
 
 #***************************************
 # Main
@@ -68,6 +75,11 @@ if __name__ == '__main__':
     ret = 0
     try:
         main = Waffel("https://eis.elevate.at/API/rest/index")
+        eis_locs = main.get_locations(2018)
+        locs = {}
+        for eis_loc in eis_locs:
+            locs[eis_loc['id']] = eis_loc
+
         eis_es = main.get_events(2018)
         es = {}
         for eis_e in eis_es:
@@ -79,6 +91,7 @@ if __name__ == '__main__':
             if e['track'] in Waffel.TRACK_NAME_MAP:
                 e['track'] = Waffel.TRACK_NAME_MAP[e['track']]
             e['location_id'] = eis_e['location_id']
+            e['location'] = locs[e['location_id']]['name']
             e['begin'] = eis_e['begin']
             e['end'] = eis_e['end']
 
@@ -90,6 +103,7 @@ if __name__ == '__main__':
         for track in es:
             es[track] = sorted(es[track], key=lambda k: k['begin'])
         print(json.dumps(es))
+
         # prog = {}
         # for ev in evs:
         #     t = ev['track']
