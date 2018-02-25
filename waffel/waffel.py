@@ -27,6 +27,8 @@ import requests
 
 
 class Waffel:
+    # due to historic reasons music is named arts and arts is named campus in EIS
+    TRACK_NAME_MAP = {"art": "music", "campus": "arts"}
 
     def __init__(self, api_url, timeout=30):
         self.api_url = api_url
@@ -70,6 +72,8 @@ if __name__ == '__main__':
             e['title'] = eis_e['title']
             e['subtitle'] = eis_e['subtitle']
             e['track'] = eis_e['track']
+            if e['track'] in Waffel.TRACK_NAME_MAP:
+                e['track'] = Waffel.TRACK_NAME_MAP[e['track']]
             e['location_id'] = eis_e['location_id']
             e['begin'] = eis_e['begin']
             e['end'] = eis_e['end']
