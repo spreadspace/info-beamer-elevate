@@ -65,7 +65,7 @@ if __name__ == '__main__':
     try:
         main = Waffel("https://eis.elevate.at/API/rest/index")
         eis_es = main.get_events(2018)
-        es = []
+        es = {}
         for eis_e in eis_es:
             e = {}
             e['id'] = eis_e['id']
@@ -77,8 +77,14 @@ if __name__ == '__main__':
             e['location_id'] = eis_e['location_id']
             e['begin'] = eis_e['begin']
             e['end'] = eis_e['end']
-            es.append(e)
 
+            if e['track'] not in es:
+                es[e['track']] = [e]
+            else:
+                es[e['track']].append(e)
+
+        for track in es:
+            es[track] = sorted(es[track], key=lambda k: k['begin'])
         print(json.dumps(es))
         # prog = {}
         # for ev in evs:
