@@ -33,25 +33,29 @@ class Waffel:
     def __init__(self, api_url, timeout=30):
         self.api_url = api_url
         self.timeout = timeout
+        self.headers = []
+
+    def __fetch_objects(self, objtype, url):
+        try:
+            r = requests.get(url, headers=self.headers, timeout=self.timeout)
+            r.raise_for_status()
+            ret = r.json()
+            if ret['status'] != 'ok':
+                print("fetching %s failed, API returned status: %s" % (objtype, ret['status']))
+                return None
+            return ret['result']
+
+        except requests.exceptions.RequestException as e:
+            print("fetching %s failed: %s" % (objtype, e))
+            return None
 
     def get_events(self, year, track=None):
         url = '%s?method=Event.detail&lang=en&year=%d' % (self.api_url, year)
         if track:
             url = '%s&track=%s' % (url, track)
 
-        headers = []
-        try:
-            r = requests.get(url, headers=headers, timeout=self.timeout)
-            r.raise_for_status()
-            ret = r.json()
-            if ret['status'] != 'ok':
-                print("fetching events failed, API returned status: %s" % (ret['status']))
-                return None
-            return ret['result']
+        return self.__fetch_objects("events", url)
 
-        except requests.exceptions.RequestException as e:
-            print("fetching events failed: %s" % (e))
-            return None
 
 #***************************************
 # Main
