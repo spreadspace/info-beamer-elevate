@@ -83,14 +83,14 @@
     }, {
         "title": "Sponsors",
         "ui_width": 3,
-        "name": "sponsors",
+        "name": "sponsor_slides",
         "type": "duration",
         "hint": "How long to display sponsor slides in seconds",
         "default": 5
     }, {
         "title": "Sponsors Skip",
         "ui_width": 3,
-        "name": "sponsors_skip",
+        "name": "sponsor_slides_skip",
         "type": "integer",
         "hint": "Skip sponser slide every x iterations, 0 shows it in all iterations, 1 will skip every other iteration ...",
         "default": 0
@@ -154,6 +154,18 @@
             "name": "name",
             "type": "string",
             "default": ""
+        }]
+    }, {
+        "title": "Sponsors",
+        "name": "sponsors",
+        "type": "list",
+        "itemname": "Slide",
+        "items": [{
+            "title": "Image",
+            "ui_width": 8,
+            "name": "image",
+            "type": "resource",
+            "valid": ["image"]
         }]
     }, {
         "title": "Devices",
