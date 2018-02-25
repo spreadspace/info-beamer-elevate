@@ -33,7 +33,7 @@ class Waffel:
         self.timeout = timeout
 
     def get_events(self, year, track=None):
-        url = '%s?method=Event.detail&year=%d' % (self.api_url, year)
+        url = '%s?method=Event.detail&lang=en&year=%d' % (self.api_url, year)
         if track:
             url = '%s&track=%s' % (url, track)
 
@@ -62,8 +62,20 @@ if __name__ == '__main__':
     ret = 0
     try:
         main = Waffel("https://eis.elevate.at/API/rest/index")
-        evs = main.get_events(2018)
-        print(json.dumps(evs))
+        eis_es = main.get_events(2018)
+        es = []
+        for eis_e in eis_es:
+            e = {}
+            e['id'] = eis_e['id']
+            e['title'] = eis_e['title']
+            e['subtitle'] = eis_e['subtitle']
+            e['track'] = eis_e['track']
+            e['location_id'] = eis_e['location_id']
+            e['begin'] = eis_e['begin']
+            e['end'] = eis_e['end']
+            es.append(e)
+
+        print(json.dumps(es))
         # prog = {}
         # for ev in evs:
         #     t = ev['track']

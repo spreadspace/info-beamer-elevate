@@ -91,7 +91,7 @@
         "title": "Sponsors Skip",
         "ui_width": 3,
         "name": "sponsors_skip",
-        "type": "",
+        "type": "integer",
         "hint": "Skip sponser slide every x iterations, 0 shows it in all iterations, 1 will skip every other iteration.",
         "default": 0
     },
