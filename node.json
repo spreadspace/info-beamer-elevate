@@ -67,19 +67,33 @@
         "title": "Slides",
         "type": "section"
     }, {
-        "title": "Current Locations (seconds)",
-        "ui_width": 4,
+        "title": "Current Locations",
+        "ui_width": 3,
         "name": "current_location",
         "type": "duration",
-        "hint": "How long to display current talk information",
+        "hint": "How long to display current talk information in seconds",
         "default": 15
     }, {
-        "title": "Other Locations (seconds)",
-        "ui_width": 4,
+        "title": "Other Locations",
+        "ui_width": 3,
         "name": "other_locations",
         "type": "duration",
-        "hint": "How long to display other location information",
+        "hint": "How long to display other location information in seconds",
         "default": 25
+    }, {
+        "title": "Sponsors",
+        "ui_width": 3,
+        "name": "sponsors",
+        "type": "duration",
+        "hint": "How long to display sponsor slides in seconds",
+        "default": 15
+    }, {
+        "title": "Sponsors Skip",
+        "ui_width": 3,
+        "name": "sponsors_skip",
+        "type": "",
+        "hint": "Skip sponser slide every x iterations, 0 shows it in all iterations, 1 will skip every other iteration.",
+        "default": 0
     },
 
     {
