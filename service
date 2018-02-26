@@ -14,8 +14,6 @@ import time
 
 CONFIG.restart_on_update()
 
-diff = datetime(2014, 7, 22, 8, 20, 00) - datetime.utcnow()
-
 
 def __get_now_in_config_tz(now):
     now = now.replace(tzinfo=pytz.utc)
@@ -23,7 +21,7 @@ def __get_now_in_config_tz(now):
 
 
 def current_time():
-    now = datetime.utcnow()  # + diff
+    now = datetime.utcnow()
     timestamp = timegm(now.timetuple()) + now.microsecond / 1000000.
     return now, timestamp
 
@@ -48,10 +46,6 @@ def main():
     now, ts = current_time()
     last_animation_time_reset = now
     while 1:
-        if now.year < 2000:
-            print >>sys.stderr, "too soon"
-            time.sleep(1)
-            continue
 
         schedule = importer.get_schedule(
             CONFIG['eis_api_url'],
