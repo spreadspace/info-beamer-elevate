@@ -122,7 +122,7 @@ end
 
 local function drawpillars(now)
     local res = fancy.res
-    res.fancy_pillar:use{time=now}
+    res.fancy_pillar:use{time=now % 1337.4223}
 
     lolpillar(res.fancy_noise, now,  -0.45,   0.6,  0.33)
     --lolpillar(res.noise6, now,  0.4,   -0.12,  0.33)

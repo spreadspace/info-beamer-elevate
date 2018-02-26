@@ -78,7 +78,7 @@ end
 function SLIDE.newSponsor(id, spon)
     local self = { id = id,
         image = spon.image,
-        sponsor = true,
+        sponsor = spon,
     }
     return setmetatable(self, SLIDE)
 end
