@@ -21,13 +21,13 @@
 #  along with eis-waffel. If not, see <http://www.gnu.org/licenses/>.
 #
 
-#***************************************
-# App
+# ***************************************
+
 import requests
 
 
-class Waffel:
-    # due to historic reasons music is named arts and arts is named campus in EIS
+class Waffel(object):
+    # due to historic reasons music is named arts and arts is named campus in EIS  # noqa
     TRACK_NAME_MAP = {"art": "music", "campus": "arts"}
 
     def __init__(self, api_url, timeout=30):

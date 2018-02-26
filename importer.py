@@ -1,12 +1,6 @@
 # -*- coding: utf-8 -*-
-
-import traceback
-import urllib2
-import calendar
-import pytz
-from datetime import datetime, timedelta
-
-import dateutil.parser
+from datetime import datetime
+from datetime import timedelta
 
 
 def get_schedule(api_url, tracks, locations, devices, schedule_tz):
@@ -43,7 +37,8 @@ def get_schedule(api_url, tracks, locations, devices, schedule_tz):
     e4 = __new_event(u"Bernhard Fleischmann & Band", 'music', now_5h, now_6h)
     schedule['orpheum'] = [e1, e2, e3, e4]
 
-    e11 = __new_event(u"Meeting of the Secret-Society", 'discourse', now, now_1h)
+    e11 = __new_event(
+        u"Meeting of the Secret-Society", 'discourse', now, now_1h)
     e11['subtitle'] = u"don't tell Donald Trump!!!!"
     e12 = __new_event(u"WTF is going on?", 'discourse', now_1h, now_2h)
     e12['subtitle'] = u"the title is rather self-explanatory"

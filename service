@@ -1,14 +1,16 @@
 #!/usr/bin/python
-import os
-import sys
-import time
-import pytz
-import json
+from . import importer
+from .hosted import CONFIG
+from .hosted import NODE
 from calendar import timegm
 from datetime import datetime
 
-from hosted import CONFIG, NODE
-import importer
+import json
+import os
+import pytz
+import sys
+import time
+
 
 CONFIG.restart_on_update()
 
@@ -28,7 +30,14 @@ def current_time():
 
 def send_clock(now, ts):
     now = __get_now_in_config_tz(now)
-    NODE.send('/clock/set:%f,%d,%d,%d' % (ts, now.hour, now.minute, now.second))
+    NODE.send(
+        '/clock/set:%f,%d,%d,%d' % (
+            ts,
+            now.hour,
+            now.minute,
+            now.second
+        )
+    )
 
 
 def send_animation_timer_reset():
@@ -63,7 +72,8 @@ def main():
 
         print >>sys.stderr, "updated schedule"
 
-        # 6 times 10s (aka 1 minute of only updateing the time but not re-downloading the schdule)
+        # 6 times 10s (aka 1 minute of only updating the time but not
+        # re-downloading the schdule)
         for i in xrange(6):
             now, ts = current_time()
             print >>sys.stderr, "time is", now, ts
@@ -73,9 +83,11 @@ def main():
         # reset animation time if it's around 6 o'clock and the last reset
         # was at least 22 hours (aka 80000 seconds) ago
         since = now - last_animation_time_reset
-        if __get_now_in_config_tz(now).hour == 6 and since.total_seconds() > 80000:
+        if __get_now_in_config_tz(now).hour == 6\
+                and since.total_seconds() > 80000:
             print >>sys.stderr, "trigger reset of animation time"
             send_animation_timer_reset()
+
 
 if __name__ == "__main__":
     main()
