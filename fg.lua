@@ -6,7 +6,9 @@ local floor = math.floor
 -- FOR TESTING --
 local NO_REMOTE_EVENTS = false
 local NO_LOCAL_EVENTS = false
+local NO_SPONSOR_SLIDES = false
 local ALWAYS_PUSH_EMPTY = true
+local SHOW_SPONSORS_WHEN_EMPTY = false -- put sponsors in rotational even when only 404 is shown?
 -----------------
 
 local NO_LOCATION = { id = "unk", name = "Unknown location" }
@@ -72,6 +74,15 @@ function SLIDE.newRemote(id, trackdef, locdef, events)
     }
     return setmetatable(self, SLIDE)
 end
+
+function SLIDE.newSponsor(id, spon)
+    local self = { id = id,
+        image = spon.image,
+        sponsor = true,
+    }
+    return setmetatable(self, SLIDE)
+end
+
 
 
 function SLIDE:print()
@@ -297,6 +308,21 @@ local function _scheduleToSlides(locations, tracks, tab)
             end
         end
     end
+    if not NO_SPONSOR_SLIDES and CONFIG.sponsors and (#slides > 0 or SHOW_SPONSORS_WHEN_EMPTY) then
+        print("Check sponsors... skip counter = " .. tostring(fg._sponsorSkipCounter))
+        if fg._sponsorSkipCounter and fg._sponsorSkipCounter > 0 then
+            fg._sponsorSkipCounter = fg._sponsorSkipCounter - 1
+        else
+            print("-> Generate sponsor slides...")
+            for _, spon in ipairs(CONFIG.sponsors) do
+                slideid = slideid + 1
+                local slide = SLIDE.newSponsor(slideid, spon)
+                table.insert(slides, slide)
+            end
+            fg._sponsorSkipCounter = CONFIG.sponsor_slides_skip or 0
+        end
+    end
+    
     
     if ALWAYS_PUSH_EMPTY then
         table.insert(slides, _makebackupslide())
@@ -309,6 +335,7 @@ local function _scheduleToSlides(locations, tracks, tab)
 end
 
 function fg.onUpdateSchedule(sch)
+    fg.last_schedule = sch
     local locations = assert(CONFIG.locations, "CONFIG.locations missing")
     local tracks = assert(CONFIG.tracks, "CONFIG.tracks missing")
     local slides = _scheduleToSlides(locations, tracks, sch)
@@ -334,6 +361,11 @@ local function _slideiter(slides)
 end
 
 function fg.newSlideIter()
+    -- HACK: always regenerate slides. slides shown may be different each time.
+    if fg.last_schedule then
+        fg.onUpdateSchedule(fg.last_schedule)
+    end
+    
     local slides
     if fg.slides and #fg.slides > 0 then
         slides = fg.slides

@@ -1,8 +1,13 @@
 local TOP_TITLE = "ELEVATE INFOSCREEN"
+local SPONSORS_TITLE = "SPONSORS"
 
 local SCREEN_ASPECT = 16 / 9
 
-
+-- in relative [0..1] screen coords
+local SPONSORSLIDE_START_X = 0.2
+local SPONSORSLIDE_END_X = 0.8
+local SPONSORSLIDE_START_Y = 0.3
+local SPONSORSLIDE_END_Y = 0.9
 
 util.init_hosted()
 
@@ -97,6 +102,8 @@ local function nextslide()
     if state.slide then
         if state.slide.empty then
             t = 3
+        elseif state.slide.sponsor then
+            t = CONFIG.sponsor_slides
         elseif state.slide.here then
             t = CONFIG.current_location
         else
@@ -162,7 +169,11 @@ local function drawheader(slide) -- slide possibly nil (unlikely)
         local where
         local fgcol2 = fgcol
         local bgcol2 = bgcol
-        if slide.here then
+        if slide.sponsor then
+            where = SPONSORS_TITLE
+            wheresize = 0.1
+        
+        elseif slide.here then
             where = slide.location.name
             wheresize = 0.1
         else
@@ -322,8 +333,18 @@ local function drawremoteslide(slide, sx, sy)
     end
 end
 
+local function drawsponsorslide(slide, sx, sy)
+    gl.pushMatrix()
+        gl.scale(WIDTH, HEIGHT)
+        local img = slide.image.ensure_loaded()
+        img:draw(SPONSORSLIDE_START_X, SPONSORSLIDE_START_Y, SPONSORSLIDE_END_X, SPONSORSLIDE_END_Y)
+    gl.popMatrix()
+end
+
 local function drawslide(slide, sx, sy) -- start positions after header
-    if slide.here then
+    if slide.image then
+        return drawsponsorslide(slide, sx, sy)
+    elseif slide.here then
         return drawlocalslide(slide, sx, sy)
     else
         return drawremoteslide(slide, sx, sy)
