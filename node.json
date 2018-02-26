@@ -113,8 +113,14 @@
         "hint": "Track definitions",
         "items": [{
             "title": "Track ID",
-            "ui_width": 4,
+            "ui_width": 3,
             "name": "id",
+            "type": "string",
+            "default": ""
+        }, {
+            "title": "EIS ID",
+            "ui_width": 3,
+            "name": "eis_id",
             "type": "string",
             "default": ""
         }, {
@@ -144,8 +150,14 @@
         "hint": "Location definitions",
         "items": [{
             "title": "Location ID",
-            "ui_width": 4,
+            "ui_width": 3,
             "name": "id",
+            "type": "string",
+            "default": ""
+        }, {
+            "title": "EIS ID",
+            "ui_width": 3,
+            "name": "eis_id",
             "type": "string",
             "default": ""
         }, {
