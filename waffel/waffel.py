@@ -85,7 +85,7 @@ class Waffel(object):
 
     def dt_within(self, start, end):
         now = datetime.now()
-        #now = datetime(2018, 3, 2, 18, 0)  # TODO: use/change this to test
+        # now = datetime(2018, 3, 2, 18, 0)  # TODO: use/change this to test
         if (
             start > now + self.max_delta
             or end < now - self.min_delta
@@ -110,7 +110,7 @@ class Waffel(object):
             'startts': self.dt_to_epoch(start),
             'end': end.strftime('%H:%M'),
             'endts': self.dt_to_epoch(end),
-            'title': title,
+            'title': title.upper(),
             'subtitle': subtitle,
             'track': self.track_map.get(track_id),
         }
