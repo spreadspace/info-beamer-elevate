@@ -46,6 +46,8 @@ class Waffel(object):
             timezone='Europe/Vienna',
             timeout=30):
         self.api_url = api_url
+        # tracks: Due to historic reasons music is named arts and arts is named
+        #         campus in EIS.
         self.track_map = {it['eis_id']: it['id'] for it in tracks}
         self.location_map = {it['eis_id']: it['id'] for it in locations}
         self.timezone = timezone
@@ -54,9 +56,6 @@ class Waffel(object):
         self.headers = {'Accept': 'application/json; charset=utf-8'}
         self.min_delta = timedelta(minutes=30)
         self.max_delta = timedelta(hours=12)
-
-    # due to historic reasons music is named arts and arts is named campus in EIS  # noqa
-    TRACK_NAME_MAP = {"art": "music", "campus": "arts"}
 
     def __fetch_objects(self, objtype, url):
         try:
@@ -85,8 +84,8 @@ class Waffel(object):
         return int((dt - datetime(1970, 1, 1)).total_seconds())
 
     def dt_within(self, start, end):
-        now = datetime.now()
-        # now = datetime(2018, 2, 28, 18, 0)  # TODO: use/change this to test
+        # now = datetime.now()
+        now = datetime(2018, 3, 2, 18, 0)  # TODO: use/change this to test
         if (
             start > now + self.max_delta
             or end < now - self.min_delta
@@ -127,6 +126,7 @@ class Waffel(object):
         result = self.__fetch_objects("events", url)
 
         ret = {}
+        missing_locations = []
         for event in result:
             start = self.parse_date(event['begin'])
             end = self.parse_date(event['end'])
@@ -134,14 +134,18 @@ class Waffel(object):
                 continue
             location = self.location_map.get(event['location_id'], None)
             if not location:
-                logger.warn(
-                    'location_id %s not found in location mapping' %
-                    event['location_id']
-                )
+                missing_locations.append((
+                    event['location_id'],
+                    event['location']['name']
+                ))
                 continue
 
             events = []
             if event['track'] in ('art',):
+                # a event in art (actually music) is a whole stage for a whole
+                # evening. each artist/slot appears in event['apps'] list.
+                # if there are any more tracks than 'art' which behave like
+                # this one, add it to the tuple above.
                 for appearance in event['apps']:
                     app_start = self.parse_date(appearance['begin'])
                     app_end = self.parse_date(appearance['end'])
@@ -168,10 +172,19 @@ class Waffel(object):
             ret.setdefault(location, [])
             ret[location] += events
 
-        # TODO: needed?
         # Sort for startts
         for key in ret.keys():
             ret[key].sort(key=lambda it: it['startts'])
+
+        if missing_locations:
+            logger.warn(
+                'The following locations were not found in the location'
+                ' mapping and their events thus not included (name (id)): %s' %
+                ', '.join([
+                    '%s (%s)' % (it[0], it[1])
+                    for it in set(missing_locations)
+                ])
+            )
 
         return ret
 

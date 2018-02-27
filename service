@@ -1,4 +1,4 @@
-# # #!/usr/bin/python
+#!/usr/bin/python
 # from . import importer
 # from .hosted import CONFIG
 # from .hosted import NODE
@@ -50,6 +50,12 @@ def main():
     now, ts = current_time()
     last_animation_time_reset = now
     while 1:
+        if now.year < 2000:
+            # Guard against NTP time not beeing synchronized yet.
+            # On the pi the year will be 1970 in that case.
+            print >>sys.stderr, "too soon"
+            time.sleep(1)
+            continue
 
         schedule = importer.get_schedule(
             CONFIG['eis_api_url'],
