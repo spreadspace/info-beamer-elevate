@@ -55,7 +55,7 @@ class Waffel(object):
         self.year = datetime.now().year
         self.headers = {'Accept': 'application/json; charset=utf-8'}
         self.min_delta = timedelta(minutes=30)
-        self.max_delta = timedelta(hours=12)
+        self.max_delta = timedelta(days=10)
 
     def __fetch_objects(self, objtype, url):
         try:
@@ -84,8 +84,8 @@ class Waffel(object):
         return int((dt - datetime(1970, 1, 1)).total_seconds())
 
     def dt_within(self, start, end):
-        # now = datetime.now()
-        now = datetime(2018, 3, 2, 18, 0)  # TODO: use/change this to test
+        now = datetime.now()
+        #now = datetime(2018, 3, 2, 18, 0)  # TODO: use/change this to test
         if (
             start > now + self.max_delta
             or end < now - self.min_delta
