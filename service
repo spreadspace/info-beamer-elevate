@@ -65,11 +65,6 @@ def main():
             pytz.timezone(CONFIG['timezone'])
         )
 
-        if not schedule:
-            print >>sys.stderr, "no events"
-            time.sleep(60)
-            continue
-
         with file("schedule.json.new", "wb") as f:
             f.write(json.dumps(schedule, indent=2).encode('utf8'))
         os.rename("schedule.json.new", "schedule.json")
