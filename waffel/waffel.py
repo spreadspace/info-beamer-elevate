@@ -4,6 +4,7 @@
 #
 #
 #  Copyright (C) 2018 Christian Pointner <equinox@elevate.at>
+#                     Johannes Raggam <thetetet@gmail.com>
 #
 #  This file is part of eis-waffel.
 #
@@ -23,17 +24,39 @@
 
 # ***************************************
 
+from datetime import datetime
+from datetime import timedelta
+
+import dateutil.parser
+import logging
 import requests
 
 
+logging.basicConfig()  # TODO: changed print to logging.
+logger = logging.getLogger(__file__)
+
+
 class Waffel(object):
+
+    def __init__(
+            self,
+            api_url,
+            tracks,
+            locations,
+            timezone='Europe/Vienna',
+            timeout=30):
+        self.api_url = api_url
+        self.track_map = {it['eis_id']: it['id'] for it in tracks}
+        self.location_map = {it['eis_id']: it['id'] for it in locations}
+        self.timezone = timezone
+        self.timeout = timeout
+        self.year = datetime.now().year
+        self.headers = {'Accept': 'application/json; charset=utf-8'}
+        self.min_delta = - timedelta(minutes=30)
+        self.max_delta = timedelta(hours=12)
+
     # due to historic reasons music is named arts and arts is named campus in EIS  # noqa
     TRACK_NAME_MAP = {"art": "music", "campus": "arts"}
-
-    def __init__(self, api_url, timeout=30):
-        self.api_url = api_url
-        self.timeout = timeout
-        self.headers = []
 
     def __fetch_objects(self, objtype, url):
         try:
@@ -41,92 +64,123 @@ class Waffel(object):
             r.raise_for_status()
             ret = r.json()
             if ret['status'] != 'ok':
-                print("fetching %s failed, API returned status: %s" % (objtype, ret['status']))
+                logger.error(
+                    "fetching %s failed, API returned status: %s" % (
+                        objtype,
+                        ret['status']
+                    )
+                )
                 return None
             return ret['result']
 
         except requests.exceptions.RequestException as e:
-            print("fetching %s failed: %s" % (objtype, e))
+            logger.error("fetching %s failed: %s" % (objtype, e))
             return None
 
-    def get_events(self, year, track=None):
-        url = '%s?method=Event.detail&lang=en&year=%d' % (self.api_url, year)
+    def parse_date(self, dt):
+        return dateutil.parser.parse(dt)
+
+    def dt_to_epoch(self, dt):
+        # https://stackoverflow.com/a/11743262/1337474
+        return int((dt - datetime(1970, 1, 1)).total_seconds())
+
+    def dt_within(self, start, end):
+        now = datetime.now()
+        # now = datetime(2018, 2, 28, 18, 0)  # TODO: use/change this to test
+        if (
+            start > now + self.max_delta
+            or end < now - self.min_delta
+        ):
+            return False
+        return True
+
+    def make_event(self, start, end, title, subtitle, track_id):
+        # "start":     Startzeit in der gegebenen Zeitzone als HH:MM
+        # "startts":   Startzeit als unix epoch timestamp
+        # "end":       Endzeit in der gegebenen Zeitzone als HH:MM
+        # "endts":     Endzeit als unix epoch timestamp
+        # "title":     Titel des Event
+        # "subtitle":  Untertitel des Event (optional)
+        # "track":     discourse, music oder arts
+        #
+        # TODO: check, if timezone-naive is really OK
+        #       converting to timezone-aware datetimes shouldn't make a
+        #       difference.
+        return {
+            'start': start.strftime('%H:%M'),
+            'startts': self.dt_to_epoch(start),
+            'end': end.strftime('%H:%M'),
+            'endts': self.dt_to_epoch(end),
+            'title': title,
+            'subtitle': subtitle,
+            'track': self.track_map.get(track_id),
+        }
+
+    def get_events(self, track=None):
+        url = '%s?method=Event.detail&lang=en&year=%d' % (
+            self.api_url,
+            self.year
+        )
         if track:
             url = '%s&track=%s' % (url, track)
 
-        return self.__fetch_objects("events", url)
+        result = self.__fetch_objects("events", url)
 
-    def get_locations(self, year, track=None):
-        url = '%s?method=Location.detail&lang=en&year=%d' % (self.api_url, year)
+        ret = {}
+        for event in result:
+            start = self.parse_date(event['begin'])
+            end = self.parse_date(event['end'])
+            if not self.dt_within(start, end):
+                continue
+            location = self.location_map.get(event['location_id'], None)
+            if not location:
+                logger.warn(
+                    'location_id %s not found in location mapping' %
+                    event['location_id']
+                )
+                continue
+
+            events = []
+            if event['track'] in ('art',):
+                for appearance in event['apps']:
+                    app_start = self.parse_date(appearance['begin'])
+                    app_end = self.parse_date(appearance['end'])
+                    if not self.dt_within(app_start, app_end):
+                        continue
+                    events.append(self.make_event(
+                        app_start,
+                        app_end,
+                        appearance['name'],
+                        appearance['name_add'],  # TODO: name_add ok? type could also be of interest.  # noqa
+                        appearance['track'],
+                    ))
+            else:
+                events.append(self.make_event(
+                    start,
+                    end,
+                    event['title'],
+                    event['subtitle'],
+                    event['track'],
+                ))
+
+            if not events:
+                continue
+            ret.setdefault(location, [])
+            ret[location] += events
+
+        # TODO: needed?
+        # Sort for startts
+        for key in ret.keys():
+            ret[key].sort(key=lambda it: it['startts'])
+
+        return ret
+
+    def get_locations(self, track=None):
+        url = '%s?method=Location.detail&lang=en&year=%d' % (
+            self.api_url,
+            self.year
+        )
         if track:
             url = '%s&track=%s' % (url, track)
 
         return self.__fetch_objects("locations", url)
-
-
-#***************************************
-# Main
-
-if __name__ == '__main__':
-    import sys
-    import traceback
-    import json
-
-    ret = 0
-    try:
-        main = Waffel("https://eis.elevate.at/API/rest/index")
-        eis_locs = main.get_locations(2018)
-        locs = {}
-        for eis_loc in eis_locs:
-            locs[eis_loc['id']] = eis_loc
-
-        eis_es = main.get_events(2018)
-        es = {}
-        for eis_e in eis_es:
-            e = {}
-            e['id'] = eis_e['id']
-            e['title'] = eis_e['title']
-            e['subtitle'] = eis_e['subtitle']
-            e['track'] = eis_e['track']
-            if e['track'] in Waffel.TRACK_NAME_MAP:
-                e['track'] = Waffel.TRACK_NAME_MAP[e['track']]
-            e['location_id'] = eis_e['location_id']
-            e['location'] = locs[e['location_id']]['name']
-            e['begin'] = eis_e['begin']
-            e['end'] = eis_e['end']
-
-            if e['track'] not in es:
-                es[e['track']] = [e]
-            else:
-                es[e['track']].append(e)
-
-        for track in es:
-            es[track] = sorted(es[track], key=lambda k: k['begin'])
-        print(json.dumps(es))
-
-        # prog = {}
-        # for ev in evs:
-        #     t = ev['track']
-        #     if t not in prog:
-        #         prog[t] = {'locations': {}}
-
-        #     lid = ev['location_id']
-        #     if lid not in prog[t]['locations']:
-        #         prog[t]['locations'][lid] = {'name': ev['location']['name']}
-        #         prog[t]['locations'][lid]['events'] = []
-
-        #     e = {'begin': ev['begin'], 'end': ev['end']}
-        #     e['title'] = ev['title']
-        #     e['shortcode'] = ev['shortcode']
-        #     e['hashtag'] = ev['hashtag']
-        #     e['live_stream'] = ev['streaming']['is_livemedia']
-        #     prog[t]['locations'][lid]['events'].append(e)
-
-        # print(json.dumps(prog))
-
-    except Exception as e:
-        print("ERROR: while running waffel: %s" % e)
-        print(traceback.format_exc())
-        sys.exit(1)
-
-    sys.exit(ret)
