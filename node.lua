@@ -9,6 +9,8 @@ local SPONSORSLIDE_END_X = 0.8
 local SPONSORSLIDE_START_Y = 0.3
 local SPONSORSLIDE_END_Y = 0.9
 
+local TEXT_WRAP_FACTOR = 0.94
+
 util.init_hosted()
 
 NATIVE_WIDTH = NATIVE_WIDTH or 1920
@@ -228,7 +230,7 @@ local function draweventabs(x, titlestartx, y, event, islocal, fontscale1, fonts
     -- DRAW TITLE
     local fx = titlestartx or max(fxt, x+0.1*WIDTH)   -- x start of title
     local yspace = WIDTH - fx -- how much space is left on the right?
-    local sa = event.title:fwrap(font, h, fx, FAKEWIDTH*0.97) -- somehow figure out how to wrap
+    local sa = event.title:fwrap(font, h, fx, FAKEWIDTH*TEXT_WRAP_FACTOR) -- somehow figure out how to wrap
     local linespacing = HEIGHT*0.01
     for i = 1, #sa do -- draw each line after wrapping
         _, liney = drawfont(font, fx, liney, sa[i], h, fgcol, bgcol)
@@ -240,7 +242,7 @@ local function draweventabs(x, titlestartx, y, event, islocal, fontscale1, fonts
     -- DRAW SUBTITLE
     if islocal and event.subtitle then
         local h2 = HEIGHT*fontscale2 -- font size subtitle
-        local sa = event.subtitle:fwrap(font, h2, fx, FAKEWIDTH*0.97)
+        local sa = event.subtitle:fwrap(font, h2, fx, FAKEWIDTH*TEXT_WRAP_FACTOR)
         local linespacing = HEIGHT*0.01
         for i = 1, #sa do
             _, liney = drawfont(font, fx, liney, sa[i], h2, fgcol, bgcol)
