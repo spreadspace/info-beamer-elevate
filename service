@@ -1,7 +1,11 @@
-#!/usr/bin/python
-from . import importer
-from .hosted import CONFIG
-from .hosted import NODE
+# # #!/usr/bin/python
+# from . import importer
+# from .hosted import CONFIG
+# from .hosted import NODE
+import importer
+from hosted import CONFIG
+from hosted import NODE
+
 from calendar import timegm
 from datetime import datetime
 
