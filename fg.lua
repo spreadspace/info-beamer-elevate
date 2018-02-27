@@ -7,8 +7,8 @@ local floor = math.floor
 local NO_REMOTE_EVENTS = false
 local NO_LOCAL_EVENTS = false
 local NO_SPONSOR_SLIDES = false
-local ALWAYS_PUSH_EMPTY = true
-local SHOW_SPONSORS_WHEN_EMPTY = false -- put sponsors in rotational even when only 404 is shown?
+local EMPTY_WHEN_NO_LOCAL = true
+local ALWAYS_PUSH_EMPTY = false
 -----------------
 
 local NO_LOCATION = { id = "unk", name = "Unknown location" }
@@ -284,6 +284,7 @@ local function _scheduleToSlides(locations, tracks, tab)
     
     print("Found " .. nevents .. " events, generating slides...")
     
+    local haslocal
     local slideid = 0
     if not NO_LOCAL_EVENTS then
         if myloc then
@@ -292,7 +293,11 @@ local function _scheduleToSlides(locations, tracks, tab)
             slideid = slideid + 1
             local slide = SLIDE.newLocal(slideid, loclut[myloc], localevents)
             table.insert(slides, slide)
+            haslocal = true
         end
+    end
+    if (not haslocal and EMPTY_WHEN_NO_LOCAL) or ALWAYS_PUSH_EMPTY then
+        table.insert(slides, _makebackupslide())
     end
     if not NO_REMOTE_EVENTS then
         for _, tr in ipairs(tracks) do
@@ -308,7 +313,7 @@ local function _scheduleToSlides(locations, tracks, tab)
             end
         end
     end
-    if not NO_SPONSOR_SLIDES and CONFIG.sponsors and (#slides > 0 or SHOW_SPONSORS_WHEN_EMPTY) then
+    if not NO_SPONSOR_SLIDES and CONFIG.sponsors then
         print("Check sponsors... skip counter = " .. tostring(fg._sponsorSkipCounter))
         if fg._sponsorSkipCounter and fg._sponsorSkipCounter > 0 then
             fg._sponsorSkipCounter = fg._sponsorSkipCounter - 1
@@ -323,10 +328,6 @@ local function _scheduleToSlides(locations, tracks, tab)
         end
     end
     
-    
-    if ALWAYS_PUSH_EMPTY then
-        table.insert(slides, _makebackupslide())
-    end
     
     print("Generated " .. #slides .. " slides")
     

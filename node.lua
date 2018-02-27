@@ -335,7 +335,7 @@ end
 
 local function drawsponsorslide(slide, sx, sy)
     gl.pushMatrix()
-        gl.scale(WIDTH, HEIGHT)
+        gl.scale(FAKEWIDTH, HEIGHT)
         local img = slide.image.ensure_loaded()
         img:draw(SPONSORSLIDE_START_X, SPONSORSLIDE_START_Y, SPONSORSLIDE_END_X, SPONSORSLIDE_END_Y)
     gl.popMatrix()
