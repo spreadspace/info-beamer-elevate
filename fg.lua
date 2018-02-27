@@ -384,7 +384,8 @@ function string.fwrap(str, font, h, xpos, width)
     width = width or WIDTH
     xpos = xpos or 0
     local xstart = xpos
-    local wrapped = str:gsub("(%s*)([^%s%-%,%.%;]+)", function(sp, word)
+    -- always allow wrapping after punctuation chars
+    local wrapped = str:gsub("(%s*)([^%s%-%,%.%;%:%/]*[%-%,%.%;%:%/]*)", function(sp, word)
         local ws = font:width(sp, h)
         local ww = font:width(word, h)
         xpos = xpos + ws + ww
