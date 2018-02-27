@@ -70,9 +70,9 @@ def main():
 
         print >>sys.stderr, "updated schedule"
 
-        # 6 times 10s (aka 1 minute of only updating the time but not
+        # 6*60 times 10s (aka 1 hour of only updating the time but not
         # re-downloading the schdule)
-        for i in xrange(6):
+        for i in xrange(6*60):  # TODO: ok?
             now, ts = current_time()
             print >>sys.stderr, "time is", now, ts
             send_clock(now, ts)
