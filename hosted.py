@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Part of info-beamer hosted
 #
 # Copyright (c) 2014, Florian Wesch <fw@dividuum.de>
@@ -102,7 +103,7 @@ class Configuration(object):
         self.parse_config_json()
 
     def restart_on_update(self):
-        print >>sys.stderr, "[hosted.py] going to restart when config is updated"
+        print >>sys.stderr, "[hosted.py] going to restart when config is updated"  # noqa
         self._restart = True
 
     def parse_node_json(self, do_update=True):
@@ -119,7 +120,7 @@ class Configuration(object):
 
     def update_config(self):
         if self._restart:
-            print >>sys.stderr, "[hosted.py] restarting service (restart_on_update set)"
+            print >>sys.stderr, "[hosted.py] restarting service (restart_on_update set)"  # noqa
             import thread
             import time
             thread.interrupt_main()
@@ -129,7 +130,7 @@ class Configuration(object):
         def parse_recursive(options, config, target):
             # print 'parsing', config
             for option in options:
-                if not 'name' in option:
+                if 'name' not in option:
                     continue
                 if option['type'] == 'list':
                     items = []
@@ -139,7 +140,9 @@ class Configuration(object):
                         items.append(parsed)
                     target[option['name']] = items
                     continue
-                target[option['name']] = types[option['type']](config[option['name']])
+                target[option['name']] = types[option['type']](
+                    config[option['name']]
+                )
 
         parsed = {}
         parse_recursive(self._options, self._config, parsed)
@@ -148,6 +151,8 @@ class Configuration(object):
 
     def __getitem__(self, key):
         return self._parsed[key]
+
+
 Configuration = Configuration()
 
 
@@ -161,7 +166,7 @@ class EventHandler(pyinotify.ProcessEvent):
         elif basename == 'config.json':
             Configuration.parse_config_json()
         elif basename == 'hosted.py':
-            print >>sys.stderr, "[hosted.py] restarting service since hosted.py changed"
+            print >>sys.stderr, "[hosted.py] restarting service since hosted.py changed"  # noqa
             import thread
             import time
             thread.interrupt_main()
@@ -209,6 +214,8 @@ class Node(object):
 
     def __call__(self, data):
         return self.Sender(self, self._node)(data)
+
+
 NODE = Node(os.environ['NODE'])
 
 
@@ -226,7 +233,7 @@ class Upstream(object):
             self._socket.connect(os.environ['SYNCER_SOCKET'])
             return True
         except Exception, err:
-            print >>sys.stderr, "cannot connect to upstream socket: %s" % (err,)
+            print >>sys.stderr, "cannot connect to upstream socket: %s" % (err,)  # noqa
 
     def send_raw(self, raw):
         try:
@@ -240,4 +247,6 @@ class Upstream(object):
 
     def send(self, **data):
         self.send_raw(json.dumps(data))
+
+
 UPSTREAM = Upstream()
