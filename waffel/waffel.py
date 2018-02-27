@@ -52,7 +52,7 @@ class Waffel(object):
         self.timeout = timeout
         self.year = datetime.now().year
         self.headers = {'Accept': 'application/json; charset=utf-8'}
-        self.min_delta = - timedelta(minutes=30)
+        self.min_delta = timedelta(minutes=30)
         self.max_delta = timedelta(hours=12)
 
     # due to historic reasons music is named arts and arts is named campus in EIS  # noqa
