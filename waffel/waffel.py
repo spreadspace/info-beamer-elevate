@@ -44,7 +44,7 @@ class Waffel(object):
             api_url,
             tracks,
             locations,
-            timezone='Europe/Vienna',
+            timezone=dateutil.tz.gettz('Europe/Vienna'),
             timeout=30):
         self.api_url = api_url
         # tracks: Due to historic reasons music is named arts and arts is named
@@ -104,11 +104,10 @@ class Waffel(object):
         # "title":     Titel des Event
         # "subtitle":  Untertitel des Event (optional)
         # "track":     discourse, music oder arts
-        logger.warn(start)
         return {
-            'start': start.strftime('%H:%M'),
+            'start': start.astimezone(self.timezone).strftime('%H:%M'),
             'startts': self.dt_to_epoch(start),
-            'end': end.strftime('%H:%M'),
+            'end': end.astimezone(self.timezone).strftime('%H:%M'),
             'endts': self.dt_to_epoch(end),
             'title': title.upper(),
             'subtitle': subtitle,
