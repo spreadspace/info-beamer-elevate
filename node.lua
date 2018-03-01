@@ -203,49 +203,49 @@ local function draweventabs(x, titlestartx, y, event, islocal, fontscale1, fonts
     local fgcol = assert((track and track.foreground_color) or CONFIG.foreground_color)
     local bgcol = assert((track and track.background_color) or CONFIG.background_color)
     local fgtex = getcolortex(fgcol)
-    --local bgtex = getcolortex(bgcol)
 
 
     local h = HEIGHT*fontscale1 -- font size time + title
+    local h2 = fontscale2 and HEIGHT*fontscale2 -- font size subtitle
     local yo = h / 2 -- center font on line
     local liney = y-yo -- always line y pos
+    local extraspace = yo -- extra space at bottom of line (increased a bit when subtitle is present
+    local linespacing = HEIGHT*0.01
+    local timelen = fontbold:width(event.start, h)
+    local fxt = x+timelen + 0.02*WIDTH -- leave some space after the time
+    local fx = titlestartx or max(fxt, x+0.1*WIDTH)   -- x start of title
+    
+    local titlea = event.title:fwrap(font, h, fx, FAKEWIDTH*TEXT_WRAP_FACTOR) -- somehow figure out how to wrap    
+    local suba = event.subtitle and event.subtitle:fwrap(font, h2, fx, FAKEWIDTH*TEXT_WRAP_FACTOR)
+    
+    local maxy = liney -- here right now
+               + (#titlea * (h + linespacing)) -- height of title
+               + (suba and (#suba * (h2 + linespacing))) -- height of subtitle
 
-
-    local xo = 0
-
+    if maxy > HEIGHT then
+        return
+    end 
     -- DRAW TICK
     if islocal then
         local gxo = 0.04 * WIDTH
         local gyo = HEIGHT * 0.004
-        --xo = gxo
         fgtex:draw(gradx-gxo*0.5, y-gyo, gradx+gxo*0.5, y+gyo)
     end
 
     -- DRAW TIME
-    local timelen = fontbold:width(event.start, h)
-    local fxt = x+xo+timelen
-    local _, fy = drawfont(fontbold, x+xo, liney, event.start .. "        ", h, fgcol, bgcol) -- HACK: kill gaps
-    fxt = fxt + 0.02*WIDTH -- leave some space after the time
+    local _, fy = drawfont(fontbold, x, liney, event.start .. "        ", h, fgcol, bgcol) -- HACK: kill gaps
 
     -- DRAW TITLE
-    local fx = titlestartx or max(fxt, x+0.1*WIDTH)   -- x start of title
-    local yspace = WIDTH - fx -- how much space is left on the right?
-    local sa = event.title:fwrap(font, h, fx, FAKEWIDTH*TEXT_WRAP_FACTOR) -- somehow figure out how to wrap
-    local linespacing = HEIGHT*0.01
-    for i = 1, #sa do -- draw each line after wrapping
-        _, liney = drawfont(font, fx, liney, sa[i], h, fgcol, bgcol)
+
+    for i = 1, #titlea do -- draw each line after wrapping
+        _, liney = drawfont(font, fx, liney, titlea[i], h, fgcol, bgcol)
         liney = liney + linespacing
     end
 
-    local extraspace = yo -- shift to bottom of line
-
     -- DRAW SUBTITLE
-    if islocal and event.subtitle then
-        local h2 = HEIGHT*fontscale2 -- font size subtitle
-        local sa = event.subtitle:fwrap(font, h2, fx, FAKEWIDTH*TEXT_WRAP_FACTOR)
-        local linespacing = HEIGHT*0.01
-        for i = 1, #sa do
-            _, liney = drawfont(font, fx, liney, sa[i], h2, fgcol, bgcol)
+    if islocal and suba then
+        for i = 1, #suba do
+            _, liney = drawfont(font, fx, liney, suba[i], h2, fgcol, bgcol)
             liney = liney + linespacing
         end
         extraspace = extraspace + HEIGHT*0.04 -- leave some more extra space
@@ -260,7 +260,7 @@ end
 local function draweventrel(sx, titlestartx, sy, ry, ...)
     local y = math.rescale(ry, 0, 1, sy, HEIGHT)
     local yabs, titlestartx = draweventabs(sx, titlestartx, y, ...)
-    return math.rescale(yabs, sy, HEIGHT, 0, 1), titlestartx
+    return yabs and math.rescale(yabs, sy, HEIGHT, 0, 1), titlestartx
 end
 
 local function drawlocalslide(slide, sx, sy)
@@ -307,6 +307,9 @@ local function drawlocalslide(slide, sx, sy)
         end
 
         yrel, titlestartx = draweventrel(sx, titlestartx, sy, yrel, evs[i], true, fontscale1, fontscale2, gx)
+        if not yrel then -- nil if space is full
+            break
+        end
         yrel = yrel + 0.04 -- some more space
     end
 end
