@@ -28,6 +28,7 @@ from datetime import datetime
 from datetime import timedelta
 
 import dateutil.parser
+import dateutil.tz
 import logging
 import requests
 
@@ -77,14 +78,16 @@ class Waffel(object):
             return None
 
     def parse_date(self, dt):
-        return dateutil.parser.parse(dt)
+        # the API returns timestamp in TZ Europe/Vienna
+        return dateutil.parser.parse(dt).replace(tzinfo=dateutil.tz.gettz('Europe/Vienna'))
 
     def dt_to_epoch(self, dt):
         # https://stackoverflow.com/a/11743262/1337474
-        return int((dt - datetime(1970, 1, 1)).total_seconds())
+        epoch = datetime(1970, 1, 1).replace(tzinfo=dateutil.tz.gettz('UTC'))
+        return int((dt - epoch).total_seconds())
 
     def dt_within(self, start, end):
-        now = datetime.now()
+        now = datetime.utcnow().replace(tzinfo=dateutil.tz.gettz('UTC'))
         # now = datetime(2018, 3, 2, 18, 0)  # TODO: use/change this to test
         if (
             start > now + self.max_delta
@@ -101,10 +104,7 @@ class Waffel(object):
         # "title":     Titel des Event
         # "subtitle":  Untertitel des Event (optional)
         # "track":     discourse, music oder arts
-        #
-        # TODO: check, if timezone-naive is really OK
-        #       converting to timezone-aware datetimes shouldn't make a
-        #       difference.
+        logger.warn(start)
         return {
             'start': start.strftime('%H:%M'),
             'startts': self.dt_to_epoch(start),
