@@ -220,11 +220,12 @@ local function draweventabs(x, titlestartx, y, event, islocal, fontscale1, fonts
     
     local maxy = liney -- here right now
                + (#titlea * (h + linespacing)) -- height of title
-               + (suba and (#suba * (h2 + linespacing))) -- height of subtitle
+               + ((suba and (#suba * (h2 + linespacing))) or 0) -- height of subtitle
 
-    if maxy > HEIGHT then
+    if maxy > HEIGHT+linespacing then
         return
-    end 
+    end
+
     -- DRAW TICK
     if islocal then
         local gxo = 0.04 * WIDTH
@@ -236,7 +237,6 @@ local function draweventabs(x, titlestartx, y, event, islocal, fontscale1, fonts
     local _, fy = drawfont(fontbold, x, liney, event.start .. "        ", h, fgcol, bgcol) -- HACK: kill gaps
 
     -- DRAW TITLE
-
     for i = 1, #titlea do -- draw each line after wrapping
         _, liney = drawfont(font, fx, liney, titlea[i], h, fgcol, bgcol)
         liney = liney + linespacing
