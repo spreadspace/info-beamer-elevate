@@ -276,25 +276,11 @@ local function drawlocalslide(slide, sx, sy)
 
     local N = min(MAXEVENTS, #evs)-- draw up to this many events
     local ystart = math.rescale(N, 1, MAXEVENTS, 0.35, 0.15) -- more events -> start higher (guesstimate)
-    local yend = 0.77 -- hopefully safe
-
-    local mints = evs[1].startts
-    local maxts = evs[#evs].endts
-    local span
-    if mints and maxts then
-        span = maxts - mints
-    end
 
     local yrel = ystart
     local titlestartx -- initially nil is fine
     for i = 1, N do
         local ev = evs[i]
-        if span and i > 1 and ev.startts then
-            --[[local yfit = math.rescale(ev.startts, mints, maxts, ystart, yend)
-            if yrel < yfit then
-                yrel = yfit
-            end]]
-        end
 
         local fontscale1 = 0.065
         local fontscale2 = 0.042
@@ -324,17 +310,16 @@ local function drawremoteslide(slide, sx, sy)
     local MAXEVENTS = 6
     local N = min(MAXEVENTS, #evs)
     local ystart = 0.3
-    local yend = 0.88 -- hopefully safe
     local yrel = ystart
     local titlestartx
     for i = 1, N do -- draw up to this many events
         local fontscale1 = 0.07
         local fontscale2 = 0.045
         yrel, titlestartx = draweventrel(sx, titlestartx, sy, yrel, evs[i], false, fontscale1, fontscale2)
-        yrel = yrel + 0.04 -- some more space
-        if yrel > yend+0.01 then -- safeguard -- bail out if it likely won't fit
+        if not yrel then
             break
         end
+        yrel = yrel + 0.04 -- some more space
     end
 end
 
