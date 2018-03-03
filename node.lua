@@ -307,7 +307,7 @@ local function drawremoteslide(slide, sx, sy)
     local fgcol = CONFIG.foreground_color
     local bgcol = CONFIG.background_color
 
-    local MAXEVENTS = 6
+    local MAXEVENTS = 5
     local N = min(MAXEVENTS, #evs)
     local ystart = 0.3
     local yrel = ystart
