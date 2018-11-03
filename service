@@ -1,7 +1,4 @@
 #!/usr/bin/python
-# from . import importer
-# from .hosted import CONFIG
-# from .hosted import NODE
 import importer
 from hosted import CONFIG
 from hosted import NODE
@@ -32,14 +29,7 @@ def current_time():
 
 def send_clock(now, ts):
     now = __get_now_in_config_tz(now)
-    NODE.send(
-        '/clock/set:%f,%d,%d,%d' % (
-            ts,
-            now.hour,
-            now.minute,
-            now.second
-        )
-    )
+    NODE.send('/clock/set:%f,%d,%d,%d' % (ts, now.hour,  now.minute, now.second))
 
 
 def send_animation_timer_reset():
