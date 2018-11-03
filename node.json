@@ -44,7 +44,7 @@
         "ui_width": 4,
         "name": "font_bold",
         "type": "font",
-        "default": ""
+        "default": "silkscreen.ttf"
     },
 
     {
