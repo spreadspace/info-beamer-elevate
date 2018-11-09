@@ -22,7 +22,8 @@ def __get_now_in_config_tz(now):
 
 
 def current_time():
-    now = datetime.utcnow()
+     # now = datetime.utcnow()
+    now = datetime(2018, 3, 2, 18, 0).replace(tzinfo=pytz.utc)
     timestamp = timegm(now.timetuple()) + now.microsecond / 1000000.
     return now, timestamp
 
@@ -63,7 +64,7 @@ def main():
 
         # 6*5 times 10s (aka 5 minutes of only updating the time but not
         # re-downloading the schdule)
-        for i in xrange(6*5):
+        for i in xrange(6 * 5):
             now, ts = current_time()
             print >>sys.stderr, "time is", now, ts
             send_clock(now, ts)
