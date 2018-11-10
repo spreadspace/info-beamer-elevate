@@ -40,8 +40,7 @@ def send_animation_timer_reset():
 def main():
     now, ts = current_time()
     last_animation_time_reset = now
-    waffel = Waffel(CONFIG['eis_api_url'], CONFIG['tracks'], CONFIG['locations'], CONFIG['devices'],
-                    pytz.timezone(CONFIG['timezone']))
+    waffel = Waffel(CONFIG['eis_api_url'], CONFIG['tracks'], CONFIG['locations'], pytz.timezone(CONFIG['timezone']))
     while 1:
         if now.year < 2000:
             # Guard against NTP time not beeing synchronized yet.
