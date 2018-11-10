@@ -171,6 +171,10 @@ class Waffel(object):
             ret.setdefault(location, [])
             ret[location] += events
 
+            if 'streaming' in event and 'is_livemedia' in event['streaming'] and event['streaming']['is_livemedia'] == '1':
+                ret.setdefault('emc', [])
+                ret['emc'] += events
+
         # Sort for startts
         for key in ret.keys():
             ret[key].sort(key=lambda it: it['startts'])
