@@ -41,7 +41,7 @@ def main():
     now, ts = current_time()
     last_animation_time_reset = now
     waffel = Waffel(CONFIG['eis_api_url'], CONFIG['tracks'], CONFIG['locations'], CONFIG['devices'],
-                    pytz.timezone(CONFIG['timezone'])
+                    pytz.timezone(CONFIG['timezone']))
     while 1:
         if now.year < 2000:
             # Guard against NTP time not beeing synchronized yet.
@@ -50,7 +50,7 @@ def main():
             time.sleep(1)
             continue
 
-        schedule=waffel.get_events()
+        schedule = waffel.get_events()
         with file("schedule.json.new", "wb") as f:
             f.write(json.dumps(schedule, indent=2).encode('utf8'))
         os.rename("schedule.json.new", "schedule.json")
@@ -60,14 +60,14 @@ def main():
         # 6*5 times 10s (aka 5 minutes of only updating the time but not
         # re-downloading the schdule)
         for i in xrange(6 * 5):
-            now, ts=current_time()
+            now, ts = current_time()
             print >>sys.stderr, "time is", now, ts
             send_clock(now, ts)
             time.sleep(10)
 
         # reset animation time if it's around 6 o'clock and the last reset
         # was at least 22 hours (aka 80000 seconds) ago
-        since=now - last_animation_time_reset
+        since = now - last_animation_time_reset
         if __get_now_in_config_tz(now).hour == 6\
                 and since.total_seconds() > 80000:
             print >>sys.stderr, "trigger reset of animation time"
