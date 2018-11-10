@@ -21,7 +21,7 @@ function M:push(delay, func, ...)
     if type(func) ~= "function" then
         error("TQ: param 2: expected function, got " .. type(func))
     end
-    
+
     local targ = self[self._tq_lock+1]
     if not targ then
         targ = {}
@@ -54,9 +54,9 @@ end
 -- Lua docs say removing elems while iterating is okay.
 function M:update(dt)
     if not self[1] then return end
-    
+
     self._tq_lock = self._tq_lock + 1
-    
+
     for qi, tq in pairs(self) do
         if type(qi) == "number" then
             for i,e in pairs(tq) do
@@ -69,10 +69,10 @@ function M:update(dt)
                 end
             end
         end
-    end 
-    
+    end
+
     self._tq_lock = self._tq_lock - 1
-    
+
     self:_compact()
 end
 
@@ -94,21 +94,21 @@ local function _coroTick(tq, co, timepassed, ...)
     else
         wait = co(timepassed)
     end
-    
+
     if not wait then
         -- done here
     elseif type(wait) == "number" then
         tq:push(wait, _coroTick,
             tq, co, timepassed + wait)
     else
-        error("TQ:launch: Unable to deal with return type (" .. type(wait).. "), value [" 
+        error("TQ:launch: Unable to deal with return type (" .. type(wait).. "), value ["
             .. tostring(wait) .. "]. Return/yield nil, false, or a number!")
     end
 end
 
 function M:launch(delay, f, ...)
     assert(type(delay) == "number", "param #1 must be number")
-    
+
     local co = cowrap(f)
     self:push(delay, _coroTick,
         self, co, false, ...)

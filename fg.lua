@@ -23,7 +23,7 @@ local NO_EVENT = {
 
 
 -- register self
-local fg = rawget(_G, "fg") 
+local fg = rawget(_G, "fg")
 if not fg then
     fg = {}
     rawset(_G, "fg", fg)
@@ -115,7 +115,7 @@ function fg.gettimestr()
     dm = floor((m + rem) % 60)
     rem = (m + rem) / 60
     dh = floor((h + rem) % 24)
-    
+
     return ("%02d:%02d"):format(dh, dm)
 end
 
@@ -139,7 +139,7 @@ function fg.onUpdateConfig(config)
     print("Reloading config...")
     fg.DEVICE = nil
     fg.locname = "Unknown location"
-    
+
     for _, dev in pairs(config.devices) do
         if SERIAL == tostring(dev.serial) then
             print("I'm located in [" .. tostring(dev.location) .. "]")
@@ -147,12 +147,12 @@ function fg.onUpdateConfig(config)
             break
         end
     end
-    
+
     fg._trackLUT = {}
     for i, track in pairs(config.tracks) do
         fg._trackLUT[track.id] = track
     end
-    
+
     if fg.DEVICE then
         local myloc = fg.location()
         for _, loc in pairs(config.locations) do
@@ -198,7 +198,7 @@ local function mangleEvent(ev, ts, locid)
         show = true
         prio = 100
     end
-    
+
     if show then
         local evc = shallowcopy(ev)
         evc.prio = prio
@@ -244,8 +244,8 @@ local function _scheduleToSlides(locations, tracks, tab)
     local slides = {}
     local localevents = {}
     local ts = math.floor(fg.getts())
-    
-    
+
+
     local tracklut = {}
     for _, track in pairs(tracks) do
         tracklut[track.id] = track
@@ -254,7 +254,7 @@ local function _scheduleToSlides(locations, tracks, tab)
     for _, loc in pairs(locations) do
         loclut[loc.id] = loc
     end
-    
+
 
     local nevents = 0
     local trackloc = setmetatable({}, _autoextendmeta1) -- "name" => { "locA" => events..., "locB" => events... }
@@ -281,9 +281,9 @@ local function _scheduleToSlides(locations, tracks, tab)
             print("  (Location " .. locdef.id .. " has no schedule)")
         end
     end
-    
+
     print("Found " .. nevents .. " events, generating slides...")
-    
+
     local haslocal
     local slideid = 0
     if not NO_LOCAL_EVENTS then
@@ -327,10 +327,10 @@ local function _scheduleToSlides(locations, tracks, tab)
             fg._sponsorSkipCounter = CONFIG.sponsor_slides_skip or 0
         end
     end
-    
-    
+
+
     print("Generated " .. #slides .. " slides")
-    
+
 
     return slides
 end
@@ -366,7 +366,7 @@ function fg.newSlideIter()
     if fg.last_schedule then
         fg.onUpdateSchedule(fg.last_schedule)
     end
-    
+
     local slides
     if fg.slides and #fg.slides > 0 then
         slides = fg.slides

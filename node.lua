@@ -149,7 +149,7 @@ local function drawheader(slide) -- slide possibly nil (unlikely)
     local fgcol = CONFIG.foreground_color
     local bgcol = CONFIG.background_color
     local hy = 0.05
-    
+
     local timesize = 0.08
     local timestr = fg.gettimestr()
     local timew = fontbold:width(timestr .. "     ", timesize*HEIGHT) / FAKEWIDTH
@@ -174,7 +174,7 @@ local function drawheader(slide) -- slide possibly nil (unlikely)
         if slide.sponsor then
             where = SPONSORS_TITLE
             wheresize = 0.1
-        
+
         elseif slide.here then
             where = slide.location.name
             wheresize = 0.1
@@ -214,10 +214,10 @@ local function draweventabs(x, titlestartx, y, event, islocal, fontscale1, fonts
     local timelen = fontbold:width(event.start, h)
     local fxt = x+timelen + 0.02*WIDTH -- leave some space after the time
     local fx = titlestartx or max(fxt, x+0.1*WIDTH)   -- x start of title
-    
-    local titlea = event.title:fwrap(font, h, fx, FAKEWIDTH*TEXT_WRAP_FACTOR) -- somehow figure out how to wrap    
+
+    local titlea = event.title:fwrap(font, h, fx, FAKEWIDTH*TEXT_WRAP_FACTOR) -- somehow figure out how to wrap
     local suba = event.subtitle and event.subtitle:fwrap(font, h2, fx, FAKEWIDTH*TEXT_WRAP_FACTOR)
-    
+
     local maxy = liney -- here right now
                + (#titlea * (h + linespacing)) -- height of title
                + ((suba and (#suba * (h2 + linespacing))) or 0) -- height of subtitle
@@ -365,11 +365,11 @@ end
 function node.render()
     local aspect = WIDTH / HEIGHT
     local bgstyle = fg.getbgstyle()
-    
+
     FAKEWIDTH = HEIGHT * SCREEN_ASPECT
-    
+
     gl.ortho()
-    
+
     if bgstyle == "static" then
         drawbgstatic()
     else
@@ -398,4 +398,3 @@ function node.render()
         drawslide(state.slide, hx, hy)
     end
 end
-
