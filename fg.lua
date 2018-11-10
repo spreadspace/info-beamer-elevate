@@ -12,6 +12,7 @@ local ALWAYS_PUSH_EMPTY = false
 -----------------
 
 local NO_LOCATION = { id = "unk", name = "Unknown location" }
+local EMC_LOCATION_ID = "emc"
 
 local NO_EVENT = {
     start = "404",
@@ -303,7 +304,7 @@ local function _scheduleToSlides(locations, tracks, tab)
         for _, tr in ipairs(tracks) do
             for _, loc in ipairs(locations) do
                 local evs = trackloc[tr.id][loc.id]
-                if evs and #evs > 0 then
+                if evs and #evs > 0 and not loc.id == EMC_LOCATION_ID then
                     table.sort(evs, _eventorder)
                     slideid = slideid + 1
                     print("GEN SLIDE[" .. slideid .. "]: track[" .. tr.id .. "] loc[" .. loc.id .. "] = " .. #evs .. " events")
