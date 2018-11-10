@@ -1,3 +1,12 @@
+util.init_hosted()
+
+-- this is only supported on the Raspi....
+--util.noglobals()
+
+node.set_flag("no_clear")
+
+gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
+
 local TOP_TITLE = "ELEVATE INFOSCREEN"
 local SPONSORS_TITLE = "SPONSORS"
 
@@ -10,18 +19,6 @@ local SPONSORSLIDE_START_Y = 0.3
 local SPONSORSLIDE_END_Y = 0.9
 
 local TEXT_WRAP_FACTOR = 0.94
-
-util.init_hosted()
-
-NATIVE_WIDTH = NATIVE_WIDTH or 1920
-NATIVE_HEIGHT = NATIVE_HEIGHT or 1080
-
-local FAKEWIDTH
-
-sys.set_flag("no_clear")
-
-gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
-
 
 local json = require "json"
 local tqnew = require "tq"
