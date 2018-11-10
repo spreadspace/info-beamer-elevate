@@ -23,7 +23,7 @@ def __get_now_in_config_tz(now):
 
 def current_time():
      # now = datetime.utcnow()
-    now = datetime(2018, 3, 2, 16, 5).replace(tzinfo=pytz.utc)
+    now = datetime(2018, 3, 2, 20, 5).replace(tzinfo=pytz.utc)
     timestamp = timegm(now.timetuple()) + now.microsecond / 1000000.
     return now, timestamp
 
