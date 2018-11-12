@@ -73,8 +73,8 @@ class Waffel(object):
                 return None
             return ret['result']
 
-        except requests.exceptions.RequestException as e:
-            logger.error("fetching %s failed: %s" % (objtype, e))
+        except (requests.exceptions.RequestException, ValueError) as e:
+            logger.error("fetching %s failed(%s): %s" % (objtype, type(e), e))
             return None
 
     def parse_date(self, dt):
@@ -123,6 +123,8 @@ class Waffel(object):
             url = '%s&track=%s' % (url, track)
 
         result = self.__fetch_objects("events", url)
+        if not result:
+            return None
 
         ret = {}
         missing_locations = []

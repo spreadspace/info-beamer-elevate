@@ -16,6 +16,10 @@ import time
 CONFIG.restart_on_update()
 
 
+def log(msg):
+    print >>sys.stderr, "[service]   %s" % msg
+
+
 def __get_now_in_config_tz(now):
     now = now.replace(tzinfo=pytz.utc)
     return now.astimezone(pytz.timezone(CONFIG['timezone']))
@@ -45,22 +49,25 @@ def main():
         if now.year < 2000:
             # Guard against NTP time not beeing synchronized yet.
             # On the pi the year will be 1970 in that case.
-            print >>sys.stderr, "too soon"
+            log("too soon! ... waiting a little for NTP to sync the clock.")
             time.sleep(1)
             continue
 
         schedule = waffel.get_events()
-        with file("schedule.json.new", "wb") as f:
-            f.write(json.dumps(schedule, indent=2).encode('utf8'))
-        os.rename("schedule.json.new", "schedule.json")
-
-        print >>sys.stderr, "updated schedule"
+        if schedule:
+            with file("schedule.json.new", "wb") as f:
+                f.write(json.dumps(schedule, indent=2).encode('utf8'))
+            os.rename("schedule.json.new", "schedule.json")
+            log("successfully updated schedule, new schedule contains %d locations and %d events" % (
+                len(schedule), sum([len(x) for x in schedule])))
+        else:
+            log("fetching failed ... not updating schedule")
 
         # 6*5 times 10s (aka 5 minutes of only updating the time but not
         # re-downloading the schdule)
         for i in xrange(6 * 5):
             now, ts = current_time()
-            print >>sys.stderr, "time is", now, ts
+            log("current time: %s / %s" % (now, ts))
             send_clock(now, ts)
             time.sleep(10)
 
@@ -69,7 +76,7 @@ def main():
         since = now - last_animation_time_reset
         if __get_now_in_config_tz(now).hour == 6\
                 and since.total_seconds() > 80000:
-            print >>sys.stderr, "trigger reset of animation time"
+            log("trigger reset of animation time")
             send_animation_timer_reset()
 
 
