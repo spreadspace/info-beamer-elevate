@@ -32,7 +32,7 @@
         "name": "logo",
         "type": "resource",
         "valid": ["image", "video", "child"],
-        "default": "logo.png"
+        "default": "logo-black.png"
     },{
         "title": "Font",
         "ui_width": 4,
