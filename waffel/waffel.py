@@ -88,7 +88,7 @@ class Waffel(object):
 
     def dt_within(self, start, end):
         # now = datetime.utcnow().replace(tzinfo=dateutil.tz.gettz('UTC'))
-        now = datetime(2018, 3, 2, 20, 5).replace(tzinfo=dateutil.tz.gettz('UTC'))  # TODO: use/change this to test
+        now = datetime(2019, 2, 27, 20, 5).replace(tzinfo=dateutil.tz.gettz('UTC'))  # TODO: use/change this to test
         if (
             start > now + self.max_delta
             or end < now - self.min_delta
