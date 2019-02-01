@@ -372,7 +372,7 @@ function fg.newSlideIter()
     if fg.slides and #fg.slides > 0 then
         slides = fg.slides
     else
-        slides = {_makebackupslides()}
+        slides = {_makebackupslide()}
     end
 
     local co = coroutine.wrap(_slideiter)
