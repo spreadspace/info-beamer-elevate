@@ -26,8 +26,7 @@ def __get_now_in_config_tz(now):
 
 
 def current_time():
-#    now = datetime.utcnow()
-    now = datetime(2019, 2, 27, 20, 5).replace(tzinfo=pytz.utc)
+    now = datetime.utcnow()
     timestamp = timegm(now.timetuple()) + now.microsecond / 1000000.
     return now, timestamp
 
@@ -64,7 +63,7 @@ def main():
             log("fetching failed ... not updating schedule")
 
         # 6*5 times 10s (aka 5 minutes of only updating the time but not
-        # re-downloading the schdule)
+        # re-downloading the schedule)
         for i in xrange(6 * 5):
             now, ts = current_time()
             log("current time: %s / %s" % (now, ts))
