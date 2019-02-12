@@ -18,8 +18,6 @@ local SPONSORSLIDE_END_X = 0.8
 local SPONSORSLIDE_START_Y = 0.3
 local SPONSORSLIDE_END_Y = 0.9
 
-local TEXT_WRAP_FACTOR = 0.94
-
 local json = require "json"
 local tqnew = require "tq"
 local fg = require "fg"
@@ -212,8 +210,8 @@ local function draweventabs(x, titlestartx, y, event, islocal, fontscale1, fonts
     local fxt = x+timelen + 0.02*WIDTH -- leave some space after the time
     local fx = titlestartx or max(fxt, x+0.1*WIDTH)   -- x start of title
 
-    local titlea = event.title:fwrap(font, h, fx, FAKEWIDTH*TEXT_WRAP_FACTOR) -- somehow figure out how to wrap
-    local suba = event.subtitle and event.subtitle:fwrap(font, h2, fx, FAKEWIDTH*TEXT_WRAP_FACTOR)
+    local titlea = event.title:fwrap(font, h, fx, FAKEWIDTH) -- figure out how to wrap
+    local suba = event.subtitle and event.subtitle:fwrap(font, h2, fx, FAKEWIDTH)
 
     local maxy = liney -- here right now
                + (#titlea * (h + linespacing)) -- height of title
