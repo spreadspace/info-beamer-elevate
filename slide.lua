@@ -25,8 +25,8 @@ local SPONSORSLIDE_END_X = 0.8
 local SPONSORSLIDE_START_Y = 0.3
 local SPONSORSLIDE_END_Y = 0.9
 
-local SLIDE_START_X = 0.2
-local SLIDE_START_Y = 0.3
+local SLIDE_SPACE_X = 0.845
+local SLIDE_SPACE_Y = 0.745
 
 local tins = table.insert
 
@@ -57,7 +57,7 @@ local function setupEvents(self, protos, getconfig, ...)
         local cfg = assert(getconfig(i))
         evs[i] = EVENT.new(p, cfg, ...)
     end
-    EVENT.Align(evs, SLIDE_START_X, SLIDE_START_Y) -- FIXME: proper screen size?
+    EVENT.Align(evs, SLIDE_SPACE_X, SLIDE_SPACE_Y) -- FIXME: proper screen size?
     AddDrawRel(self, function(...)
         local fgcolor = CONFIG.foreground_color
         local bgcolor = CONFIG.background_color
@@ -72,8 +72,8 @@ end
 ---- draw BEFORE translating space
 ---- draw AFTER translating space
 
-local cfgDefault = { sizemult = 1 }
-local cfgLocalTop = { sizemult = 1.3 }
+local cfgDefault = { sizemult = 1, linespacing = 0.01, ypadding = 0.03 }
+local cfgLocalTop = { sizemult = 1.3, linespacing = 0.01, ypadding = 0.03 }
 local function fLocal(i)
     if i == 1 then
         return cfgLocalTop
@@ -176,8 +176,11 @@ function SLIDE:print()
     end
 end
 
+local TESTBG = resource.create_colored_texture(0, 0.5, 1, 0.15)
 
 function SLIDE:draw(...)
+    TESTBG:draw(0,0, FAKEWIDTH * SLIDE_SPACE_X, HEIGHT * SLIDE_SPACE_Y)
+
     for _, f in ipairs(self._drawrel) do
         f(self, ...)
     end

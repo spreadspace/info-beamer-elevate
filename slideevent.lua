@@ -9,13 +9,13 @@ BOX.__index = BOX
 
 
 local function RelPosToScreen(x, y)
-    return x * FAKEWIDTH, y * HEIGHT
+    return x * FAKEWIDTH, y and y * HEIGHT
 end
 local function RelSizeToScreen(sz)
     return sz * HEIGHT
 end
 local function ScreenPosToRel(x, y)
-    return x / FAKEWIDTH, y / HEIGHT
+    return x / FAKEWIDTH, y and y / HEIGHT
 end
 local function ScreenSizeToRel(sz)
     return sz * HEIGHT
@@ -56,18 +56,21 @@ local config =
 local function layouttime(self, mul)
     local h, m = self.start:match("(%d+):(%d+)")
     local relscale = config.fontscale1 * mul
-    local font, scale = config.font, RelSizeToScreen(relscale)
+    local font, scale = config.font, RelSizeToScreen(self.fontscale)
     local wh = font:width(h, scale)
     local wc = font:width(":", scale)
     local wm = font:width(m, scale)
     local offs = -wh - (wc * 0.5)
-    self.tw, self.th = ScreenPosToRel(wh + wc + wm, scale)
+    self.tw = ScreenPosToRel(wh + wc + wm)
     self.tco = offs / FAKEWIDTH
-    self.tscale = relscale
 end
 
 local function layout(self, cfg)
-    local mul = cfg.sizemult
+    local mul = assert(cfg.sizemult)
+    self.fontscale = assert(config.fontscale1) * mul
+    self.fontscale2 = assert(config.fontscale2) * mul
+    self.linespacing = assert(cfg.linespacing)
+    self.ypadding = assert(cfg.ypadding)
     layouttime(self, mul)
 end
 
@@ -76,16 +79,50 @@ end
 -- linewrapping must happen here
 function E.Align(evs, w, h)
     local maxtw = 0
+    local maxtend = 0
     local ybegin = 0
-    for i, ev in ipairs(evs) do
-        ev.height = ev.th
-        maxtw = max(maxtw, ev.tw)
-    end
+    local totalAvailW, totalAvailH = RelPosToScreen(w, h)
+    local font = config.font
 
     for i, ev in ipairs(evs) do
+        maxtw = max(maxtw, ev.tw)
+        maxtend = max(maxtend, ev.tw + math.abs(ev.tco))
+        --ev.subtitle = "Suppress normal output; instead print the name of each input file from which no output would normally have been printed. The scanning will stop on the first match."
+    end
+
+    local absTimeW = RelPosToScreen(maxtend)
+    local textAvailW = totalAvailW - absTimeW
+
+    for i, ev in ipairs(evs) do
+        local fontsize = RelSizeToScreen(ev.fontscale)
+        local subfontsize = RelSizeToScreen(ev.fontscale2)
+
         ev.maxtw = maxtw
+        ev.textx = 0
+
+        ev.titleparts = ev.title:fwrap(font, fontsize, 0, textAvailW)
+        local subh = 0
+        if ev.subtitle and #ev.subtitle > 0 then
+            ev.subtitleparts = ev.subtitle:fwrap(font, subfontsize, 0, textAvailW)
+            subh = #ev.subtitleparts * ev.fontscale2
+        end
+        ev.heightNoPadding = (ev.fontscale + ev.linespacing) * #ev.titleparts
+            + subh
+        -- TODO: minReqH (for checking if thing fits on screen)
+        ev.height = ev.heightNoPadding  + ev.ypadding
+        ev.maxwidth = w
+        ev.maxheight = h
         ev.ybegin = ybegin
         ybegin = ybegin + ev.height
+
+        -- remove events that don't fit
+        local endY = ev.ybegin + ev.heightNoPadding - ev.linespacing
+        if endY >= ev.maxheight then
+            for k = i, #evs do
+                evs[k] = nil
+            end
+            return
+        end
     end
 end
 
@@ -97,19 +134,46 @@ function E.new(proto, cfg) -- proto is an event def from json
     return self
 end
 
+local RED = resource.create_colored_texture(1, 0, 0, 0.2)
+local GREEN = resource.create_colored_texture(0, 1, 0, 0.2)
+local BLUE = resource.create_colored_texture(0, 0, 1, 0.2)
+
 -- x is the position of the colon (eg. 20:00) in relative screen coords
 -- this ensures that all colons are aligned
-function E:drawts(fgcol, bgcol)
-    local scale = RelSizeToScreen(self.tscale)
-    local xstart, ystart = RelPosToScreen(self.tco, self.ybegin)
-    config.font:write(xstart, ystart, self.start, scale, fgcol:rgba())
-
-end
-
 function E:draw(fgcol, bgcol)
-    self:drawts(fgcol, bgcol)
-end
 
+    local scale = RelSizeToScreen(self.fontscale)
+    local subscale = RelSizeToScreen(self.fontscale2)
+    local timex, ystart = RelPosToScreen(self.tco, self.ybegin)
+    local font = config.font
+    local textx = RelPosToScreen(self.maxtw)
+    local absLineDist = RelSizeToScreen(self.linespacing) + scale
+    local absSubLineDist = subscale
+
+    -- debug: total size of drawing area
+    do
+        local xend, yend = RelPosToScreen(self.tco + self.maxwidth, self.ybegin + self.heightNoPadding)
+        RED:draw(textx, ystart, xend, yend)
+    end
+
+    -- time text
+    font:write(timex, ystart, self.start, scale, fgcol:rgba())
+
+    -- title
+    local ty = ystart
+
+    for _, s in ipairs(self.titleparts) do
+        font:write(textx, ty, s, scale, fgcol:rgba())
+        ty = ty + absLineDist
+    end
+
+    if self.subtitleparts then
+        for _, s in ipairs(self.subtitleparts) do
+            font:write(textx, ty, s, subscale, fgcol:rgba())
+            ty = ty + absSubLineDist
+        end
+    end
+end
 
 
 
