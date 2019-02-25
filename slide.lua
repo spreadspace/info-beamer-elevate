@@ -3,6 +3,7 @@ local EVENT, BOX = require "slideevent"
 util.file_watch("slideevent.lua", function(content)
     print("Reload slideevent.lua...")
     EVENT, BOX = assert(loadstring(content, "slideevent.lua"))()
+    ResetState()
 end)
 
 
@@ -42,7 +43,6 @@ end
 local function setupGradient(self)
     local beginy = 0.15 * HEIGHT
     local thickness = WIDTH*0.006
-    local empty = self.empty
 
     AddDrawAbs(self, function(slide, sx, sy)
         local gx = sx - 0.035 * FAKEWIDTH
@@ -65,6 +65,20 @@ local function setupEvents(self, protos, getconfig, ...)
             ev:draw(fgcolor, bgcolor)
         end
     end)
+
+    -- draw ticks
+    local beginy = 0.15 * HEIGHT
+
+    if self.type == "local" then
+        AddDrawAbs(self, function(slide, sx, sy)
+            local HACK_FACTOR = 0.3 -- no time to explain
+            local gx = sx - 0.035 * FAKEWIDTH
+            local fgcolor = CONFIG.foreground_color
+            for i, ev in ipairs(evs) do
+                ev:drawtick(fgcolor, sx-gx*HACK_FACTOR,sy)
+            end
+        end)
+    end
 end
 
 -- TODO: for layouting, pass remaining space
@@ -72,8 +86,8 @@ end
 ---- draw BEFORE translating space
 ---- draw AFTER translating space
 
-local cfgDefault = { sizemult = 1, linespacing = 0.01, ypadding = 0.03 }
-local cfgLocalTop = { sizemult = 1.3, linespacing = 0.01, ypadding = 0.03 }
+local cfgDefault = { sizemult = 1, linespacing = 0.01, ypadding = 0.03, timexoffs = 0.05, titlexoffs = 0.02, }
+local cfgLocalTop = { sizemult = 1.3, linespacing = 0.01, ypadding = 0.03, timexoffs = 0.05, titlexoffs = 0.02, }
 local function fLocal(i)
     if i == 1 then
         return cfgLocalTop

@@ -21,6 +21,7 @@ local function ScreenSizeToRel(sz)
     return sz * HEIGHT
 end
 
+--[[
 function BOX.new(x, y, w, h)
     local yborder = 0.01 * HEIGHT
     local xborder = 0.02 * HEIGHT -- intentionally HEIGHT, not a typo
@@ -32,6 +33,7 @@ function BOX:draw(col) -- abs. coords/size
     local bgtex = fg.getcolortex(bgcol)
     bgtex:draw(unpack(self))
 end
+]]
 
 
 -- an event-to-display is a timestamp with a title and subtitle
@@ -71,6 +73,8 @@ local function layout(self, cfg)
     self.fontscale2 = assert(config.fontscale2) * mul
     self.linespacing = assert(cfg.linespacing)
     self.ypadding = assert(cfg.ypadding)
+    self.timexoffs = assert(cfg.timexoffs)
+    self.titlexoffs = assert(cfg.titlexoffs)
     layouttime(self, mul)
 end
 
@@ -108,7 +112,7 @@ function E.Align(evs, w, h)
         end
         ev.heightNoPadding = (ev.fontscale + ev.linespacing) * #ev.titleparts
             + subh
-        -- TODO: minReqH (for checking if thing fits on screen)
+
         ev.height = ev.heightNoPadding  + ev.ypadding
         ev.maxwidth = w
         ev.maxheight = h
@@ -138,29 +142,47 @@ local RED = resource.create_colored_texture(1, 0, 0, 0.2)
 local GREEN = resource.create_colored_texture(0, 1, 0, 0.2)
 local BLUE = resource.create_colored_texture(0, 0, 1, 0.2)
 
--- x is the position of the colon (eg. 20:00) in relative screen coords
+function E:drawtick(fgcol, sx, sy)
+    local fgtex = fg.getcolortex(fgcol)
+    local gxo = 0.04 * WIDTH
+    local gyo = HEIGHT * 0.004
+    local ystart = RelSizeToScreen(self.ybegin)
+    local scale = RelSizeToScreen(self.fontscale)
+    local x, y = sx, sy + ystart + (scale*0.5)
+    fgtex:draw(x-gxo*0.5, y-gyo, x+gxo*0.5, y+gyo)
+end
+
+
 -- this ensures that all colons are aligned
 function E:draw(fgcol, bgcol)
 
     local scale = RelSizeToScreen(self.fontscale)
     local subscale = RelSizeToScreen(self.fontscale2)
-    local timex, ystart = RelPosToScreen(self.tco, self.ybegin)
+    local timex, ystart = RelPosToScreen(self.tco + self.timexoffs, self.ybegin)
     local font = config.font
-    local textx = RelPosToScreen(self.maxtw)
+    local textx = RelPosToScreen(self.maxtw + self.titlexoffs)
     local absLineDist = RelSizeToScreen(self.linespacing) + scale
     local absSubLineDist = subscale
+    local bgtex = fg.getcolortex(bgcol)
 
     -- debug: total size of drawing area
-    do
+    if DEBUG_THINGS then
         local xend, yend = RelPosToScreen(self.tco + self.maxwidth, self.ybegin + self.heightNoPadding)
         RED:draw(textx, ystart, xend, yend)
     end
 
+    -- TODO: time BG
+
     -- time text
     font:write(timex, ystart, self.start, scale, fgcol:rgba())
 
+
+
     -- title
     local ty = ystart
+
+    -- TODO: bg box for title
+    -- TODO: bg box for subtitle
 
     for _, s in ipairs(self.titleparts) do
         font:write(textx, ty, s, scale, fgcol:rgba())

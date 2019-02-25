@@ -4,9 +4,9 @@ local json = require "json"
 local floor = math.floor
 
 -- FOR TESTING --
-local NO_REMOTE_EVENTS = true
+local NO_REMOTE_EVENTS = false
 local NO_LOCAL_EVENTS = false
-local NO_SPONSOR_SLIDES = true
+local NO_SPONSOR_SLIDES = false
 local EMPTY_WHEN_NO_LOCAL = false
 local ALWAYS_PUSH_EMPTY = false
 -----------------

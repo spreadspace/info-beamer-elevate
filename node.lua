@@ -13,8 +13,27 @@ local SPONSORS_TITLE = "SPONSORS"
 local SCREEN_ASPECT = 16 / 9
 FAKEWIDTH = HEIGHT * SCREEN_ASPECT
 
-local json = require "json"
+rawset(_G, "DEBUG_THINGS", true)
+
+
+-- persistent state, survives file reloads
+local state = rawget(_G, "._state")
+if not state then
+    state = {}
+    rawset(_G, "._state", state)
+end
+
 local tqnew = require "tq"
+
+local function ResetState()
+    state.slideiter = nil
+    state.slide = nil
+    state.tq = tqnew()
+end
+rawset(_G, "ResetState", ResetState)
+
+
+local json = require "json"
 local fg = require "fg"
 local SLIDE = require "slide"
 local res = util.auto_loader()
@@ -26,21 +45,15 @@ fancy.res = res
 local min = math.min
 local max = math.max
 
--- persistent state, survives file reloads
-local state = rawget(_G, "._state")
-if not state then
-    state = {}
-    rawset(_G, "._state", state)
-end
 if not state.tq then
     state.tq = tqnew()
 end
-
 
 util.file_watch("fg.lua", function(content)
     print("Reload fg.lua...")
     local x = assert(loadstring(content, "fg.lua"))()
     fg = x
+    ResetState()
 end)
 
 util.file_watch("slide.lua", function(content)
@@ -48,6 +61,7 @@ util.file_watch("slide.lua", function(content)
     local x = assert(loadstring(content, "slide.lua"))()
     SLIDE = x
     rawset(_G, "SLIDE", x)
+    ResetState()
 end)
 
 node.event("config_update", function()
@@ -169,6 +183,7 @@ local function drawheader(slide) -- slide possibly nil (unlikely)
 end
 
 -- absolute positions
+--[=[
 local function draweventabs(x, titlestartx, y, event, islocal, fontscale1, fontscale2, gradx)
     local font = CONFIG.font
     local fontbold = CONFIG.font_bold
@@ -295,6 +310,7 @@ local function drawremoteslide(slide, sx, sy)
         yrel = yrel + 0.04 -- some more space
     end
 end
+]=]
 
 local function drawslide(slide, sx, sy)
     -- start positions after header
