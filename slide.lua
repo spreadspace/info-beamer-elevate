@@ -193,7 +193,9 @@ end
 local TESTBG = resource.create_colored_texture(0, 0.5, 1, 0.15)
 
 function SLIDE:draw(...)
-    TESTBG:draw(0,0, FAKEWIDTH * SLIDE_SPACE_X, HEIGHT * SLIDE_SPACE_Y)
+    if DEBUG_THINGS then
+        TESTBG:draw(0,0, FAKEWIDTH * SLIDE_SPACE_X, HEIGHT * SLIDE_SPACE_Y)
+    end
 
     for _, f in ipairs(self._drawrel) do
         f(self, ...)
