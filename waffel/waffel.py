@@ -56,7 +56,7 @@ class Waffel(object):
         self.year = datetime.now().year
         self.headers = {'Accept': 'application/json; charset=utf-8'}
         self.min_delta = timedelta(minutes=10)
-        self.max_delta = timedelta(hours=15)  # increase for debugging
+        self.max_delta = timedelta(hours=16)  # increase for debugging
 
     def __fetch_objects(self, objtype, url):
         try:
