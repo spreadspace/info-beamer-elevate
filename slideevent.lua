@@ -57,6 +57,8 @@ local config =
 -- returns w, h, colonOffset as relative sizes (center of colon = w + colonOffs)
 local function layouttime(self, mul)
     local h, m = self.start:match("(%d+):(%d+)")
+    if not h then h = '--' end
+    if not m then m = '--' end
     local relscale = config.fontscale1 * mul
     local font, scale = config.font, RelSizeToScreen(self.fontscale)
     local wh = font:width(h, scale)
