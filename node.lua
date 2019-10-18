@@ -11,25 +11,10 @@ local TOP_TITLE = "ELEVATE INFOSCREEN"
 local SPONSORS_TITLE = "SPONSORS"
 
 local SCREEN_ASPECT = 16 / 9
+FAKEWIDTH = HEIGHT * SCREEN_ASPECT
 
--- in relative [0..1] screen coords
-local SPONSORSLIDE_START_X = 0.2
-local SPONSORSLIDE_END_X = 0.8
-local SPONSORSLIDE_START_Y = 0.3
-local SPONSORSLIDE_END_Y = 0.9
+rawset(_G, "DEBUG_THINGS", true)
 
-local TEXT_WRAP_FACTOR = 0.94
-
-local json = require "json"
-local tqnew = require "tq"
-local fg = require "fg"
-local res = util.auto_loader()
-
-local fancy = require"fancy"
-fancy.res = res
-
-local min = math.min
-local max = math.max
 
 -- persistent state, survives file reloads
 local state = rawget(_G, "._state")
@@ -37,28 +22,46 @@ if not state then
     state = {}
     rawset(_G, "._state", state)
 end
+
+local tqnew = require "tq"
+
+local function ResetState()
+    state.slideiter = nil
+    state.slide = nil
+    state.tq = tqnew()
+end
+rawset(_G, "ResetState", ResetState)
+
+
+local json = require "json"
+local fg = require "fg"
+local SLIDE = require "slide"
+local res = util.auto_loader()
+RES = res
+
+local fancy = require"fancy"
+fancy.res = res
+
+local min = math.min
+local max = math.max
+
 if not state.tq then
     state.tq = tqnew()
 end
-
-
-local _tmptex = setmetatable({}, { __mode = "kv" })
-local function getcolortex(col)
-    assert(col, "COLOR MISSING")
-    local tex = _tmptex[col]
-    if not tex then
-        tex = resource.create_colored_texture(col.rgba())
-        _tmptex[col] = tex
-    end
-    assert(tex, "OOPS - TEX MISSING")
-    return tex
-end
-
 
 util.file_watch("fg.lua", function(content)
     print("Reload fg.lua...")
     local x = assert(loadstring(content, "fg.lua"))()
     fg = x
+    ResetState()
+end)
+
+util.file_watch("slide.lua", function(content)
+    print("Reload slide.lua...")
+    local x = assert(loadstring(content, "slide.lua"))()
+    SLIDE = x
+    rawset(_G, "SLIDE", x)
+    ResetState()
 end)
 
 node.event("config_update", function()
@@ -99,15 +102,7 @@ local function nextslide()
 
     local t = 1
     if state.slide then
-        if state.slide.empty then
-            t = 3
-        elseif state.slide.sponsor then
-            t = CONFIG.sponsor_slides
-        elseif state.slide.here then
-            t = CONFIG.current_location
-        else
-            t = CONFIG.other_locations
-        end
+        t = state.slide.time or t
     end
 
     -- schedule next slide
@@ -124,7 +119,7 @@ local function drawfontrel(font, x, y, text, sz, fgcol, bgcol)
     local yborder = 0.01 * HEIGHT
     local xborder = 0.02 * HEIGHT -- intentionally HEIGHT, not a typo
     local w = font:write(xx, yy, text, zz, fgcol:rgba())
-    local bgtex = getcolortex(bgcol)
+    local bgtex = fg.getcolortex(bgcol)
     bgtex:draw(xx-xborder, yy-yborder, xx+w+xborder, yy+zz+yborder)
     font:write(xx, yy, text, zz, fgcol:rgba())
     return xx, yy+zz, w
@@ -134,7 +129,7 @@ local function drawfont(font, x, y, text, sz, fgcol, bgcol)
     local yborder = 0.01 * HEIGHT
     local xborder = 0.02 * HEIGHT -- intentionally HEIGHT, not a typo
     local w = font:write(x, y, text, sz, fgcol:rgba())
-    local bgtex = getcolortex(bgcol)
+    local bgtex = fg.getcolortex(bgcol)
     bgtex:draw(x-xborder, y-yborder, x+w+xborder, y+sz+yborder)
     font:write(x, y, text, sz, fgcol:rgba())
     return x+w, y+sz
@@ -187,19 +182,15 @@ local function drawheader(slide) -- slide possibly nil (unlikely)
     return FAKEWIDTH*xpos, hy + wheresize + HEIGHT*0.25
 end
 
---[[local function wrapfactor(yspace, h) -- how many chars until wrap
-    return math.floor(2.15 * yspace / h) -- i don't even
-end]]
-
-
 -- absolute positions
+--[=[
 local function draweventabs(x, titlestartx, y, event, islocal, fontscale1, fontscale2, gradx)
     local font = CONFIG.font
     local fontbold = CONFIG.font_bold
     local track = fg.gettrack(event.track)
     local fgcol = assert((track and track.foreground_color) or CONFIG.foreground_color)
     local bgcol = assert((track and track.background_color) or CONFIG.background_color)
-    local fgtex = getcolortex(fgcol)
+    local fgtex = fg.getcolortex(fgcol)
 
 
     local h = HEIGHT*fontscale1 -- font size time + title
@@ -212,8 +203,8 @@ local function draweventabs(x, titlestartx, y, event, islocal, fontscale1, fonts
     local fxt = x+timelen + 0.02*WIDTH -- leave some space after the time
     local fx = titlestartx or max(fxt, x+0.1*WIDTH)   -- x start of title
 
-    local titlea = event.title:fwrap(font, h, fx, FAKEWIDTH*TEXT_WRAP_FACTOR) -- somehow figure out how to wrap
-    local suba = event.subtitle and event.subtitle:fwrap(font, h2, fx, FAKEWIDTH*TEXT_WRAP_FACTOR)
+    local titlea = event.title:fwrap(font, h, fx, FAKEWIDTH) -- figure out how to wrap
+    local suba = event.subtitle and event.subtitle:fwrap(font, h2, fx, FAKEWIDTH)
 
     local maxy = liney -- here right now
                + (#titlea * (h + linespacing)) -- height of title
@@ -267,7 +258,7 @@ local function drawlocalslide(slide, sx, sy)
     local thickness = WIDTH*0.006
     local empty = slide.empty
     local gx = sx - 0.035 * FAKEWIDTH
-    res.gradient:draw(gx - thickness/2, beginy, gx + thickness/2, HEIGHT)
+    --res.gradient:draw(gx - thickness/2, beginy, gx + thickness/2, HEIGHT)
 
     local MAXEVENTS = 3
 
@@ -305,7 +296,7 @@ local function drawremoteslide(slide, sx, sy)
     local bgcol = CONFIG.background_color
 
     local MAXEVENTS = 5
-    local N = min(MAXEVENTS, #evs)
+    local N = min(MAXEVENTS, evs and #evs or 0)
     local ystart = 0.3
     local yrel = ystart
     local titlestartx
@@ -319,23 +310,22 @@ local function drawremoteslide(slide, sx, sy)
         yrel = yrel + 0.04 -- some more space
     end
 end
+]=]
 
-local function drawsponsorslide(slide, sx, sy)
+local function drawslide(slide, sx, sy)
+    -- start positions after header
     gl.pushMatrix()
-        gl.scale(FAKEWIDTH, HEIGHT)
-        local img = slide.image.ensure_loaded()
-        img:draw(SPONSORSLIDE_START_X, SPONSORSLIDE_START_Y, SPONSORSLIDE_END_X, SPONSORSLIDE_END_Y)
+        slide:drawAbs(sx, sy)
+        gl.translate(sx, sy)
+        slide:draw()
     gl.popMatrix()
-end
 
-local function drawslide(slide, sx, sy) -- start positions after header
-    if slide.image then
-        return drawsponsorslide(slide, sx, sy)
-    elseif slide.here then
+    -- TODO KILL THIS
+    --[[if slide.here then
         return drawlocalslide(slide, sx, sy)
     else
         return drawremoteslide(slide, sx, sy)
-    end
+    end]]
 end
 
 local function fixaspect(aspect)
@@ -390,7 +380,6 @@ function node.render()
     end
 
     local hx, hy = drawheader(state.slide) -- returns where header ends
-
     if state.slide then
         drawslide(state.slide, hx, hy)
     end

@@ -7,20 +7,12 @@ local floor = math.floor
 local NO_REMOTE_EVENTS = false
 local NO_LOCAL_EVENTS = false
 local NO_SPONSOR_SLIDES = false
-local EMPTY_WHEN_NO_LOCAL = true
+local EMPTY_WHEN_NO_LOCAL = false
 local ALWAYS_PUSH_EMPTY = false
 -----------------
 
 local NO_LOCATION = { id = "unk", name = "Unknown location" }
 local EMC_LOCATION_ID = "emc"
-
-local NO_EVENT = {
-    start = "404",
-    --title = "Event not found blah rofl lolo omg wtf long title right let's see where this goes or otherwise things might break",
-    title = "Event not found",
-    --subtitle = "There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along.",
-    subtitle = "There is currently no event to display.\nMove along.",
-}
 
 
 -- register self
@@ -41,59 +33,7 @@ print("CONFIG = " .. tostring(CONFIG))
 
 
 
-local function printevent(ev)
-    print(("[%s] %s - %s: %s [%s]")
-        :format(tostring(ev.status), tostring(ev.start), tostring(ev["end"]),
-                tostring(ev.title), tostring(ev.track))
-    )
-end
 
-
-
-local SLIDE = {}
-SLIDE.__index = SLIDE
-
-function SLIDE.newLocal(id, locdef, events)
-    local empty
-    if not events or #events == 0 then
-        events = {NO_EVENT}
-        empty = true
-    end
-    local self = { id = id, here = true,
-        location = assert(locdef),
-        events = assert(events),
-        empty = empty
-    }
-    return setmetatable(self, SLIDE)
-end
-
-function SLIDE.newRemote(id, trackdef, locdef, events)
-    local self = { id = id,
-        track = assert(trackdef),
-        location = assert(locdef),
-        events = assert(events)
-    }
-    return setmetatable(self, SLIDE)
-end
-
-function SLIDE.newSponsor(id, spon)
-    local self = { id = id,
-        image = spon.image,
-        sponsor = spon,
-    }
-    return setmetatable(self, SLIDE)
-end
-
-
-
-function SLIDE:print()
-    print"  ** [SLIDE] **"
-    print(" - Location: ", self.location.name, "[" .. tostring(self.location.id) .. "]")
-    print(" - Events (" .. #self.events .. " shown):")
-    for i, ev in ipairs(self.events) do
-        printevent(ev)
-    end
-end
 
 
 -- current time, time passed since last update was received
@@ -178,6 +118,7 @@ local function shallowcopy(t)
     end
     return tt
 end
+table.shallowcopy = shallowcopy
 
 -- returns nil when event is not to be shown
 local function mangleEvent(ev, ts, locid)
@@ -214,7 +155,7 @@ end
 local function _makebackupslide()
     print("Generating backup slide")
     local location = fg.locdef or NO_LOCATION
-    return SLIDE.newLocal(1, location, {})
+    return SLIDE.newLocal(1, location, false)
 end
 
 
@@ -386,12 +327,13 @@ function string.fwrap(str, font, h, xpos, width)
     xpos = xpos or 0
     local xstart = xpos
     -- always allow wrapping after punctuation chars
+    str = str:match("(.-)%\n*$") -- kill trailing newlines
     local wrapped = str:gsub("(%s*)([^%s%-%,%.%;%:%/]*[%-%,%.%;%:%/]*)", function(sp, word)
         local ws = font:width(sp, h)
         local ww = font:width(word, h)
         xpos = xpos + ws + ww
         if xpos > width or sp:find("\n", 1, true) then -- always wrap when there's a newline
-            xpos = xstart
+            xpos = xstart + ww
             return "\n"..word
         end
     end)
@@ -416,6 +358,19 @@ function table.clear(t)
         t[k] = nil
     end
     return t
+end
+
+-- return colored single-pixel texture with caching
+local _tmptex = setmetatable({}, { __mode = "kv" })
+function fg.getcolortex(col)
+    assert(col, "COLOR MISSING")
+    local tex = _tmptex[col]
+    if not tex then
+        tex = resource.create_colored_texture(col.rgba())
+        _tmptex[col] = tex
+    end
+    assert(tex, "OOPS - TEX MISSING")
+    return tex
 end
 
 

@@ -33,7 +33,7 @@ import logging
 import requests
 
 
-logging.basicConfig()  # TODO: changed print to logging.
+logging.basicConfig()
 logger = logging.getLogger(__file__)
 
 
@@ -56,7 +56,7 @@ class Waffel(object):
         self.year = datetime.now().year
         self.headers = {'Accept': 'application/json; charset=utf-8'}
         self.min_delta = timedelta(minutes=10)
-        self.max_delta = timedelta(hours=18)
+        self.max_delta = timedelta(hours=500)  # TODO: lower to 15h
 
     def __fetch_objects(self, objtype, url):
         try:
@@ -87,8 +87,7 @@ class Waffel(object):
         return int((dt - epoch).total_seconds())
 
     def dt_within(self, start, end):
-        # now = datetime.utcnow().replace(tzinfo=dateutil.tz.gettz('UTC'))
-        now = datetime(2018, 3, 2, 20, 5).replace(tzinfo=dateutil.tz.gettz('UTC'))  # TODO: use/change this to test
+        now = datetime.utcnow().replace(tzinfo=dateutil.tz.gettz('UTC'))
         if (
             start > now + self.max_delta
             or end < now - self.min_delta
@@ -97,13 +96,13 @@ class Waffel(object):
         return True
 
     def make_event(self, start, end, title, subtitle, track_id):
-        # "start":     Startzeit in der gegebenen Zeitzone als HH:MM
-        # "startts":   Startzeit als unix epoch timestamp
-        # "end":       Endzeit in der gegebenen Zeitzone als HH:MM
-        # "endts":     Endzeit als unix epoch timestamp
-        # "title":     Titel des Event
-        # "subtitle":  Untertitel des Event (optional)
-        # "track":     discourse, music oder arts
+        # "start":     start-time in given timezone as HH:MM
+        # "startts":   start-time as unix epoch timestamp
+        # "end":       end-time in given timezone as HH:MM
+        # "endts":     end-time as unix epoch timestamp
+        # "title":     title of the event
+        # "subtitle":  subtitle of the event (optional)
+        # "track":     discourse, music or arts
         return {
             'start': start.astimezone(self.timezone).strftime('%H:%M'),
             'startts': self.dt_to_epoch(start),
@@ -177,7 +176,7 @@ class Waffel(object):
                 ret.setdefault('emc', [])
                 ret['emc'] += events
 
-        # Sort for startts
+        # sort by startts
         for key in ret.keys():
             ret[key].sort(key=lambda it: it['startts'])
 
