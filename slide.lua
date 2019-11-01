@@ -29,14 +29,12 @@ local SPONSORSLIDE_END_Y = 0.9
 local SLIDE_SPACE_X = 0.845
 local SLIDE_SPACE_Y = 0.745
 
-local tins = table.insert
-
 local function AddDrawRel(self, f)
-    tins(self._drawrel, f)
+    table.insert(self._drawrel, f)
 end
 
 local function AddDrawAbs(self, f)
-    tins(self._drawabs, f)
+    table.insert(self._drawabs, f)
 end
 
 

@@ -1,16 +1,6 @@
 -- timerqueue module
 -- for delayed function calls
 
-local tins = table.insert
-local type = type
-local error = error
-local pairs = pairs
-local ipairs = ipairs
-local unpack = unpack
-local setmetatable = setmetatable
-local cowrap = coroutine.wrap
-local costatus = coroutine.status
-
 local M = {}
 M.__index = M
 
@@ -27,7 +17,7 @@ function M:push(delay, func, ...)
         targ = {}
         self[self._tq_lock+1] = targ
     end
-    tins(targ, {f = func, t = delay, n = select("#", ...), ... } )
+    table.insert(targ, {f = func, t = delay, n = select("#", ...), ... } )
     self._jobs = self._jobs + 1
 end
 
@@ -38,7 +28,7 @@ function M:_compact()
         for qi, tq in pairs(self) do
             if type(qi) == "number" and qi > 1 then -- skip tq[1]
                 for _,e in pairs(tq) do
-                    tins(targ, e)
+                    table.insert(targ, e)
                 end
                 self[qi] = nil
             end
@@ -109,7 +99,7 @@ end
 function M:launch(delay, f, ...)
     assert(type(delay) == "number", "param #1 must be number")
 
-    local co = cowrap(f)
+    local co = coroutine.wrap(f)
     self:push(delay, _coroTick,
         self, co, false, ...)
 end

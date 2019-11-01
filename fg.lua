@@ -1,8 +1,3 @@
-local yield = coroutine.yield
-local tqnew = require "tq"
-local json = require "json"
-local floor = math.floor
-
 -- FOR TESTING --
 local NO_REMOTE_EVENTS = false
 local NO_LOCAL_EVENTS = false
@@ -51,11 +46,11 @@ function fg.gettimestr()
         return "--:--"
     end
     local rem
-    ds = floor(((s + off) % 60))
+    ds = math.floor(((s + off) % 60))
     rem = (s + off) / 60
-    dm = floor((m + rem) % 60)
+    dm = math.floor((m + rem) % 60)
     rem = (m + rem) / 60
-    dh = floor((h + rem) % 24)
+    dh = math.floor((h + rem) % 24)
 
     return ("%02d:%02d"):format(dh, dm)
 end
@@ -79,7 +74,7 @@ function fg.onUpdateConfig(config)
     config = assert(config or CONFIG, "no CONFIG passed or found")
     print("Reloading config...")
     fg.DEVICE = nil
-    fg.locname = "Unknown location"
+    fg.locname = NO_LOCATION.name
 
     for _, dev in pairs(config.devices) do
         if SERIAL == tostring(dev.serial) then
@@ -124,7 +119,7 @@ table.shallowcopy = shallowcopy
 local function mangleEvent(ev, ts, locid)
     local startts = math.floor(tonumber(ev.startts))
     local endts = math.floor(tonumber(ev.endts))
-    local status = "UNK"
+    local status = "unknown"
     local show
     local prio = 0
     if not (startts and endts) then
@@ -297,9 +292,9 @@ function fg.onUpdateTime(tm)
 end
 
 local function _slideiter(slides)
-    yield()
+    coroutine.yield()
     for _, slide in ipairs(slides) do
-        yield(slide)
+        coroutine.yield(slide)
     end
 end
 
