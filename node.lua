@@ -39,11 +39,8 @@ local SLIDE = require "slide"
 local res = util.auto_loader()
 RES = res
 
-local fancy = require"fancy"
+local fancy = require "fancy"
 fancy.res = res
-
-local min = math.min
-local max = math.max
 
 if not state.tq then
     state.tq = tqnew()
