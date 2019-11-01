@@ -1,8 +1,8 @@
-local EVENT, BOX = require "slideevent"
+local SlideEvent = require "slideevent"
 
 util.file_watch("slideevent.lua", function(content)
     print("Reload slideevent.lua...")
-    EVENT, BOX = assert(loadstring(content, "slideevent.lua"))()
+    SlideEvent = assert(loadstring(content, "slideevent.lua"))()
     ResetState()
 end)
 
@@ -53,9 +53,9 @@ local function setupEvents(self, protos, getconfig, ...)
     local evs = {}
     for i, p in ipairs(protos) do
         local cfg = assert(getconfig(i))
-        evs[i] = EVENT.new(p, cfg, ...)
+        evs[i] = SlideEvent.new(p, cfg, ...)
     end
-    EVENT.Align(evs, SLIDE_SPACE_X, SLIDE_SPACE_Y) -- FIXME: proper screen size?
+    SlideEvent.Align(evs, SLIDE_SPACE_X, SLIDE_SPACE_Y) -- FIXME: proper screen size?
     AddDrawRel(self, function(...)
         local fgcolor = CONFIG.foreground_color
         local bgcolor = CONFIG.background_color

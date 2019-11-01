@@ -1,9 +1,5 @@
-local E = {}
-E.__index = E
-
-local BOX = {}
-BOX.__index = BOX
-
+local SlideEvent = {}
+SlideEvent.__index = SlideEvent
 
 local function RelPosToScreen(x, y)
     return x * FAKEWIDTH, y and y * HEIGHT
@@ -19,6 +15,9 @@ local function ScreenSizeToRel(sz)
 end
 
 --[[
+local BOX = {}
+BOX.__index = BOX
+
 function BOX.new(x, y, w, h)
     local yborder = 0.01 * HEIGHT
     local xborder = 0.02 * HEIGHT -- intentionally HEIGHT, not a typo
@@ -80,7 +79,7 @@ end
 -- final alignment step for all events generated for a single slide
 -- align to relative screen size (w, h) (w == 0.9 means fill up to 90% of the screen width)
 -- linewrapping must happen here
-function E.Align(evs, w, h)
+function SlideEvent.Align(evs, w, h)
     local maxtw = 0
     local maxtend = 0
     local ybegin = 0
@@ -129,9 +128,9 @@ function E.Align(evs, w, h)
     end
 end
 
-function E.new(proto, cfg) -- proto is an event def from json
+function SlideEvent.new(proto, cfg) -- proto is an event def from json
     local self = table.shallowcopy(proto)
-    setmetatable(self, E)
+    setmetatable(self, SlideEvent)
 
     layout(self, cfg)
     return self
@@ -141,7 +140,7 @@ local RED = resource.create_colored_texture(1, 0, 0, 0.2)
 local GREEN = resource.create_colored_texture(0, 1, 0, 0.2)
 local BLUE = resource.create_colored_texture(0, 0, 1, 0.2)
 
-function E:drawtick(fgcol, sx, sy)
+function SlideEvent:drawtick(fgcol, sx, sy)
     local fgtex = fg.getcolortex(fgcol)
     local gxo = 0.04 * WIDTH
     local gyo = HEIGHT * 0.004
@@ -153,7 +152,7 @@ end
 
 
 -- this ensures that all colons are aligned
-function E:draw(fgcol, bgcol)
+function SlideEvent:draw(fgcol, bgcol)
 
     local scale = RelSizeToScreen(self.fontscale)
     local subscale = RelSizeToScreen(self.fontscale2)
@@ -199,4 +198,4 @@ end
 
 
 print("slideevent.lua loaded completely")
-return E, BOX
+return SlideEvent
