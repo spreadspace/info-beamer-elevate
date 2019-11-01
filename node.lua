@@ -23,12 +23,12 @@ if not state then
     rawset(_G, "._state", state)
 end
 
-local tqnew = require "tq"
+local TimerQueue = require "timerqueue"
 
 local function ResetState()
     state.slideiter = nil
     state.slide = nil
-    state.tq = tqnew()
+    state.tq = TimerQueue.new()
 end
 rawset(_G, "ResetState", ResetState)
 
@@ -44,7 +44,7 @@ local fancy = require "fancy"
 fancy.res = res
 
 if not state.tq then
-    state.tq = tqnew()
+    state.tq = TimerQueue.new()
 end
 
 util.file_watch("fg.lua", function(content)

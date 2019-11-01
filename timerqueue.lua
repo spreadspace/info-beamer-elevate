@@ -1,10 +1,10 @@
 -- timerqueue module
 -- for delayed function calls
 
-local M = {}
-M.__index = M
+local TimerQueue = {}
+TimerQueue.__index = TimerQueue
 
-function M:push(delay, func, ...)
+function TimerQueue:push(delay, func, ...)
     if type(delay) ~= "number" then
         error("TQ: param 1: expected number, got " .. type(delay))
     end
@@ -22,7 +22,7 @@ function M:push(delay, func, ...)
 end
 
 -- compact tq[1...X] into tq[1]
-function M:_compact()
+function TimerQueue:_compact()
     if self._tq_lock == 0 and #self > 1 then
         local targ = self[1] -- must exist
         for qi, tq in pairs(self) do
@@ -42,7 +42,7 @@ end
 -- and calling pushTQ() from a callback is no problem either.
 -- (taking care of not adding entries to any table that is currently iterated over)
 -- Lua docs say removing elems while iterating is okay.
-function M:update(dt)
+function TimerQueue:update(dt)
     if not self[1] then return end
 
     self._tq_lock = self._tq_lock + 1
@@ -66,46 +66,8 @@ function M:update(dt)
     self:_compact()
 end
 
-function M:isEmpty()
-    return self._jobs <= 0
+function TimerQueue.new()
+    return setmetatable({ _tq_lock = 0, _jobs = 0 }, TimerQueue)
 end
 
-function M:clear()
-    for i = 1, #self do
-        self[i] = nil
-    end
-end
-
-local function _coroTick(tq, co, timepassed, ...)
-    local wait
-    if not timepassed then -- first call?
-        wait = co(...)
-        timepassed = 0
-    else
-        wait = co(timepassed)
-    end
-
-    if not wait then
-        -- done here
-    elseif type(wait) == "number" then
-        tq:push(wait, _coroTick,
-            tq, co, timepassed + wait)
-    else
-        error("TQ:launch: Unable to deal with return type (" .. type(wait).. "), value ["
-            .. tostring(wait) .. "]. Return/yield nil, false, or a number!")
-    end
-end
-
-function M:launch(delay, f, ...)
-    assert(type(delay) == "number", "param #1 must be number")
-
-    local co = coroutine.wrap(f)
-    self:push(delay, _coroTick,
-        self, co, false, ...)
-end
-
-local function tq_create()
-    return setmetatable({ _tq_lock = 0, _jobs = 0 }, M)
-end
-
-return tq_create
+return TimerQueue
