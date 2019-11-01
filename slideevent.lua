@@ -1,6 +1,3 @@
-local min, max = math.min, math.max
-
-
 local E = {}
 E.__index = E
 
@@ -91,8 +88,8 @@ function E.Align(evs, w, h)
     local font = config.font
 
     for i, ev in ipairs(evs) do
-        maxtw = max(maxtw, ev.tw)
-        maxtend = max(maxtend, ev.tw + math.abs(ev.tco))
+        maxtw = math.max(maxtw, ev.tw)
+        maxtend = math.max(maxtend, ev.tw + math.abs(ev.tco))
         --ev.subtitle = "Suppress normal output; instead print the name of each input file from which no output would normally have been printed. The scanning will stop on the first match."
     end
 
