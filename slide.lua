@@ -9,8 +9,8 @@ end)
 
 
 
-local SLIDE = {}
-SLIDE.__index = SLIDE
+local Slide = {}
+Slide.__index = Slide
 
 local NO_EVENT = {
     start = "404",
@@ -44,7 +44,7 @@ local function setupGradient(self)
 
     AddDrawAbs(self, function(slide, sx, sy)
         local gx = sx - 0.035 * FAKEWIDTH
-        RES.gradient:draw(gx - thickness/2, beginy, gx + thickness/2, HEIGHT)
+        Slide.res.gradient:draw(gx - thickness/2, beginy, gx + thickness/2, HEIGHT)
     end)
 end
 
@@ -133,7 +133,7 @@ local function commonInit(self)
     return self
 end
 
-function SLIDE.newLocal(id, locdef, events)
+function Slide.newLocal(id, locdef, events)
     local empty
     local time = CONFIG.current_location
     if not events or #events == 0 then
@@ -148,10 +148,10 @@ function SLIDE.newLocal(id, locdef, events)
         type = "local",
         time = time,
     }
-    return setmetatable(commonInit(self), SLIDE)
+    return setmetatable(commonInit(self), Slide)
 end
 
-function SLIDE.newRemote(id, trackdef, locdef, events)
+function Slide.newRemote(id, trackdef, locdef, events)
     local self = { id = id,
         track = assert(trackdef),
         location = assert(locdef),
@@ -159,10 +159,10 @@ function SLIDE.newRemote(id, trackdef, locdef, events)
         type = "remote",
         time = CONFIG.other_locations,
     }
-    return setmetatable(commonInit(self), SLIDE)
+    return setmetatable(commonInit(self), Slide)
 end
 
-function SLIDE.newSponsor(id, spon)
+function Slide.newSponsor(id, spon)
     local self = { id = id,
         image = spon.image,
         sponsor = spon,
@@ -170,7 +170,7 @@ function SLIDE.newSponsor(id, spon)
         time = CONFIG.sponsor_slides,
         --abspos = true, -- don't translate before drawing content
     }
-    return setmetatable(commonInit(self), SLIDE)
+    return setmetatable(commonInit(self), Slide)
 end
 
 local function printevent(ev)
@@ -179,7 +179,7 @@ local function printevent(ev)
                 tostring(ev.title), tostring(ev.track))
     )
 end
-function SLIDE:print()
+function Slide:print()
     print"  ** [SLIDE] **"
     print(" - Location: ", self.location.name, "[" .. tostring(self.location.id) .. "]")
     print(" - Events (" .. #self.events .. " shown):")
@@ -190,7 +190,7 @@ end
 
 local TESTBG = resource.create_colored_texture(0, 0.5, 1, 0.15)
 
-function SLIDE:draw(...)
+function Slide:draw(...)
     if DEBUG_THINGS then
         TESTBG:draw(0,0, FAKEWIDTH * SLIDE_SPACE_X, HEIGHT * SLIDE_SPACE_Y)
     end
@@ -200,11 +200,11 @@ function SLIDE:draw(...)
     end
 end
 
-function SLIDE:drawAbs(...)
+function Slide:drawAbs(...)
     for _, f in ipairs(self._drawabs) do
         f(self, ...)
     end
 end
 
 print("slide.lua loaded completely")
-return SLIDE
+return Slide

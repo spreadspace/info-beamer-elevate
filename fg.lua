@@ -150,7 +150,7 @@ end
 local function _makebackupslide()
     print("Generating backup slide")
     local location = fg.locdef or NO_LOCATION
-    return SLIDE.newLocal(1, location, false)
+    return Slide.newLocal(1, location, false)
 end
 
 
@@ -228,7 +228,7 @@ local function _scheduleToSlides(locations, tracks, tab)
             print("I have " .. #localevents .. " events upcoming here [" .. myloc .. "]")
             table.sort(localevents, _eventorder)
             slideid = slideid + 1
-            local slide = SLIDE.newLocal(slideid, loclut[myloc], localevents)
+            local slide = Slide.newLocal(slideid, loclut[myloc], localevents)
             table.insert(slides, slide)
             haslocal = true
         end
@@ -244,7 +244,7 @@ local function _scheduleToSlides(locations, tracks, tab)
                     table.sort(evs, _eventorder)
                     slideid = slideid + 1
                     print("GEN SLIDE[" .. slideid .. "]: track[" .. tr.id .. "] loc[" .. loc.id .. "] = " .. #evs .. " events")
-                    local slide = SLIDE.newRemote(slideid, tr, loc, evs)
+                    local slide = Slide.newRemote(slideid, tr, loc, evs)
                     table.insert(slides, slide)
                 end
             end
@@ -258,7 +258,7 @@ local function _scheduleToSlides(locations, tracks, tab)
             print("-> Generate sponsor slides...")
             for _, spon in ipairs(CONFIG.sponsors) do
                 slideid = slideid + 1
-                local slide = SLIDE.newSponsor(slideid, spon)
+                local slide = Slide.newSponsor(slideid, spon)
                 table.insert(slides, slide)
             end
             fg._sponsorSkipCounter = CONFIG.sponsor_slides_skip or 0

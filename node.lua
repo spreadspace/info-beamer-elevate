@@ -35,9 +35,10 @@ rawset(_G, "ResetState", ResetState)
 
 local json = require "json"
 local fg = require "fg"
-local SLIDE = require "slide"
 local res = util.auto_loader()
-RES = res
+
+local Slide = require "slide"
+Slide.res = res
 
 local fancy = require "fancy"
 fancy.res = res
@@ -56,8 +57,9 @@ end)
 util.file_watch("slide.lua", function(content)
     print("Reload slide.lua...")
     local x = assert(loadstring(content, "slide.lua"))()
-    SLIDE = x
-    rawset(_G, "SLIDE", x)
+    Slide = x
+    Slide.res = res
+    rawset(_G, "Slide", x)
     ResetState()
 end)
 
