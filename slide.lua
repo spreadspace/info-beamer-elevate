@@ -1,5 +1,4 @@
-local SlideEvent = require "slideevent"
-
+local SlideEvent = {}
 util.file_watch("slideevent.lua", function(content)
     print("Reloading slideevent.lua...")
     SlideEvent = assert(loadstring(content, "slideevent.lua"))()

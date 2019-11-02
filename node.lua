@@ -29,7 +29,7 @@ end
 rawset(_G, "ResetState", ResetState)
 
 -- this will install itself onto _G
-local tools = require "tools"
+local tools = {}
 util.file_watch("tools.lua", function(content)
     print("Reloading tools.lua...")
     local x = assert(loadstring(content, "tools.lua"))()
@@ -38,7 +38,7 @@ util.file_watch("tools.lua", function(content)
 end)
 
 -- this will install itself onto _G
-local fg = require "fg"
+local fg = {}
 util.file_watch("fg.lua", function(content)
     print("Reloading fg.lua...")
     local x = assert(loadstring(content, "fg.lua"))()
@@ -49,8 +49,7 @@ end)
 
 local res = util.auto_loader()
 
-local Slide = require "slide"
-Slide.res = res
+local Slide = {}
 util.file_watch("slide.lua", function(content)
     print("Reloading slide.lua...")
     local x = assert(loadstring(content, "slide.lua"))()
