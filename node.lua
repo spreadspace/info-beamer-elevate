@@ -7,11 +7,12 @@ gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
 local TOP_TITLE = "ELEVATE INFOSCREEN"
 local SPONSORS_TITLE = "SPONSORS"
 
-local SCREEN_ASPECT = 16 / 9
+SCREEN_ASPECT = 16 / 9
 FAKEWIDTH = HEIGHT * SCREEN_ASPECT
+rawset(_G, "_DEBUG_", true)
 
-rawset(_G, "DEBUG_THINGS", true)
 
+local TimerQueue = require "timerqueue"
 
 -- persistent state, survives file reloads
 local state = rawget(_G, "._state")
@@ -20,8 +21,6 @@ if not state then
     rawset(_G, "._state", state)
 end
 
-local TimerQueue = require "timerqueue"
-
 local function ResetState()
     state.slideiter = nil
     state.slide = nil
@@ -29,8 +28,6 @@ local function ResetState()
 end
 rawset(_G, "ResetState", ResetState)
 
-
-local json = require "json"
 
 -- this will install itself onto _G
 local fg = require "fg"
@@ -76,14 +73,15 @@ end
 
 
 
-node.event("config_update", function()
-    fg.onUpdateConfig()
-    tools.clearColorText()
-end)
-
+local json = require "json"
 util.file_watch("schedule.json", function(content)
     local schedule = json.decode(content)
     fg.onUpdateSchedule(schedule)
+end)
+
+node.event("config_update", function()
+    fg.onUpdateConfig()
+    tools.clearColorText()
 end)
 
 util.data_mapper{
@@ -189,14 +187,11 @@ local function drawslide(slide, sx, sy)
     gl.pushMatrix()
         slide:drawAbs(sx, sy)
         gl.translate(sx, sy)
-        slide:draw()
+        slide:drawRel()
     gl.popMatrix()
 end
 
-local function fixaspect(aspect)
-    gl.scale(1 / (SCREEN_ASPECT / aspect), 1)
-end
-fancy.fixaspect = fixaspect
+fancy.fixaspect = tools.fixAspect
 
 local function drawbgstatic()
     gl.pushMatrix()
@@ -235,7 +230,7 @@ function node.render()
         fancy.render(bgstyle, aspect) -- resets the matrix
         gl.ortho()
     end
-    fixaspect(aspect)
+    tools.fixAspect(aspect)
 
     -- draw the header + slide
     drawlogo(aspect)

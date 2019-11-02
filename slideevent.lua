@@ -151,7 +151,7 @@ function SlideEvent:draw(fgcol, bgcol)
     local bgtex = tools.getColorTex(bgcol)
 
     -- debug: total size of drawing area
-    if DEBUG_THINGS then
+    if _DEBUG_ then
         local xend, yend = tools.RelPosToScreen(self.tco + self.maxwidth, self.ybegin + self.heightNoPadding)
         RED:draw(textx, ystart, xend, yend)
     end

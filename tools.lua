@@ -44,6 +44,9 @@ if not tools then
     rawset(_G, "tools", tools)
 end
 
+function tools.fixAspect(aspect)
+    gl.scale(1 / (SCREEN_ASPECT / aspect), 1)
+end
 
 function tools.RelPosToScreen(x, y)
     return x * FAKEWIDTH, y and y * HEIGHT

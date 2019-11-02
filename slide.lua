@@ -190,8 +190,8 @@ end
 
 local TESTBG = resource.create_colored_texture(0, 0.5, 1, 0.15)
 
-function Slide:draw(...)
-    if DEBUG_THINGS then
+function Slide:drawRel(...)
+    if _DEBUG_ then
         TESTBG:draw(0,0, FAKEWIDTH * SLIDE_SPACE_X, HEIGHT * SLIDE_SPACE_Y)
     end
 
