@@ -224,7 +224,7 @@ function node.render()
     end
     fixaspect(aspect)
 
-    -- draw the header
+    -- draw the header + slide
     drawlogo(aspect)
     local hx, hy = drawheader(state.slide) -- returns where header ends
     if state.slide then

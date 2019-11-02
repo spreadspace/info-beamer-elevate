@@ -24,8 +24,7 @@
 
 # ***************************************
 
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import dateutil.parser
 import dateutil.tz
@@ -42,21 +41,24 @@ class Waffel(object):
     def __init__(
             self,
             api_url,
+            year,
             tracks,
             locations,
+            min_delta=timedelta(minutes=10),
+            max_delta=timedelta(hours=15),
             timezone=dateutil.tz.gettz('Europe/Vienna'),
             timeout=30):
         self.api_url = api_url
+        self.year = year
         # tracks: Due to historic reasons music is named arts and arts is named
         #         campus in EIS.
         self.track_map = {it['eis_id']: it['id'] for it in tracks}
         self.location_map = {it['eis_id']: it['id'] for it in locations}
+        self.min_delta = min_delta
+        self.max_delta = max_delta
         self.timezone = timezone
         self.timeout = timeout
-        self.year = datetime.now().year
         self.headers = {'Accept': 'application/json; charset=utf-8'}
-        self.min_delta = timedelta(minutes=10)
-        self.max_delta = timedelta(hours=500)  # TODO: lower to 15h
 
     def __fetch_objects(self, objtype, url):
         try:
@@ -86,9 +88,7 @@ class Waffel(object):
         epoch = datetime(1970, 1, 1).replace(tzinfo=dateutil.tz.gettz('UTC'))
         return int((dt - epoch).total_seconds())
 
-    def dt_within(self, start, end):
-        # now = datetime.utcnow().replace(tzinfo=dateutil.tz.gettz('UTC'))
-        now = datetime(2019, 2, 27, 20, 5).replace(tzinfo=dateutil.tz.gettz('UTC'))  # TODO: use/change this to test
+    def dt_within(self, now, start, end):
         if (
             start > now + self.max_delta
             or end < now - self.min_delta
@@ -114,7 +114,7 @@ class Waffel(object):
             'track': self.track_map.get(track_id),
         }
 
-    def get_events(self, track=None):
+    def get_events(self, now=datetime.utcnow().replace(tzinfo=dateutil.tz.gettz('UTC')), track=None):
         url = '%s?method=Event.detail&lang=en&year=%d' % (
             self.api_url,
             self.year
@@ -131,7 +131,7 @@ class Waffel(object):
         for event in result:
             start = self.parse_date(event['begin'])
             end = self.parse_date(event['end'])
-            if not self.dt_within(start, end):
+            if not self.dt_within(now, start, end):
                 continue
             location = self.location_map.get(event['location_id'], None)
             if not location:
@@ -142,7 +142,7 @@ class Waffel(object):
                 continue
 
             events = []
-            if event['track'] in ('art',):
+            if event['track'] in ('art',) and 'apps' in event:
                 # a event in art (actually music) is a whole stage for a whole
                 # evening. each artist/slot appears in event['apps'] list.
                 # if there are any more tracks than 'art' which behave like
@@ -150,7 +150,7 @@ class Waffel(object):
                 for appearance in event['apps']:
                     app_start = self.parse_date(appearance['begin'])
                     app_end = self.parse_date(appearance['end'])
-                    if not self.dt_within(app_start, app_end):
+                    if not self.dt_within(now, app_start, app_end):
                         continue
                     events.append(self.make_event(
                         app_start,

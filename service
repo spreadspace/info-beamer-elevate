@@ -4,11 +4,11 @@ from hosted import NODE
 from waffel.waffel import Waffel
 
 from calendar import timegm
-from datetime import datetime
+from datetime import datetime, timedelta
+import pytz
 
 import json
 import os
-import pytz
 import sys
 import time
 
@@ -26,7 +26,7 @@ def __get_now_in_config_tz(now):
 
 
 def current_time():
-#    now = datetime.utcnow()
+    # now = datetime.utcnow().replace(tzinfo=pytz.utc)  # TODO: re-enable realtime
     now = datetime(2019, 2, 27, 20, 5).replace(tzinfo=pytz.utc)
     timestamp = timegm(now.timetuple()) + now.microsecond / 1000000.
     return now, timestamp
@@ -44,24 +44,26 @@ def send_animation_timer_reset():
 def main():
     now, ts = current_time()
     last_animation_time_reset = now
-    waffel = Waffel(CONFIG['eis_api_url'], CONFIG['tracks'], CONFIG['locations'], pytz.timezone(CONFIG['timezone']))
+    waffel = Waffel(CONFIG['eis_api_url'], CONFIG['year'], CONFIG['tracks'], CONFIG['locations'],
+                    max_delta=timedelta(hours=500), timezone=pytz.timezone(CONFIG['timezone']))  # TODO: set timedelta back to 15h
     while 1:
+        now, ts = current_time()
         if now.year < 2000:
             # Guard against NTP time not beeing synchronized yet.
             # On the pi the year will be 1970 in that case.
-            log("too soon! ... waiting a little for NTP to sync the clock.")
+            log("too soon! ... waiting a little for NTP to sync the clock (current time: %s / %s)" % (now, ts))
             time.sleep(1)
             continue
 
-        schedule = waffel.get_events()
+        schedule = waffel.get_events(now)
         if schedule:
             with file("schedule.json.new", "wb") as f:
                 f.write(json.dumps(schedule, indent=2).encode('utf8'))
             os.rename("schedule.json.new", "schedule.json")
             log("successfully updated schedule, new schedule contains %d locations and %d events" % (
-                len(schedule), sum([len(x) for x in schedule])))
+                len(schedule), sum([len(schedule[x]) for x in schedule])))
         else:
-            log("fetching failed ... not updating schedule")
+            log("EIS didn't return any events ... not updating schedule")
 
         # 6*5 times 10s (aka 5 minutes of only updating the time but not
         # re-downloading the schedule)
