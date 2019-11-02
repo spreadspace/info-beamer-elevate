@@ -44,6 +44,23 @@ if not tools then
     rawset(_G, "tools", tools)
 end
 
+
+function tools.RelPosToScreen(x, y)
+    return x * FAKEWIDTH, y and y * HEIGHT
+end
+
+function tools.RelSizeToScreen(sz)
+    return sz * HEIGHT
+end
+
+function tools.ScreenPosToRel(x, y)
+    return x / FAKEWIDTH, y and y / HEIGHT
+end
+
+function tools.ScreenSizeToRel(sz)
+    return sz / HEIGHT
+end
+
 -- return colored single-pixel texture with caching
 local _colorTex = setmetatable({}, { __mode = "kv" })
 function tools.getColorTex(col)

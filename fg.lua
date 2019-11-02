@@ -29,21 +29,6 @@ print("CONFIG = " .. tostring(CONFIG))
 
 
 
-function fg.RelPosToScreen(x, y)
-    return x * FAKEWIDTH, y and y * HEIGHT
-end
-
-function fg.RelSizeToScreen(sz)
-    return sz * HEIGHT
-end
-
-function fg.ScreenPosToRel(x, y)
-    return x / FAKEWIDTH, y and y / HEIGHT
-end
-
-function fg.ScreenSizeToRel(sz)
-    return sz / HEIGHT
-end
 
 -- current time, time passed since last update was received
 function fg.getts()

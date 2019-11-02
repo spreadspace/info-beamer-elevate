@@ -43,12 +43,12 @@ local function layouttime(self, mul)
     if not h then h = '--' end
     if not m then m = '--' end
     local relscale = config.fontscale1 * mul
-    local font, scale = config.font, fg.RelSizeToScreen(self.fontscale)
+    local font, scale = config.font, tools.RelSizeToScreen(self.fontscale)
     local wh = font:width(h, scale)
     local wc = font:width(":", scale)
     local wm = font:width(m, scale)
     local offs = -wh - (wc * 0.5)
-    self.tw = fg.ScreenPosToRel(wh + wc + wm)
+    self.tw = tools.ScreenPosToRel(wh + wc + wm)
     self.tco = offs / FAKEWIDTH
 end
 
@@ -70,7 +70,7 @@ function SlideEvent.Align(evs, w, h)
     local maxtw = 0
     local maxtend = 0
     local ybegin = 0
-    local totalAvailW, totalAvailH = fg.RelPosToScreen(w, h)
+    local totalAvailW, totalAvailH = tools.RelPosToScreen(w, h)
     local font = config.font
 
     for i, ev in ipairs(evs) do
@@ -79,12 +79,12 @@ function SlideEvent.Align(evs, w, h)
         --ev.subtitle = "Suppress normal output; instead print the name of each input file from which no output would normally have been printed. The scanning will stop on the first match."
     end
 
-    local absTimeW = fg.RelPosToScreen(maxtend)
+    local absTimeW = tools.RelPosToScreen(maxtend)
     local textAvailW = totalAvailW - absTimeW
 
     for i, ev in ipairs(evs) do
-        local fontsize = fg.RelSizeToScreen(ev.fontscale)
-        local subfontsize = fg.RelSizeToScreen(ev.fontscale2)
+        local fontsize = tools.RelSizeToScreen(ev.fontscale)
+        local subfontsize = tools.RelSizeToScreen(ev.fontscale2)
 
         ev.maxtw = maxtw
         ev.textx = 0
@@ -131,8 +131,8 @@ function SlideEvent:drawtick(fgcol, sx, sy)
     local fgtex = tools.getColorTex(fgcol)
     local gxo = 0.04 * WIDTH
     local gyo = HEIGHT * 0.004
-    local ystart = fg.RelSizeToScreen(self.ybegin)
-    local scale = fg.RelSizeToScreen(self.fontscale)
+    local ystart = tools.RelSizeToScreen(self.ybegin)
+    local scale = tools.RelSizeToScreen(self.fontscale)
     local x, y = sx, sy + ystart + (scale*0.5)
     fgtex:draw(x-gxo*0.5, y-gyo, x+gxo*0.5, y+gyo)
 end
@@ -141,18 +141,18 @@ end
 -- this ensures that all colons are aligned
 function SlideEvent:draw(fgcol, bgcol)
 
-    local scale = fg.RelSizeToScreen(self.fontscale)
-    local subscale = fg.RelSizeToScreen(self.fontscale2)
-    local timex, ystart = fg.RelPosToScreen(self.tco + self.timexoffs, self.ybegin)
+    local scale = tools.RelSizeToScreen(self.fontscale)
+    local subscale = tools.RelSizeToScreen(self.fontscale2)
+    local timex, ystart = tools.RelPosToScreen(self.tco + self.timexoffs, self.ybegin)
     local font = config.font
-    local textx = fg.RelPosToScreen(self.maxtw + self.titlexoffs)
-    local absLineDist = fg.RelSizeToScreen(self.linespacing) + scale
+    local textx = tools.RelPosToScreen(self.maxtw + self.titlexoffs)
+    local absLineDist = tools.RelSizeToScreen(self.linespacing) + scale
     local absSubLineDist = subscale
     local bgtex = tools.getColorTex(bgcol)
 
     -- debug: total size of drawing area
     if DEBUG_THINGS then
-        local xend, yend = fg.RelPosToScreen(self.tco + self.maxwidth, self.ybegin + self.heightNoPadding)
+        local xend, yend = tools.RelPosToScreen(self.tco + self.maxwidth, self.ybegin + self.heightNoPadding)
         RED:draw(textx, ystart, xend, yend)
     end
 
