@@ -200,37 +200,32 @@ local function drawlogo(aspect)
     gl.popMatrix()
 end
 
-
 function node.render()
-    local aspect = WIDTH / HEIGHT
-    local bgstyle = fg.getbgstyle()
-
-    FAKEWIDTH = HEIGHT * SCREEN_ASPECT
-
-    gl.ortho()
-
-    if bgstyle == "static" then
-        drawbgstatic()
-    else
-        fancy.render(bgstyle, aspect) -- resets the matrix
-        gl.ortho()
-    end
-
-    fixaspect(aspect)
-    drawlogo(aspect)
-
-
-
     local now = sys.now()
     local dt = (state.lastnow and now - state.lastnow) or 0
     state.lastnow = now
-
     state.tq:update(dt)
 
     if not state.slide then
         nextslide()
     end
 
+    local aspect = WIDTH / HEIGHT
+    local bgstyle = fg.getbgstyle()
+    FAKEWIDTH = HEIGHT * SCREEN_ASPECT
+
+    -- draw the background
+    gl.ortho()
+    if bgstyle == "static" then
+        drawbgstatic()
+    else
+        fancy.render(bgstyle, aspect) -- resets the matrix
+        gl.ortho()
+    end
+    fixaspect(aspect)
+
+    -- draw the header
+    drawlogo(aspect)
     local hx, hy = drawheader(state.slide) -- returns where header ends
     if state.slide then
         drawslide(state.slide, hx, hy)
