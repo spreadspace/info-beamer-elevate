@@ -1,7 +1,7 @@
 local SlideEvent = require "slideevent"
 
 util.file_watch("slideevent.lua", function(content)
-    print("Reload slideevent.lua...")
+    print("Reloading slideevent.lua...")
     SlideEvent = assert(loadstring(content, "slideevent.lua"))()
     ResetState()
 end)
@@ -173,25 +173,25 @@ function Slide.newSponsor(id, spon)
     return setmetatable(commonInit(self), Slide)
 end
 
-local function printevent(ev)
-    print(("[%s] %s - %s: %s [%s]")
-        :format(tostring(ev.status), tostring(ev.start), tostring(ev["end"]),
-                tostring(ev.title), tostring(ev.track))
-    )
-end
-function Slide:print()
-    print"  ** [SLIDE] **"
-    print(" - Location: ", self.location.name, "[" .. tostring(self.location.id) .. "]")
-    print(" - Events (" .. #self.events .. " shown):")
-    for i, ev in ipairs(self.events) do
-        printevent(ev)
-    end
-end
+-- local function printevent(ev)
+--     print(("[%s] %s - %s: %s [%s]")
+--         :format(tostring(ev.status), tostring(ev.start), tostring(ev["end"]),
+--                 tostring(ev.title), tostring(ev.track))
+--     )
+-- end
+-- function Slide:print()
+--     print("  ** [SLIDE] **")
+--     print(" - Location: ", self.location.name, "[" .. tostring(self.location.id) .. "]")
+--     print(" - Events (" .. #self.events .. " shown):")
+--     for i, ev in ipairs(self.events) do
+--         printevent(ev)
+--     end
+-- end
 
 local TESTBG = resource.create_colored_texture(0, 0.5, 1, 0.15)
 
 function Slide:drawRel(...)
-    if _DEBUG_ then
+    if _DEBUG_ >= 5 then
         TESTBG:draw(0,0, FAKEWIDTH * SLIDE_SPACE_X, HEIGHT * SLIDE_SPACE_Y)
     end
 

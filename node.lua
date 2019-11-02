@@ -9,7 +9,7 @@ local SPONSORS_TITLE = "SPONSORS"
 
 SCREEN_ASPECT = 16 / 9
 FAKEWIDTH = HEIGHT * SCREEN_ASPECT
-rawset(_G, "_DEBUG_", true)
+rawset(_G, "_DEBUG_", 2) -- <5 will only print to stdout, >= 5 also adds visual changes to the screen
 
 
 local TimerQueue = require "timerqueue"
@@ -28,22 +28,21 @@ local function ResetState()
 end
 rawset(_G, "ResetState", ResetState)
 
-
 -- this will install itself onto _G
-local fg = require "fg"
-util.file_watch("fg.lua", function(content)
-    print("Reload fg.lua...")
-    local x = assert(loadstring(content, "fg.lua"))()
-    fg = x
+local tools = require "tools"
+util.file_watch("tools.lua", function(content)
+    print("Reloading tools.lua...")
+    local x = assert(loadstring(content, "tools.lua"))()
+    tools = x
     ResetState()
 end)
 
 -- this will install itself onto _G
-local tools = require "tools"
-util.file_watch("tools.lua", function(content)
-    print("Reload tools.lua...")
-    local x = assert(loadstring(content, "tools.lua"))()
-    tools = x
+local fg = require "fg"
+util.file_watch("fg.lua", function(content)
+    print("Reloading fg.lua...")
+    local x = assert(loadstring(content, "fg.lua"))()
+    fg = x
     ResetState()
 end)
 
@@ -53,7 +52,7 @@ local res = util.auto_loader()
 local Slide = require "slide"
 Slide.res = res
 util.file_watch("slide.lua", function(content)
-    print("Reload slide.lua...")
+    print("Reloading slide.lua...")
     local x = assert(loadstring(content, "slide.lua"))()
     x.res = res
     Slide = x
@@ -96,7 +95,7 @@ local function nextslide()
     if it then
         state.slide = it()
         if not state.slide then
-            print("Slide iterator finished")
+            tools.debugPrint(2, "Slide iterator finished")
             it = nil
         end
     end
@@ -104,7 +103,7 @@ local function nextslide()
         local n
         it, n = fg.newSlideIter()
         state.slideiter = it
-        print("Reloaded slide iter, to show:  " .. n)
+        tools.debugPrint(2, "Reloaded slide iter, to show:  " .. n)
     end
     if not state.slide then
         state.slide = it()

@@ -64,6 +64,12 @@ function tools.ScreenSizeToRel(sz)
     return sz / HEIGHT
 end
 
+function tools.debugPrint(lvl, ...)
+   if _DEBUG_ and _DEBUG_ >= lvl then
+      print(...)
+   end
+end
+
 -- return colored single-pixel texture with caching
 local _colorTex = setmetatable({}, { __mode = "kv" })
 function tools.getColorTex(col)

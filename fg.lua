@@ -23,12 +23,6 @@ if not fg then
 end
 
 local SERIAL = assert(sys.get_env("SERIAL"), "SERIAL not set! Please set INFOBEAMER_ENV_SERIAL")
-print("SERIAL = " .. tostring(SERIAL))
-print("CONFIG = " .. tostring(CONFIG))
-
-
-
-
 
 -- current time, time passed since last update was received
 function fg.getts()
@@ -71,13 +65,13 @@ end
 
 function fg.onUpdateConfig(config)
     config = assert(config or CONFIG, "no CONFIG passed or found")
-    print("Reloading config...")
+    tools.debugPrint(2, "Updating config...")
     fg.DEVICE = nil
     fg.locname = NO_LOCATION.name
 
     for _, dev in pairs(config.devices) do
         if SERIAL == tostring(dev.serial) then
-            print("I'm located in [" .. tostring(dev.location) .. "]")
+            tools.debugPrint(2, "I'm device '" .. tostring(SERIAL) .. "' and located at: " .. tostring(dev.location))
             fg.DEVICE = dev
             break
         end
@@ -98,7 +92,7 @@ function fg.onUpdateConfig(config)
             end
         end
     else
-        print("Warning: I'm device [" .. tostring(SERIAL) .. "] but am not listed in config")
+        tools.debugPrint(1, "WARNING: I'm device '" .. tostring(SERIAL) .. "' but am not listed in config")
     end
 end
 if CONFIG then
@@ -122,7 +116,7 @@ local function mangleEvent(ev, ts, locid)
     local show
     local prio = 0
     if not (startts and endts) then
-        print("WARNING: Event " .. tostring(ev.title) .. " has no valid timestamp")
+        tools.debugPrint(1, "WARNING: Event " .. tostring(ev.title) .. " has no valid timestamp")
         status = "invalid"
     elseif ts > endts then
         status = "finished"
@@ -147,7 +141,7 @@ local function mangleEvent(ev, ts, locid)
 end
 
 local function _makebackupslide()
-    print("Generating backup slide")
+    tools.debugPrint(3, "Generating backup slide")
     local location = fg.locdef or NO_LOCATION
     return Slide.newLocal(1, location, false)
 end
@@ -191,6 +185,7 @@ local function _scheduleToSlides(locations, tracks, tab)
         loclut[loc.id] = loc
     end
 
+    tools.debugPrint(2, "Updating schedule...")
 
     local nevents = 0
     local trackloc = setmetatable({}, _autoextendmeta1) -- "name" => { "locA" => events..., "locB" => events... }
@@ -205,26 +200,26 @@ local function _scheduleToSlides(locations, tracks, tab)
                         table.insert(localevents, evx)
                     end
                     if tracklut[evx.track] then
-                        print("track[" .. evx.track .. "] loc[" .. locdef.id .. "] = " .. tostring(evx.title))
+                        tools.debugPrint(4, "track[" .. evx.track .. "] loc[" .. locdef.id .. "] = " .. tostring(evx.title))
                         table.insert(trackloc[evx.track][locdef.id], evx)
                     else
-                        print("WARNING: Unknown track [" .. tostring(evx.track) .. "] for event " .. tostring(evx.title))
+                        tools.debugPrint(1, "WARNING: Unknown track [" .. tostring(evx.track) .. "] for event " .. tostring(evx.title))
                     end
                     nevents = nevents + 1
                 end
             end
         else
-            print("  (Location " .. locdef.id .. " has no schedule)")
+            tools.debugPrint(3, "  (Location " .. locdef.id .. " has no schedule)")
         end
     end
 
-    print("Found " .. nevents .. " events, generating slides...")
+    tools.debugPrint(2, "Found " .. nevents .. " events, generating slides...")
 
     local haslocal
     local slideid = 0
     if not NO_LOCAL_EVENTS then
         if myloc then
-            print("I have " .. #localevents .. " events upcoming here [" .. myloc .. "]")
+            tools.debugPrint(3, "I have " .. #localevents .. " events upcoming here [" .. myloc .. "]")
             table.sort(localevents, _eventorder)
             slideid = slideid + 1
             local slide = Slide.newLocal(slideid, loclut[myloc], localevents)
@@ -242,7 +237,7 @@ local function _scheduleToSlides(locations, tracks, tab)
                 if evs and #evs > 0 and not (loc.id == EMC_LOCATION_ID) then
                     table.sort(evs, _eventorder)
                     slideid = slideid + 1
-                    print("GEN SLIDE[" .. slideid .. "]: track[" .. tr.id .. "] loc[" .. loc.id .. "] = " .. #evs .. " events")
+                    tools.debugPrint(3, "GEN SLIDE[" .. slideid .. "]: track[" .. tr.id .. "] loc[" .. loc.id .. "] = " .. #evs .. " events")
                     local slide = Slide.newRemote(slideid, tr, loc, evs)
                     table.insert(slides, slide)
                 end
@@ -250,11 +245,11 @@ local function _scheduleToSlides(locations, tracks, tab)
         end
     end
     if not NO_SPONSOR_SLIDES and CONFIG.sponsors then
-        print("Check sponsors... skip counter = " .. tostring(fg._sponsorSkipCounter))
+        tools.debugPrint(3, "Check sponsors... skip counter = " .. tostring(fg._sponsorSkipCounter))
         if fg._sponsorSkipCounter and fg._sponsorSkipCounter > 0 then
             fg._sponsorSkipCounter = fg._sponsorSkipCounter - 1
         else
-            print("-> Generate sponsor slides...")
+            tools.debugPrint(3, "-> Generate sponsor slides...")
             for _, spon in ipairs(CONFIG.sponsors) do
                 slideid = slideid + 1
                 local slide = Slide.newSponsor(slideid, spon)
@@ -265,7 +260,7 @@ local function _scheduleToSlides(locations, tracks, tab)
     end
 
 
-    print("Generated " .. #slides .. " slides")
+    tools.debugPrint(2, "Generated " .. #slides .. " slides")
 
 
     return slides
@@ -287,7 +282,7 @@ function fg.onUpdateTime(tm)
     fg.timem = tonumber(m)
     fg.times = tonumber(s)
     fg.base_time = tonumber(u) - now
-    print("UPDATED TIME", fg.base_time, "; NOW: ", fg.getts(), fg.gettimestr())
+    tools.debugPrint(4, "UPDATED TIME", fg.base_time, "; NOW: ", fg.getts(), fg.gettimestr())
 end
 
 local function _slideiter(slides)
