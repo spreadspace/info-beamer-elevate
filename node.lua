@@ -1,8 +1,5 @@
 util.init_hosted()
 
--- this is only supported on the Raspi....
---util.noglobals()
-
 node.set_flag("no_clear")
 
 gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)

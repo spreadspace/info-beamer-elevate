@@ -42,7 +42,7 @@ function fg.ScreenPosToRel(x, y)
 end
 
 function fg.ScreenSizeToRel(sz)
-    return sz * HEIGHT
+    return sz / HEIGHT
 end
 
 -- current time, time passed since last update was received
