@@ -13,7 +13,7 @@ function BOX.new(x, y, w, h)
 end
 
 function BOX:draw(col) -- abs. coords/size
-    local bgtex = fg.getcolortex(bgcol)
+    local bgtex = tools.getColorTex(bgcol)
     bgtex:draw(unpack(self))
 end
 ]]
@@ -128,7 +128,7 @@ local GREEN = resource.create_colored_texture(0, 1, 0, 0.2)
 local BLUE = resource.create_colored_texture(0, 0, 1, 0.2)
 
 function SlideEvent:drawtick(fgcol, sx, sy)
-    local fgtex = fg.getcolortex(fgcol)
+    local fgtex = tools.getColorTex(fgcol)
     local gxo = 0.04 * WIDTH
     local gyo = HEIGHT * 0.004
     local ystart = fg.RelSizeToScreen(self.ybegin)
@@ -148,7 +148,7 @@ function SlideEvent:draw(fgcol, bgcol)
     local textx = fg.RelPosToScreen(self.maxtw + self.titlexoffs)
     local absLineDist = fg.RelSizeToScreen(self.linespacing) + scale
     local absSubLineDist = subscale
-    local bgtex = fg.getcolortex(bgcol)
+    local bgtex = tools.getColorTex(bgcol)
 
     -- debug: total size of drawing area
     if DEBUG_THINGS then

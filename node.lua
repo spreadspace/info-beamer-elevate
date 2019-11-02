@@ -31,19 +31,9 @@ rawset(_G, "ResetState", ResetState)
 
 
 local json = require "json"
+
+-- this will install itself onto _G
 local fg = require "fg"
-local res = util.auto_loader()
-
-local Slide = require "slide"
-Slide.res = res
-
-local fancy = require "fancy"
-fancy.res = res
-
-if not state.tq then
-    state.tq = TimerQueue.new()
-end
-
 util.file_watch("fg.lua", function(content)
     print("Reload fg.lua...")
     local x = assert(loadstring(content, "fg.lua"))()
@@ -51,18 +41,44 @@ util.file_watch("fg.lua", function(content)
     ResetState()
 end)
 
+-- this will install itself onto _G
+local tools = require "tools"
+util.file_watch("tools.lua", function(content)
+    print("Reload tools.lua...")
+    local x = assert(loadstring(content, "tools.lua"))()
+    tools = x
+    ResetState()
+end)
+
+
+local res = util.auto_loader()
+
+local Slide = require "slide"
+Slide.res = res
 util.file_watch("slide.lua", function(content)
     print("Reload slide.lua...")
     local x = assert(loadstring(content, "slide.lua"))()
+    x.res = res
     Slide = x
-    Slide.res = res
     rawset(_G, "Slide", x)
     ResetState()
 end)
 
+
+local fancy = require "fancy"
+fancy.res = res
+-- TODO: auto-reload??
+
+
+if not state.tq then
+    state.tq = TimerQueue.new()
+end
+
+
+
 node.event("config_update", function()
     fg.onUpdateConfig()
-    table.clear(_tmptex)
+    tools.clearColorText()
 end)
 
 util.file_watch("schedule.json", function(content)
@@ -115,7 +131,7 @@ local function drawfont(font, x, y, text, sz, fgcol, bgcol)
     local yborder = 0.01 * HEIGHT
     local xborder = 0.02 * HEIGHT -- intentionally HEIGHT, not a typo
     local w = font:write(xx, yy, text, zz, fgcol:rgba())
-    local bgtex = fg.getcolortex(bgcol)
+    local bgtex = tools.getColorTex(bgcol)
     bgtex:draw(xx-xborder, yy-yborder, xx+w+xborder, yy+zz+yborder)
     font:write(xx, yy, text, zz, fgcol:rgba())
     return xx, yy+zz, w
