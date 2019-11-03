@@ -19,19 +19,15 @@ if not state then
 end
 
 -- this will install itself onto _G
-local tools = {}
 util.file_watch("tools.lua", function(content)
     print("Reloading tools.lua...")
-    local x = assert(loadstring(content, "tools.lua"))()
-    tools = x
+    assert(loadstring(content, "tools.lua"))()
 end)
 
 -- this will install itself onto _G
-local fg = {}
 util.file_watch("fg.lua", function(content)
     print("Reloading fg.lua...")
-    local x = assert(loadstring(content, "fg.lua"))()
-    fg = x
+    assert(loadstring(content, "fg.lua"))()
 end)
 
 local SlideDeck = {}
