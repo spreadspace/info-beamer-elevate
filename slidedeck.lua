@@ -4,7 +4,6 @@ util.file_watch("slide.lua", function(content)
     x = assert(loadstring(content, "slide.lua"))()
     Slide = x
     rawset(_G, "Slide", x) -- remove this once slide generator is moved in here...
-    --ResetState()
 end)
 
 

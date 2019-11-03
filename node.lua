@@ -13,21 +13,10 @@ rawset(_G, "_DEBUG_", 2) -- <5 will only print to stdout, >= 5 also adds visual 
 local state = rawget(_G, "._state")
 if not state then
     state = {}
+    state.slidedeck = nil
+    state.lastnow = nil
     rawset(_G, "._state", state)
 end
-
-local SlideDeck = {}
-util.file_watch("slidedeck.lua", function(content)
-    print("Reloading slidedeck.lua...")
-    local x = assert(loadstring(content, "slidedeck.lua"))()
-    SlideDeck = x
-    --ResetState()
-end)
-
-local function ResetState()
-   state.slidedeck = SlideDeck.new()
-end
-rawset(_G, "ResetState", ResetState)
 
 -- this will install itself onto _G
 local tools = {}
@@ -35,7 +24,6 @@ util.file_watch("tools.lua", function(content)
     print("Reloading tools.lua...")
     local x = assert(loadstring(content, "tools.lua"))()
     tools = x
-    ResetState()
 end)
 
 -- this will install itself onto _G
@@ -44,13 +32,21 @@ util.file_watch("fg.lua", function(content)
     print("Reloading fg.lua...")
     local x = assert(loadstring(content, "fg.lua"))()
     fg = x
-    ResetState()
 end)
+
+local SlideDeck = {}
+util.file_watch("slidedeck.lua", function(content)
+    print("Reloading slidedeck.lua...")
+    local x = assert(loadstring(content, "slidedeck.lua"))()
+    SlideDeck = x
+end)
+if not state.slidedeck then
+    state.slidedeck = SlideDeck.new()
+end
 
 
 local res = util.auto_loader()
-RES = res -- TODO: find a better way than this global...
-
+RES = res -- TODO: find a better way than this global... only needed by slide.lua to load the gradient
 
 local fancy = require "fancy"
 fancy.res = res
@@ -80,10 +76,6 @@ local function drawbgstatic()
         gl.scale(WIDTH, HEIGHT)
         CONFIG.background.ensure_loaded():draw(0, 0, 1, 1)
     gl.popMatrix()
-end
-
-if not state.slidedeck then
-    state.slidedeck = SlideDeck.new()
 end
 
 function node.render()
