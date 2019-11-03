@@ -19,7 +19,6 @@ if not fg then
     fg.locname = NO_LOCATION.name
     fg.locdef = NO_LOCATION
     fg.lasttimeupdate = 0
-    fg.slides = {}
 end
 
 local SERIAL = assert(sys.get_env("SERIAL"), "SERIAL not set! Please set INFOBEAMER_ENV_SERIAL")
@@ -140,7 +139,7 @@ local function mangleEvent(ev, ts, locid)
     end
 end
 
-local function _makebackupslide()
+function fg.makebackupslide()
     tools.debugPrint(3, "Generating backup slide")
     local location = fg.locdef or NO_LOCATION
     return Slide.newLocal(1, location, false)
@@ -169,7 +168,7 @@ local function _eventorder(a, b)
     return a.prio > b.prio or (a.prio == b.prio and a.startts < b.startts)
 end
 
-local function _scheduleToSlides(locations, tracks, tab)
+function fg.scheduleToSlides(locations, tracks, tab)
     local myloc = fg.location()
     local slides = {}
     local localevents = {}
@@ -228,7 +227,7 @@ local function _scheduleToSlides(locations, tracks, tab)
         end
     end
     if (not haslocal and EMPTY_WHEN_NO_LOCAL) or ALWAYS_PUSH_EMPTY then
-        table.insert(slides, _makebackupslide())
+        table.insert(slides, fg.makebackupslide())
     end
     if not NO_REMOTE_EVENTS then
         for _, tr in ipairs(tracks) do
@@ -266,14 +265,6 @@ local function _scheduleToSlides(locations, tracks, tab)
     return slides
 end
 
-function fg.onUpdateSchedule(sch)
-    fg.last_schedule = sch
-    local locations = assert(CONFIG.locations, "CONFIG.locations missing")
-    local tracks = assert(CONFIG.tracks, "CONFIG.tracks missing")
-    local slides = _scheduleToSlides(locations, tracks, sch)
-    fg.slides = slides
-end
-
 function fg.onUpdateTime(tm)
     local now = sys.now()
     fg.lasttimeupdate = now
@@ -285,30 +276,6 @@ function fg.onUpdateTime(tm)
     tools.debugPrint(4, "UPDATED TIME", fg.base_time, "; NOW: ", fg.getts(), fg.gettimestr())
 end
 
-local function _slideiter(slides)
-    coroutine.yield()
-    for _, slide in ipairs(slides) do
-        coroutine.yield(slide)
-    end
-end
-
-function fg.newSlideIter()
-    -- HACK: always regenerate slides. slides shown may be different each time.
-    if fg.last_schedule then
-        fg.onUpdateSchedule(fg.last_schedule)
-    end
-
-    local slides
-    if fg.slides and #fg.slides > 0 then
-        slides = fg.slides
-    else
-        slides = {_makebackupslide()}
-    end
-
-    local co = coroutine.wrap(_slideiter)
-    co(slides)
-    return co, #slides
-end
 
 
 print("fg.lua loaded completely")
