@@ -35,19 +35,18 @@ util.file_watch("slidedeck.lua", function(content)
     print("Reloading slidedeck.lua...")
     local x = assert(loadstring(content, "slidedeck.lua"))()
     SlideDeck = x
+    local last_schedule = state.slidedeck and state.slidedeck.last_schedule
+    state.slidedeck  = SlideDeck.new(last_schedule)
 end)
-if not state.slidedeck then
-    state.slidedeck = SlideDeck.new()
-end
 
 
 local res = util.auto_loader()
 RES = res -- TODO: find a better way than this global... only needed by slide.lua to load the gradient
 
+-- TODO: auto-reload??
 local fancy = require "fancy"
 fancy.res = res
 fancy.fixaspect = tools.fixAspect
--- TODO: auto-reload??
 
 local json = require "json"
 util.file_watch("schedule.json", function(content)

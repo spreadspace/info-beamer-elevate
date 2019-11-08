@@ -93,21 +93,22 @@ local function drawslide(slide, sx, sy)
 end
 
 
-
 local SlideDeck = {}
 SlideDeck.__index = SlideDeck
 
 
-function SlideDeck.new()
+function SlideDeck.new(schedule)
     local self = {
-        last_schedule = nil,
+        last_schedule = schedule,
         slides = nil,
 
         current = nil,
         iter = nil,
         tq = TimerQueue.new()
     }
-    return setmetatable(self, SlideDeck)
+    setmetatable(self, SlideDeck)
+    if schedule then  self:updateSchedule(schedule) end
+    return self
 end
 
 
@@ -126,6 +127,7 @@ local function _slideiter(slides)
         coroutine.yield(slide)
     end
 end
+
 
 
 function SlideDeck:_newSlideIter()
