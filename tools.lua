@@ -29,6 +29,14 @@ function math.rescale(t, lower, upper, rangeMin, rangeMax)
     return (((t - lower) / (upper - lower)) * (rangeMax - rangeMin)) + rangeMin
 end
 
+function table.shallowcopy(t)
+    local tt = {}
+    for k, v in pairs(t) do
+        tt[k] = v
+    end
+    return tt
+end
+
 function table.clear(t)
     for k in pairs(t) do
         t[k] = nil

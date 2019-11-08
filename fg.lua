@@ -98,14 +98,6 @@ if CONFIG then
     fg.onUpdateConfig(config)
 end
 
-local function shallowcopy(t)
-    local tt = {}
-    for k, v in pairs(t) do
-        tt[k] = v
-    end
-    return tt
-end
-table.shallowcopy = shallowcopy
 
 -- returns nil when event is not to be shown
 local function mangleEvent(ev, ts, locid)
@@ -129,7 +121,7 @@ local function mangleEvent(ev, ts, locid)
     end
 
     if show then
-        local evc = shallowcopy(ev)
+        local evc = table.shallowcopy(ev)
         evc.prio = prio
         evc.status = status
         evc.locid = locid
