@@ -138,6 +138,11 @@ function SlideEvent:drawtick(fgcol, sx, sy)
 end
 
 
+local function drawEventBG(self, textx, ystart)
+    local xend, yend = tools.RelPosToScreen(self.tco + self.maxwidth, self.ybegin + self.heightNoPadding)
+    RED:draw(textx, ystart, xend, yend)
+end
+
 -- this ensures that all colons are aligned
 function SlideEvent:draw(fgcol, bgcol)
 
@@ -151,10 +156,7 @@ function SlideEvent:draw(fgcol, bgcol)
     local bgtex = tools.getColorTex(bgcol)
 
     -- debug: total size of drawing area
-    if _DEBUG_ >= 5 then
-        local xend, yend = tools.RelPosToScreen(self.tco + self.maxwidth, self.ybegin + self.heightNoPadding)
-        RED:draw(textx, ystart, xend, yend)
-    end
+    tools.debugDraw(5, drawEventBG, self, textx, ystart)
 
     -- TODO: time BG
 

@@ -188,11 +188,12 @@ end
 -- end
 
 local TESTBG = resource.create_colored_texture(0, 0.5, 1, 0.15)
+local function drawTestBG()
+    TESTBG:draw(0,0, FAKEWIDTH * SLIDE_SPACE_X, HEIGHT * SLIDE_SPACE_Y)
+end
 
 function Slide:drawRel(...)
-    if _DEBUG_ >= 5 then
-        TESTBG:draw(0,0, FAKEWIDTH * SLIDE_SPACE_X, HEIGHT * SLIDE_SPACE_Y)
-    end
+    tools.debugDraw(5, drawTestBG)
 
     for _, f in ipairs(self._drawrel) do
         f(self, ...)
