@@ -53,7 +53,7 @@ local function drawQueru(now)
     --     rotate1(QROTSPEED *now, 0, 0, 1)
     --     gl.scale(s, s, s)
     --     gl.translate(QSIZE/-2, QSIZE/-2) -- center rotation point
-    --     fancy.res.shadow:draw(0,0,QSIZE,QSIZE)
+    --     Resources.shadow:draw(0,0,QSIZE,QSIZE)
     -- POP()
 
     -- querulant
@@ -61,23 +61,22 @@ local function drawQueru(now)
         gl.translate(x,y)
         rotate1(QROTSPEED * now, 0, 0, 1)
         gl.translate(QSIZE/-2, QSIZE/-2) -- center rotation point
-        fancy.res.fancy_bgcolor:draw(0,0,QSIZE,QSIZE)
+        Resources.fancy_bgcolor:draw(0,0,QSIZE,QSIZE)
     POP()
 end
 
 
 ----------------------------------------------
--- modes: "minimal", fancy".
+-- modes: "minimal", "full".
 
 function fancy.render(mode, aspect)
     aspect = aspect or (WIDTH / HEIGHT)
     local now = sys.now()
-    local res = fancy.res
 
     if mode == "minimal" then
-        res.fancy_minimalbg:draw(0, 0, WIDTH, HEIGHT)
-    elseif mode == "fancy" then
-        res.fancy_bgcolor:draw(0, 0, WIDTH, HEIGHT)
+        Resources.fancy_minimalbg:draw(0, 0, WIDTH, HEIGHT)
+    elseif mode == "full" then
+        Resources.fancy_bgcolor:draw(0, 0, WIDTH, HEIGHT)
 
         local fov = math.atan2(HEIGHT, WIDTH*2) * 360 / math.pi
         gl.perspective(fov, WIDTH/2, HEIGHT/2, -WIDTH,
@@ -91,15 +90,13 @@ function fancy.render(mode, aspect)
         -- TODO: draw fancy animation
     end
 
-    if mode == "fancy" or mode == "minimal" then
-        gl.ortho()
-        gl.translate(WIDTH/2, HEIGHT/2)
-        gl.scale(WIDTH * (1/aspect), HEIGHT)
-        if fancy.fixaspect then
-            fancy.fixaspect(aspect)
-        end
-        drawQueru(now)
+    gl.ortho()
+    gl.translate(WIDTH/2, HEIGHT/2)
+    gl.scale(WIDTH * (1/aspect), HEIGHT)
+    if fancy.fixaspect then
+        fancy.fixaspect(aspect)
     end
+    drawQueru(now)
 end
 
 ----------------------------------------------

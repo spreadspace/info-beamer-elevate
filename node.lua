@@ -13,6 +13,7 @@ rawset(_G, "_DEBUG_", 2) -- <5 will only print to stdout, >= 5 also adds visual 
 local state = rawget(_G, "._state")
 if not state then
     state = {}
+    state.background = nil
     state.slidedeck = nil
     state.current_schedule = nil
     state.lastnow = nil
@@ -57,17 +58,11 @@ util.data_mapper{
     end,
 }
 
-
-local fancy = require "fancy"
-fancy.res = Resources
-fancy.fixaspect = tools.fixAspect
-
-local function drawbgstatic()
-    gl.pushMatrix()
-        gl.scale(WIDTH, HEIGHT)
-        CONFIG.background.ensure_loaded():draw(0, 0, 1, 1)
-    gl.popMatrix()
-end
+util.file_watch("background.lua", function(content)
+    print("Reloading background.lua...")
+    local x = assert(loadstring(content, "background.lua"))()
+    state.background = x.new()
+end)
 
 
 local SlideDeck = {}
@@ -94,18 +89,6 @@ function node.render()
 
     local aspect = WIDTH / HEIGHT
     FAKEWIDTH = HEIGHT * SCREEN_ASPECT
-
-    -- draw the background
-    local bgstyle = fg.getbgstyle()
-    gl.ortho()
-    if bgstyle == "static" then
-        drawbgstatic()
-    else
-        fancy.render(bgstyle, aspect) -- resets the matrix
-        gl.ortho()
-    end
-    tools.fixAspect(aspect)
-
-    -- draw the slides
+    state.background:draw(aspect)
     state.slidedeck:draw(aspect)
 end

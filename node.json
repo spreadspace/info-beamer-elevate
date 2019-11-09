@@ -8,43 +8,50 @@
         "type": "section"
     }, {
         "title": "Background color",
-        "ui_width": 4,
+        "ui_width": 3,
         "name": "background_color",
         "type": "color",
         "default": [0,0,0,1]
     }, {
         "title": "Foreground color",
-        "ui_width": 4,
+        "ui_width": 3,
         "name": "foreground_color",
         "type": "color",
         "default": [1,1,1,1]
     }, {
-        "title": "Background",
-        "ui_width": 4,
-        "name": "background",
-        "hint": "This is only used if device background style is set to static",
-        "type": "resource",
-        "valid": ["image", "video", "child"],
-        "default": "empty.png"
-    }, {
-        "title": "Logo",
-        "ui_width": 4,
-        "name": "logo",
-        "type": "resource",
-        "valid": ["image", "video", "child"],
-        "default": "logo-black.png"
-    },{
         "title": "Font",
-        "ui_width": 4,
+        "ui_width": 3,
         "name": "font",
         "type": "font",
         "default": "silkscreen.ttf"
     }, {
         "title": "Font Bold",
-        "ui_width": 4,
+        "ui_width": 3,
         "name": "font_bold",
         "type": "font",
         "default": "silkscreen.ttf"
+    }, {
+        "title": "Logo",
+        "ui_width": 4,
+        "name": "logo",
+        "type": "resource",
+        "valid": ["image"],
+        "default": "logo-black.png"
+    }, {
+        "title": "Static Background",
+        "ui_width": 4,
+        "name": "background_static",
+        "hint": "This is only used if device background style is set to static",
+        "type": "resource",
+        "valid": ["image"],
+        "default": "empty.png"
+    }, {
+        "title": "Video Background",
+        "ui_width": 4,
+        "name": "background_video",
+        "hint": "This is only used if device background style is set to video",
+        "type": "resource",
+        "valid": ["video"]
     },
 
     {
@@ -71,14 +78,14 @@
         "ui_width": 3,
         "name": "current_location",
         "type": "duration",
-        "hint": "How long to display current talk information in seconds",
+        "hint": "How long to display current location information in seconds",
         "default": 15
     }, {
         "title": "Other Locations",
         "ui_width": 3,
         "name": "other_locations",
         "type": "duration",
-        "hint": "How long to display other location information in seconds",
+        "hint": "How long to display other locations information in seconds",
         "default": 10
     }, {
         "title": "Sponsors",
@@ -101,7 +108,7 @@
         "type": "section"
     }, {
         "title": "EIS API Url",
-        "ui_width": 8,
+        "ui_width": 9,
         "name": "eis_api_url",
         "type": "string",
         "default": "https://eis.elevate.at/API/rest/index"
@@ -211,8 +218,9 @@
             "type": "select",
             "options": [
                ["static", "static background (no animation)"],
-               ["minimal", "minimal animation (needs minimal GPU power)"],
-               ["fancy", "fancy animation (needs lots of GPU power)"]
+               ["video", "use video as background"],
+               ["fancy-minimal", "minimal animation (needs minimal GPU power)"],
+               ["fancy-full", "animation with maximum fanciness (needs lots of GPU power)"]
             ]
         }]
     }]
