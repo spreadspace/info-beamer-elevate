@@ -72,6 +72,24 @@ function tools.ScreenSizeToRel(sz)
     return sz / HEIGHT
 end
 
+-- takes x, y, sz in resolution-independent coords
+-- (0, 0) = upper left corner, (1, 1) = lower right corner
+-- sz == 0.5 -> half as high as the screen
+function tools.drawFont(font, x, y, text, sz, fgcol, bgcol)
+    local xx, yy  = tools.RelPosToScreen(x, y)
+    local zz = tools.RelSizeToScreen(sz)
+    local yborder = tools.RelSizeToScreen(0.01)
+    local xborder = tools.RelSizeToScreen(0.01)
+    local w = font:write(xx, yy, text, zz, fgcol:rgba())
+    local bgtex = tools.getColorTex(bgcol)
+    bgtex:draw(xx-xborder, yy-yborder, xx+w+xborder, yy+zz+yborder)
+    font:write(xx, yy, text, zz, fgcol:rgba())
+    return xx, yy+zz, w
+end
+
+
+
+
 function tools.debugPrint(lvl, ...)
    if _DEBUG_ and _DEBUG_ >= lvl then
       print(...)
@@ -86,6 +104,7 @@ end
 
 -- return colored single-pixel texture with caching
 local _colorTex = setmetatable({}, { __mode = "kv" })
+
 function tools.getColorTex(col)
     assert(col, "COLOR MISSING")
     local tex = _colorTex[col]

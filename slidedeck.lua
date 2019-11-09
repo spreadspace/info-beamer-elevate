@@ -20,21 +20,6 @@ local function drawlogo(aspect)
     gl.popMatrix()
 end
 
--- takes x, y, sz in resolution-independent coords
--- (0, 0) = upper left corner, (1, 1) = lower right corner
--- sz == 0.5 -> half as high as the screen
-local function drawfont(font, x, y, text, sz, fgcol, bgcol)
-    local xx = x * FAKEWIDTH
-    local yy = y * HEIGHT
-    local zz = sz * HEIGHT
-    local yborder = 0.01 * HEIGHT
-    local xborder = 0.02 * HEIGHT -- intentionally HEIGHT, not a typo
-    local w = font:write(xx, yy, text, zz, fgcol:rgba())
-    local bgtex = tools.getColorTex(bgcol)
-    bgtex:draw(xx-xborder, yy-yborder, xx+w+xborder, yy+zz+yborder)
-    font:write(xx, yy, text, zz, fgcol:rgba())
-    return xx, yy+zz, w
-end
 
 local function drawheader(slide) -- slide possibly nil (unlikely)
     local font = CONFIG.font
@@ -49,11 +34,11 @@ local function drawheader(slide) -- slide possibly nil (unlikely)
     local timex = 1.0 - timew
 
     -- time
-    drawfont(fontbold, timex, hy, timestr, timesize, fgcol, bgcol)
+    tools.drawFont(fontbold, timex, hy, timestr, timesize, fgcol, bgcol)
 
     local xpos = 0.15
     local titlesize = 0.06
-    drawfont(font, xpos, hy, TOP_TITLE, titlesize, fgcol, bgcol)
+    tools.drawFont(font, xpos, hy, TOP_TITLE, titlesize, fgcol, bgcol)
 
     hy = hy + titlesize + 0.02
 
@@ -77,7 +62,7 @@ local function drawheader(slide) -- slide possibly nil (unlikely)
             fgcol2 = slide.track.foreground_color
             bgcol2 = slide.track.background_color
         end
-        drawfont(font, xpos, hy, where, wheresize, fgcol2, bgcol2)
+        tools.drawFont(font, xpos, hy, where, wheresize, fgcol2, bgcol2)
     end
 
     return FAKEWIDTH*xpos, hy + wheresize + HEIGHT*0.25

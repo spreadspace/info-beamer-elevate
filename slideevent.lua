@@ -146,44 +146,33 @@ end
 -- this ensures that all colons are aligned
 function SlideEvent:draw(fgcol, bgcol)
 
-    local scale = tools.RelSizeToScreen(self.fontscale)
-    local subscale = tools.RelSizeToScreen(self.fontscale2)
-    local timex, ystart = tools.RelPosToScreen(self.tco + self.timexoffs, self.ybegin)
+    local timex = self.tco + self.timexoffs
+    local ty = self.ybegin
     local font = config.font
-    local textx = tools.RelPosToScreen(self.maxtw + self.titlexoffs)
-    local absLineDist = tools.RelSizeToScreen(self.linespacing) + scale
-    local absSubLineDist = subscale
-    local bgtex = tools.getColorTex(bgcol)
+    local textx = self.maxtw + self.titlexoffs
+    local relLineDist = self.linespacing + self.fontscale
+    local relSubLineDist = self.fontscale2
 
     -- debug: total size of drawing area
     tools.debugDraw(5, drawEventBG, self, textx, ystart)
 
-    -- TODO: time BG
-
     -- time text
-    font:write(timex, ystart, self.start, scale, fgcol:rgba())
-
-
+    tools.drawFont(font, timex, ty, self.start, self.fontscale, fgcol, bgcol)
 
     -- title
-    local ty = ystart
-
-    -- TODO: bg box for title
-    -- TODO: bg box for subtitle
-
     for _, s in ipairs(self.titleparts) do
-        font:write(textx, ty, s, scale, fgcol:rgba())
-        ty = ty + absLineDist
+        tools.drawFont(font, textx, ty, s, self.fontscale, fgcol, bgcol)
+        ty = ty + relLineDist
     end
 
+    -- subtitle
     if self.subtitleparts then
         for _, s in ipairs(self.subtitleparts) do
-            font:write(textx, ty, s, subscale, fgcol:rgba())
-            ty = ty + absSubLineDist
+            tools.drawFont(font, textx, ty, s, self.fontscale2, fgcol, bgcol)
+            ty = ty + relSubLineDist
         end
     end
 end
-
 
 
 print("slideevent.lua loaded completely")
