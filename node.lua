@@ -47,21 +47,19 @@ util.file_watch("schedule.json", function(content)
     -- regenerateSlideDeck()
 end)
 
-node.event("config_update", function()
-    fg.onUpdateConfig()
-    tools.clearColorTex()
-end)
-
 util.data_mapper{
     ["clock/set"] = function(tm)
         fg.onUpdateTime(tm)
     end,
 }
 
+
+local Background = {}
 util.file_watch("background.lua", function(content)
     print("Reloading background.lua...")
     local x = assert(loadstring(content, "background.lua"))()
-    state.background = x.new()
+    Background = x
+    state.background = Background.new(fg.getbgstyle())
 end)
 
 
@@ -73,6 +71,13 @@ util.file_watch("slidedeck.lua", function(content)
     if _DEBUG_ or not state.slidedeck then
        state.slidedeck = SlideDeck.new(state.current_schedule)
     end
+end)
+
+
+node.event("config_update", function()
+    fg.onUpdateConfig()
+    tools.clearColorTex()
+    state.background = Background.new(fg.getbgstyle())
 end)
 
 
