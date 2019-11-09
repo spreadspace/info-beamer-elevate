@@ -57,10 +57,6 @@ function fg.getbgstyle()
     return (fg.DEVICE and fg.DEVICE.bg_style)
 end
 
-function fg.gettrack(id)
-    return fg._trackLUT[id]
-end
-
 
 function fg.onUpdateConfig(config)
     config = assert(config or CONFIG, "no CONFIG passed or found")
@@ -74,11 +70,6 @@ function fg.onUpdateConfig(config)
             fg.DEVICE = dev
             break
         end
-    end
-
-    fg._trackLUT = {}
-    for i, track in pairs(config.tracks) do
-        fg._trackLUT[track.id] = track
     end
 
     if fg.DEVICE then
