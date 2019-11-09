@@ -3,6 +3,7 @@ util.file_watch("slideevent.lua", function(content)
     print("Reloading slideevent.lua...")
     x = assert(loadstring(content, "slideevent.lua"))()
     SlideEvent = x
+    if _DEBUG_ then regenerateSlideDeck() end
 end)
 
 

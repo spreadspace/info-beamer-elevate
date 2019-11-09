@@ -42,6 +42,7 @@ end)
 local json = require "json"
 util.file_watch("schedule.json", function(content)
     state.current_schedule = json.decode(content)
+    -- regenerateSlideDeck()
 end)
 
 node.event("config_update", function()
@@ -73,7 +74,7 @@ util.file_watch("slidedeck.lua", function(content)
     print("Reloading slidedeck.lua...")
     local x = assert(loadstring(content, "slidedeck.lua"))()
     SlideDeck = x
-    if not state.slidedeck then
+    if _DEBUG_ or not state.slidedeck then
        state.slidedeck = SlideDeck.new(state.current_schedule)
     end
 end)
