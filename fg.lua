@@ -160,7 +160,10 @@ local function _eventorder(a, b)
     return a.prio > b.prio or (a.prio == b.prio and a.startts < b.startts)
 end
 
-function fg.scheduleToSlides(locations, tracks, tab)
+function fg.scheduleToSlides(schedule)
+    local locations = assert(CONFIG.locations, "CONFIG.locations missing")
+    local tracks = assert(CONFIG.tracks, "CONFIG.tracks missing")
+
     local myloc = fg.location()
     local slides = {}
     local localevents = {}
@@ -176,12 +179,10 @@ function fg.scheduleToSlides(locations, tracks, tab)
         loclut[loc.id] = loc
     end
 
-    tools.debugPrint(2, "Updating schedule...")
-
     local nevents = 0
     local trackloc = setmetatable({}, _autoextendmeta1) -- "name" => { "locA" => events..., "locB" => events... }
     for _, locdef in ipairs(locations) do
-        local events = tab[locdef.id]
+        local events = schedule[locdef.id]
         local ishere = myloc == locdef.id
         if events then
             for _, ev in pairs(events) do
@@ -207,7 +208,7 @@ function fg.scheduleToSlides(locations, tracks, tab)
         end
     end
 
-    tools.debugPrint(2, "Found " .. nevents .. " events, generating slides...")
+    tools.debugPrint(2, "found " .. nevents .. " events, generating slides...")
 
     local haslocal
     local slideid = 0
@@ -252,11 +253,6 @@ function fg.scheduleToSlides(locations, tracks, tab)
             fg._sponsorSkipCounter = CONFIG.sponsor_slides_skip or 0
         end
     end
-
-
-    tools.debugPrint(2, "Generated " .. #slides .. " slides")
-
-
     return slides
 end
 

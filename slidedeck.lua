@@ -77,79 +77,53 @@ local function drawslide(slide, sx, sy)
 end
 
 
+
 local SlideDeck = {}
 SlideDeck.__index = SlideDeck
 
 
-function SlideDeck.new(schedule)
-    local self = {
-        last_schedule = schedule,
-        slides = nil,
+local function _slideiter(slides)
+    coroutine.yield()
+    n = #slides
+    for i, slide in ipairs(slides) do
+       tools.debugPrint(3, "showing slide " .. i .. " of " .. n)
+       coroutine.yield(slide)
+    end
+end
 
-        current = nil,
+
+function SlideDeck.new(schedule)
+    tools.debugPrint(2, "generating new slide deck")
+    local self = {
+        tq = TimerQueue.new(),
         iter = nil,
-        tq = TimerQueue.new()
+        current = nil
     }
     setmetatable(self, SlideDeck)
-    if schedule then  self:updateSchedule(schedule) end
+
+    local slides = nil
+    if schedule then
+       slides = fg.scheduleToSlides(schedule)
+    end
+    if not slides or #slides == 0 then
+       slides = {fg.makebackupslide()}
+    end
+    tools.debugPrint(2, "generated slide deck cotaining " .. #slides .. " slides")
+
+    local it = coroutine.wrap(_slideiter)
+    it(slides)
+    self.iter = it
+    self:next()
     return self
 end
 
-
-function SlideDeck:updateSchedule(schedule)
-    self.last_schedule = schedule
-    local locations = assert(CONFIG.locations, "CONFIG.locations missing")
-    local tracks = assert(CONFIG.tracks, "CONFIG.tracks missing")
-    local slides = fg.scheduleToSlides(locations, tracks, schedule)
-    self.slides = slides
-end
-
-
-local function _slideiter(slides)
-    coroutine.yield()
-    for _, slide in ipairs(slides) do
-        coroutine.yield(slide)
-    end
-end
-
-
-
-function SlideDeck:_newSlideIter()
-    -- HACK: always regenerate slides. slides shown may be different each time.
-    if self.last_schedule then
-        self:updateSchedule(self.last_schedule)
-    end
-
-    local slides
-    if self.slides and #self.slides > 0 then
-        slides = self.slides
-    else
-        slides = {fg.makebackupslide()}
-    end
-
-    local co = coroutine.wrap(_slideiter)
-    co(slides)
-    return co, #slides
-end
-
-
-function SlideDeck:_next()
+function SlideDeck:next()
     local it = self.iter
-    if it then
-        self.current = it()
-        if not self.current then
-            tools.debugPrint(2, "Slide iterator finished")
-            it = nil
-        end
-    end
-    if not it then
-        local n
-        it, n = self:_newSlideIter()
-        self.iter = it
-        tools.debugPrint(2, "Reloaded slide iter (" .. n .. " slides)")
-    end
+    self.current = it()
     if not self.current then
-        self.current = it()
+       tools.debugPrint(2, "slide deck reached the end")
+       regenerateSlideDeck()
+       return
     end
 
     local t = 1
@@ -158,18 +132,14 @@ function SlideDeck:_next()
     end
 
     -- schedule next slide
-    self.tq:push(t, function()
-         self:_next()
-      end)
+    self.tq:push(t, function() self:next() end)
 end
 
-function SlideDeck:draw(aspect, dt)
+function SlideDeck:update(dt)
     self.tq:update(dt)
+end
 
-    if not self.current then
-        self:_next()
-    end
-
+function SlideDeck:draw(aspect)
     drawlogo(aspect)
     local hx, hy = drawheader(self.current) -- returns where header ends
     if self.current then

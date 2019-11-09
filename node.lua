@@ -14,11 +14,17 @@ local state = rawget(_G, "._state")
 if not state then
     state = {}
     state.slidedeck = nil
+    state.current_schedule = nil
     state.lastnow = nil
     rawset(_G, "._state", state)
 end
-Resources = util.auto_loader()
 
+local function regenerateSlideDeck()
+    state.slidedeck = nil
+end
+rawset(_G, "regenerateSlideDeck", regenerateSlideDeck)
+
+Resources = util.auto_loader()
 
 -- this will install itself onto _G
 util.file_watch("tools.lua", function(content)
@@ -32,23 +38,10 @@ util.file_watch("fg.lua", function(content)
     assert(loadstring(content, "fg.lua"))()
 end)
 
-local SlideDeck = {}
-util.file_watch("slidedeck.lua", function(content)
-    print("Reloading slidedeck.lua...")
-    local x = assert(loadstring(content, "slidedeck.lua"))()
-    SlideDeck = x
-    local last_schedule = state.slidedeck and state.slidedeck.last_schedule
-    state.slidedeck  = SlideDeck.new(last_schedule)
-end)
-
-local fancy = require "fancy"
-fancy.res = Resources
-fancy.fixaspect = tools.fixAspect
 
 local json = require "json"
 util.file_watch("schedule.json", function(content)
-    local schedule = json.decode(content)
-    state.slidedeck:updateSchedule(schedule)
+    state.current_schedule = json.decode(content)
 end)
 
 node.event("config_update", function()
@@ -63,6 +56,10 @@ util.data_mapper{
 }
 
 
+local fancy = require "fancy"
+fancy.res = Resources
+fancy.fixaspect = tools.fixAspect
+
 local function drawbgstatic()
     gl.pushMatrix()
         gl.scale(WIDTH, HEIGHT)
@@ -70,10 +67,28 @@ local function drawbgstatic()
     gl.popMatrix()
 end
 
+
+local SlideDeck = {}
+util.file_watch("slidedeck.lua", function(content)
+    print("Reloading slidedeck.lua...")
+    local x = assert(loadstring(content, "slidedeck.lua"))()
+    SlideDeck = x
+    if not state.slidedeck then
+       state.slidedeck = SlideDeck.new(state.current_schedule)
+    end
+end)
+
+
 function node.render()
     local now = sys.now()
     local dt = (state.lastnow and now - state.lastnow) or 0
     state.lastnow = now
+
+    -- slidedeck.update() might set state.slidedeck to nil if we reached the end of the slides
+    if state.slidedeck then state.slidedeck:update(dt) end
+    if not state.slidedeck then
+       state.slidedeck  = SlideDeck.new(state.current_schedule)
+    end
 
     local aspect = WIDTH / HEIGHT
     FAKEWIDTH = HEIGHT * SCREEN_ASPECT
@@ -90,5 +105,5 @@ function node.render()
     tools.fixAspect(aspect)
 
     -- draw the slides
-    state.slidedeck:draw(aspect, dt)
+    state.slidedeck:draw(aspect)
 end
