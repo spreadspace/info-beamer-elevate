@@ -56,10 +56,12 @@ local function setupEvents(self, protos, getconfig, ...)
     end
     SlideEvent.Align(evs, SLIDE_SPACE_X, SLIDE_SPACE_Y) -- FIXME: proper screen size?
     AddDrawRel(self, function(...)
-        local fgcolor = CONFIG.foreground_color
-        local bgcolor = CONFIG.background_color
+        local fgcol = (self.track and self.track.foreground_color) or CONFIG.foreground_color
+        local bgcol = (self.track and self.track.background_color) or CONFIG.background_color
         for i, ev in ipairs(evs) do
-            ev:draw(fgcolor, bgcolor)
+            fgcol = (ev.track and ev.track.foreground_color) or fgcol
+            bgcol = (ev.track and ev.track.background_color) or bgcol
+            ev:draw(fgcol, bgcol)
         end
     end)
 

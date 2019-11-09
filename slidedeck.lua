@@ -24,8 +24,8 @@ end
 local function drawheader(slide) -- slide possibly nil (unlikely)
     local font = CONFIG.font
     local fontbold = CONFIG.font_bold
-    local fgcol = CONFIG.foreground_color
-    local bgcol = CONFIG.background_color
+    local fgcol = (slide.track and slide.track.foreground_color) or CONFIG.foreground_color
+    local bgcol = (slide.track and slide.track.background_color) or CONFIG.background_color
     local hy = 0.05
 
     local timesize = 0.08
@@ -47,20 +47,19 @@ local function drawheader(slide) -- slide possibly nil (unlikely)
     if slide then
         local font = CONFIG.font_bold
         local where
-        local fgcol2 = fgcol
-        local bgcol2 = bgcol
+        local fgcol2 = CONFIG.foreground_color
+        local bgcol2 = CONFIG.background_color
         if slide.sponsor then
             where = SPONSORS_TITLE
             wheresize = 0.1
-
         elseif slide.here then
             where = slide.location.name
             wheresize = 0.1
         else
-            wheresize = 0.08
             where = ("%s / %s"):format(slide.location.name, slide.track.name)
-            fgcol2 = slide.track.foreground_color
-            bgcol2 = slide.track.background_color
+            wheresize = 0.08
+            fgcol2 = fgcol
+            bgcol2 = bgcol
         end
         tools.drawFont(font, xpos, hy, where, wheresize, fgcol2, bgcol2)
     end

@@ -190,11 +190,14 @@ function fg.scheduleToSlides(locations, tracks, tab)
                     if ishere then
                         table.insert(localevents, evx)
                     end
-                    if tracklut[evx.track] then
-                        tools.debugPrint(4, "track[" .. evx.track .. "] loc[" .. locdef.id .. "] = " .. tostring(evx.title))
-                        table.insert(trackloc[evx.track][locdef.id], evx)
+                    local trackname = evx.track
+                    if tracklut[trackname] then
+                        evx.track = tracklut[trackname]
+                        tools.debugPrint(4, "track[" .. trackname .. "] loc[" .. locdef.id .. "] = " .. tostring(evx.title))
+                        table.insert(trackloc[trackname][locdef.id], evx)
                     else
-                        tools.debugPrint(1, "WARNING: Unknown track [" .. tostring(evx.track) .. "] for event " .. tostring(evx.title))
+                        evx.track = nil
+                        tools.debugPrint(1, "WARNING: Unknown track [" .. tostring(trackname) .. "] for event " .. tostring(evx.title))
                     end
                     nevents = nevents + 1
                 end
