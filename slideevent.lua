@@ -1,40 +1,12 @@
 local SlideEvent = {}
 SlideEvent.__index = SlideEvent
 
---[[
-local BOX = {}
-BOX.__index = BOX
-
-function BOX.new(x, y, w, h)
-    local yborder = 0.01 * HEIGHT
-    local xborder = 0.02 * HEIGHT -- intentionally HEIGHT, not a typo
-    local self = { x-xborder, y-yborder, x+w+xborder, y+sz+yborder }
-    return setmetatable(self, BOX)
-end
-
-function BOX:draw(col) -- abs. coords/size
-    local bgtex = tools.getColorTex(bgcol)
-    bgtex:draw(unpack(self))
-end
-]]
-
-
--- an event-to-display is a timestamp with a title and subtitle
--- track is not handled here.
-
---[[
-things added:
-  .width -- total width in relative coords
-  .height -- total height in relative coords
-]]
 local config =
 {
     fontscale1 = 0.07, -- fontscale is in total screen height
     fontscale2 = 0.045,
     font = CONFIG.font,
 }
-
-
 
 
 -- returns w, h, colonOffset as relative sizes (center of colon = w + colonOffs)
@@ -138,11 +110,6 @@ function SlideEvent:drawtick(fgcol, sx, sy)
 end
 
 
-local function drawEventBG(self, textx, ystart)
-    local xend, yend = tools.RelPosToScreen(self.tco + self.maxwidth, self.ybegin + self.heightNoPadding)
-    RED:draw(textx, ystart, xend, yend)
-end
-
 -- this ensures that all colons are aligned
 function SlideEvent:draw(fgcol, bgcol)
 
@@ -152,9 +119,6 @@ function SlideEvent:draw(fgcol, bgcol)
     local textx = self.maxtw + self.titlexoffs
     local relLineDist = self.linespacing + self.fontscale
     local relSubLineDist = self.fontscale2
-
-    -- debug: total size of drawing area
-    tools.debugDraw(5, drawEventBG, self, textx, ystart)
 
     -- time text
     tools.drawFont(font, timex, ty, self.start, self.fontscale, fgcol, bgcol)
