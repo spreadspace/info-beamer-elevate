@@ -52,6 +52,29 @@ if not tools then
     rawset(_G, "tools", tools)
 end
 
+
+local _autoextendmeta0 =
+{
+    __index = function(t, k)
+        local ret = {}
+        t[k] = ret
+        return ret
+    end
+}
+local _autoextendmeta1 =
+{
+    __index = function(t, k)
+        local ret = setmetatable({}, _autoextendmeta0)
+        t[k] = ret
+        return ret
+    end
+}
+
+function tools.newAutoExtendTable()
+    return setmetatable({}, _autoextendmeta1)
+end
+
+
 function tools.fixAspect(aspect)
     gl.scale(1 / (SCREEN_ASPECT / aspect), 1)
 end
@@ -88,8 +111,6 @@ function tools.drawFont(font, x, y, text, sz, fgcol, bgcol)
 end
 
 
-
-
 function tools.debugPrint(lvl, ...)
    if _DEBUG_ and _DEBUG_ >= lvl then
       print(...)
@@ -101,6 +122,7 @@ function tools.debugDraw(lvl, draw, ...)
       draw(...)
    end
 end
+
 
 -- return colored single-pixel texture with caching
 local _colorTex = setmetatable({}, { __mode = "kv" })

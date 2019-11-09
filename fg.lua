@@ -137,25 +137,6 @@ function fg.makebackupslide()
     return Slide.newLocal(1, location, false)
 end
 
-
-local _autoextendmeta0 =
-{
-    __index = function(t, k)
-        local ret = {}
-        t[k] = ret
-        return ret
-    end
-}
-
-local _autoextendmeta1 =
-{
-    __index = function(t, k)
-        local ret = setmetatable({}, _autoextendmeta0)
-        t[k] = ret
-        return ret
-    end
-}
-
 local function _eventorder(a, b)
     return a.prio > b.prio or (a.prio == b.prio and a.startts < b.startts)
 end
@@ -180,7 +161,7 @@ function fg.scheduleToSlides(schedule)
     end
 
     local nevents = 0
-    local trackloc = setmetatable({}, _autoextendmeta1) -- "name" => { "locA" => events..., "locB" => events... }
+    local trackloc = tools.newAutoExtendTable() -- "name" => { "locA" => events..., "locB" => events... }
     for _, locdef in ipairs(locations) do
         local events = schedule[locdef.id]
         local ishere = myloc == locdef.id

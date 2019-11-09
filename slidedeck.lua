@@ -22,7 +22,7 @@ local function drawlogo(aspect)
 end
 
 
-local function drawheader(slide) -- slide possibly nil (unlikely)
+local function drawheader(slide)
     local font = CONFIG.font
     local fontbold = CONFIG.font_bold
     local fgcol = (slide.track and slide.track.foreground_color) or CONFIG.foreground_color
@@ -143,9 +143,7 @@ end
 function SlideDeck:draw(aspect)
     drawlogo(aspect)
     local hx, hy = drawheader(self.current) -- returns where header ends
-    if self.current then
-        drawslide(self.current, hx, hy)
-    end
+    drawslide(self.current, hx, hy)
 end
 
 print("slidedeck.lua loaded completely")

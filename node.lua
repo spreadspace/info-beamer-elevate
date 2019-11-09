@@ -42,6 +42,7 @@ end)
 local json = require "json"
 util.file_watch("schedule.json", function(content)
     state.current_schedule = json.decode(content)
+    -- uncomment this for changes to take effect immediatly
     -- regenerateSlideDeck()
 end)
 
