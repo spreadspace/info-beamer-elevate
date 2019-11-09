@@ -179,7 +179,9 @@ function SlideDeck:_next()
       end)
 end
 
-function SlideDeck:draw(aspect)
+function SlideDeck:draw(aspect, dt)
+    self.tq:update(dt)
+
     if not self.current then
         self:_next()
     end

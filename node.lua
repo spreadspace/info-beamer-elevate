@@ -17,6 +17,8 @@ if not state then
     state.lastnow = nil
     rawset(_G, "._state", state)
 end
+Resources = util.auto_loader()
+
 
 -- this will install itself onto _G
 util.file_watch("tools.lua", function(content)
@@ -39,13 +41,8 @@ util.file_watch("slidedeck.lua", function(content)
     state.slidedeck  = SlideDeck.new(last_schedule)
 end)
 
-
-local res = util.auto_loader()
-RES = res -- TODO: find a better way than this global... only needed by slide.lua to load the gradient
-
--- TODO: auto-reload??
 local fancy = require "fancy"
-fancy.res = res
+fancy.res = Resources
 fancy.fixaspect = tools.fixAspect
 
 local json = require "json"
@@ -74,12 +71,9 @@ local function drawbgstatic()
 end
 
 function node.render()
-    -- TODO: should this be moved to slidedeck??
     local now = sys.now()
     local dt = (state.lastnow and now - state.lastnow) or 0
     state.lastnow = now
-    state.slidedeck.tq:update(dt)
-
 
     local aspect = WIDTH / HEIGHT
     FAKEWIDTH = HEIGHT * SCREEN_ASPECT
@@ -96,5 +90,5 @@ function node.render()
     tools.fixAspect(aspect)
 
     -- draw the slides
-    state.slidedeck:draw(aspect)
+    state.slidedeck:draw(aspect, dt)
 end

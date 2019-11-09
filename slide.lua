@@ -43,7 +43,7 @@ local function setupGradient(self)
 
     AddDrawAbs(self, function(slide, sx, sy)
         local gx = sx - 0.035 * FAKEWIDTH
-        RES.gradient:draw(gx - thickness/2, beginy, gx + thickness/2, HEIGHT)
+        Resources.gradient:draw(gx - thickness/2, beginy, gx + thickness/2, HEIGHT)
     end)
 end
 
