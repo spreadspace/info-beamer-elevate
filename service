@@ -28,6 +28,7 @@ def __get_now_in_config_tz(now):
 def current_time():
     # now = datetime.utcnow().replace(tzinfo=pytz.utc)  # TODO: re-enable realtime
     now = datetime(2019, 2, 27, 20, 5).replace(tzinfo=pytz.utc)
+    # now = datetime(2020, 3, 4, 20, 5).replace(tzinfo=pytz.utc)
     timestamp = timegm(now.timetuple()) + now.microsecond / 1000000.
     return now, timestamp
 

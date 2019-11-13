@@ -21,6 +21,7 @@ local NO_EVENT = {
 }
 
 -- in relative [0..1] screen coords
+local SPONSORS_TITLE = "SPONSORS"
 local SPONSORSLIDE_START_X = 0.2
 local SPONSORSLIDE_END_X = 0.8
 local SPONSORSLIDE_START_Y = 0.3
@@ -37,6 +38,31 @@ local function AddDrawAbs(self, f)
     table.insert(self._drawabs, f)
 end
 
+local function setupTitle(self)
+    local font = CONFIG.font_bold
+    local fgcol = (self.track and self.track.foreground_color) or CONFIG.foreground_color
+    local bgcol = (self.track and self.track.background_color) or CONFIG.background_color
+
+    local title
+    local titlesize
+    if self.sponsor then
+        title = SPONSORS_TITLE
+        titlesize = 0.1
+    elseif self.here then
+        title = self.location.name
+        titlesize = 0.1
+    else
+        title = ("%s / %s"):format(self.location.name, self.track.name)
+        titlesize = 0.08
+    end
+
+    -- TODO: this not nice...
+    self.titleoffset = titlesize + 0.03
+
+    AddDrawAbs(self, function(slide, sx, sy)
+        tools.drawFont(font, sx/FAKEWIDTH, sy/HEIGHT, title, titlesize, fgcol, bgcol)
+    end)
+end
 
 local function setupGradient(self)
     local beginy = 0.15 * HEIGHT
@@ -75,7 +101,7 @@ local function setupEvents(self, protos, getconfig, ...)
             local gx = sx - 0.035 * FAKEWIDTH
             local fgcolor = CONFIG.foreground_color
             for i, ev in ipairs(evs) do
-                ev:drawtick(fgcolor, sx-gx*HACK_FACTOR,sy)
+                ev:drawtick(fgcolor, sx-gx*HACK_FACTOR,sy+(self.titleoffset*HEIGHT))
             end
         end)
     end
@@ -102,10 +128,12 @@ end
 
 local function layoutlocal(self)
     setupGradient(self)
+    setupTitle(self)
     setupEvents(self, self.events, fLocal)
 end
 
 local function layoutremote(self, sx, sy)
+    setupTitle(self)
     setupEvents(self, self.events, fDefault)
 end
 
@@ -118,6 +146,7 @@ local function _drawsponsor(self)
 end
 
 local function layoutsponsor(self)
+    setupTitle(self)
     AddDrawAbs(self, _drawsponsor)
 end
 
@@ -207,6 +236,16 @@ function Slide:drawAbs(...)
     for _, f in ipairs(self._drawabs) do
         f(self, ...)
     end
+end
+
+function Slide:draw(sx, sy)
+    -- start positions after header
+    gl.pushMatrix()
+        self:drawAbs(sx, sy)
+        sy = sy + self.titleoffset*HEIGHT
+        gl.translate(sx, sy)
+        self:drawRel()
+    gl.popMatrix()
 end
 
 print("slide.lua loaded completely")

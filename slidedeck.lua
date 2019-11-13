@@ -8,12 +8,10 @@ util.file_watch("slide.lua", function(content)
 end)
 
 
-local TOP_TITLE = "ELEVATE INFOSCREEN"
-local SPONSORS_TITLE = "SPONSORS"
-
 local TimerQueue = require "timerqueue"
 
-local function drawlogo(aspect)
+
+local function drawLogo(aspect)
     gl.pushMatrix()
         gl.scale(WIDTH, HEIGHT)
         local logosz = 0.23
@@ -21,60 +19,30 @@ local function drawlogo(aspect)
     gl.popMatrix()
 end
 
-
-local function drawheader(slide)
+local function drawHeader(aspect)
     local font = CONFIG.font
     local fontbold = CONFIG.font_bold
-    local fgcol = (slide.track and slide.track.foreground_color) or CONFIG.foreground_color
-    local bgcol = (slide.track and slide.track.background_color) or CONFIG.background_color
+    local fgcol = CONFIG.foreground_color
+    local bgcol = CONFIG.background_color
     local hy = 0.05
 
+    -- logo
+    drawLogo(aspect)
+
+    -- time
     local timesize = 0.08
     local timestr = fg.gettimestr()
     local timew = fontbold:width(timestr .. "     ", timesize*HEIGHT) / FAKEWIDTH
     local timex = 1.0 - timew
-
-    -- time
     tools.drawFont(fontbold, timex, hy, timestr, timesize, fgcol, bgcol)
 
-    local xpos = 0.15
+    -- top title
     local titlesize = 0.06
-    tools.drawFont(font, xpos, hy, TOP_TITLE, titlesize, fgcol, bgcol)
+    local titlestr = "ELEVATE INFOSCREEN"
+    local titlex = 0.15
+    tools.drawFont(font, titlex, hy, titlestr, titlesize, fgcol, bgcol)
 
-    hy = hy + titlesize + 0.02
-
-
-    local wheresize
-    if slide then
-        local font = CONFIG.font_bold
-        local where
-        local fgcol2 = CONFIG.foreground_color
-        local bgcol2 = CONFIG.background_color
-        if slide.sponsor then
-            where = SPONSORS_TITLE
-            wheresize = 0.1
-        elseif slide.here then
-            where = slide.location.name
-            wheresize = 0.1
-        else
-            where = ("%s / %s"):format(slide.location.name, slide.track.name)
-            wheresize = 0.08
-            fgcol2 = fgcol
-            bgcol2 = bgcol
-        end
-        tools.drawFont(font, xpos, hy, where, wheresize, fgcol2, bgcol2)
-    end
-
-    return FAKEWIDTH*xpos, hy + wheresize + HEIGHT*0.25
-end
-
-local function drawslide(slide, sx, sy)
-    -- start positions after header
-    gl.pushMatrix()
-        slide:drawAbs(sx, sy)
-        gl.translate(sx, sy)
-        slide:drawRel()
-    gl.popMatrix()
+    return FAKEWIDTH*titlex,  HEIGHT*(hy + titlesize + 0.02)
 end
 
 
@@ -141,9 +109,8 @@ function SlideDeck:update(dt)
 end
 
 function SlideDeck:draw(aspect)
-    drawlogo(aspect)
-    local hx, hy = drawheader(self.current) -- returns where header ends
-    drawslide(self.current, hx, hy)
+    local hx, hy = drawHeader(aspect) -- returns where header ends
+    self.current:draw(hx, hy)
 end
 
 print("slidedeck.lua loaded completely")
