@@ -22,10 +22,11 @@ local NO_EVENT = {
 
 -- in relative [0..1] screen coords
 local SPONSORS_TITLE = "SPONSORS"
-local SPONSORSLIDE_START_X = 0.2
-local SPONSORSLIDE_END_X = 0.8
-local SPONSORSLIDE_START_Y = 0.3
-local SPONSORSLIDE_END_Y = 0.9
+-- TODO this values need to fixed for aspect ratio
+local SPONSORSLIDE_X = 0.2
+local SPONSORSLIDE_Y = 0.3
+local SPONSORSLIDE_W = (0.8*FAKEWIDTH)/WIDTH
+local SPONSORSLIDE_H = 0.9
 
 local SLIDE_SPACE_X = 0.845
 local SLIDE_SPACE_Y = 0.745
@@ -140,9 +141,8 @@ end
 
 
 local function _drawsponsor(self)
-    gl.scale(FAKEWIDTH, HEIGHT)
     local img = self.image.ensure_loaded()
-    img:draw(SPONSORSLIDE_START_X, SPONSORSLIDE_START_Y, SPONSORSLIDE_END_X, SPONSORSLIDE_END_Y)
+    tools.drawImage(img, SPONSORSLIDE_X, SPONSORSLIDE_Y, SPONSORSLIDE_W, SPONSORSLIDE_H)
 end
 
 local function layoutsponsor(self)

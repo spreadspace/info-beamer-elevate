@@ -11,15 +11,8 @@ end)
 local TimerQueue = require "timerqueue"
 
 
-local function drawLogo(aspect)
-    gl.pushMatrix()
-        gl.scale(WIDTH, HEIGHT)
-        local logosz = 0.23
-        CONFIG.logo.ensure_loaded():draw(-0.01, 0.01, logosz/aspect, logosz)
-    gl.popMatrix()
-end
-
 local function drawHeader(aspect)
+    local logo = CONFIG.logo.ensure_loaded()
     local font = CONFIG.font
     local fontbold = CONFIG.font_bold
     local fgcol = CONFIG.foreground_color
@@ -27,7 +20,8 @@ local function drawHeader(aspect)
     local hy = 0.05
 
     -- logo
-    drawLogo(aspect)
+    local logosize = 0.23
+    tools.drawImage(logo, -0.01, 0.01, logosize/aspect, logosize)
 
     -- time
     local timesize = 0.08
