@@ -76,11 +76,11 @@ end
 
 
 function tools.fixAspect(aspect)
-    gl.scale(1 / (SCREEN_ASPECT / aspect), 1)
+    gl.scale(1 / (DISPLAY_ASPECT / aspect), 1)
 end
 
 function tools.RelPosToScreen(x, y)
-    return x * FAKEWIDTH, y and y * HEIGHT
+    return x * DISPLAY_WIDTH, y and y * HEIGHT
 end
 
 function tools.RelSizeToScreen(sz)
@@ -88,7 +88,7 @@ function tools.RelSizeToScreen(sz)
 end
 
 function tools.ScreenPosToRel(x, y)
-    return x / FAKEWIDTH, y and y / HEIGHT
+    return x / DISPLAY_WIDTH, y and y / HEIGHT
 end
 
 function tools.ScreenSizeToRel(sz)

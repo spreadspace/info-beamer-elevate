@@ -25,7 +25,7 @@ local SPONSORS_TITLE = "SPONSORS"
 -- TODO this values need to fixed for aspect ratio
 local SPONSORSLIDE_X = 0.2
 local SPONSORSLIDE_Y = 0.3
-local SPONSORSLIDE_W = (0.8*FAKEWIDTH)/WIDTH
+local SPONSORSLIDE_W = (0.8*DISPLAY_WIDTH)/WIDTH
 local SPONSORSLIDE_H = 0.9
 
 local SLIDE_SPACE_X = 0.845
@@ -61,7 +61,7 @@ local function setupTitle(self)
     self.titleoffset = titlesize + 0.03
 
     AddDrawAbs(self, function(slide, sx, sy)
-        tools.drawFont(font, sx/FAKEWIDTH, sy/HEIGHT, title, titlesize, fgcol, bgcol)
+        tools.drawFont(font, sx/DISPLAY_WIDTH, sy/HEIGHT, title, titlesize, fgcol, bgcol)
     end)
 end
 
@@ -70,7 +70,7 @@ local function setupGradient(self)
     local thickness = WIDTH*0.006
 
     AddDrawAbs(self, function(slide, sx, sy)
-        local gx = sx - 0.035 * FAKEWIDTH
+        local gx = sx - 0.035 * DISPLAY_WIDTH
         Resources.gradient:draw(gx - thickness/2, beginy, gx + thickness/2, HEIGHT)
     end)
 end
@@ -99,7 +99,7 @@ local function setupEvents(self, protos, getconfig, ...)
     if self.type == "local" then
         AddDrawAbs(self, function(slide, sx, sy)
             local HACK_FACTOR = 0.3 -- no time to explain
-            local gx = sx - 0.035 * FAKEWIDTH
+            local gx = sx - 0.035 * DISPLAY_WIDTH
             local fgcolor = CONFIG.foreground_color
             for i, ev in ipairs(evs) do
                 ev:drawtick(fgcolor, sx-gx*HACK_FACTOR,sy+(self.titleoffset*HEIGHT))
@@ -221,7 +221,7 @@ end
 
 local TESTBG = resource.create_colored_texture(0, 0.5, 1, 0.15)
 local function drawTestBG()
-    TESTBG:draw(0,0, FAKEWIDTH * SLIDE_SPACE_X, HEIGHT * SLIDE_SPACE_Y)
+    TESTBG:draw(0,0, DISPLAY_WIDTH * SLIDE_SPACE_X, HEIGHT * SLIDE_SPACE_Y)
 end
 
 function Slide:drawRel(...)

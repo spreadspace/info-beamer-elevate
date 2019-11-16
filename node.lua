@@ -2,10 +2,12 @@ util.init_hosted()
 
 node.set_flag("no_clear")
 
+NATIVE_ASPECT = NATIVE_WIDTH / NATIVE_HEIGHT
 gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
 
-SCREEN_ASPECT = 16 / 9
-FAKEWIDTH = HEIGHT * SCREEN_ASPECT
+DISPLAY_ASPECT = 16 / 9
+DISPLAY_HEIGHT = HEIGHT
+DISPLAY_WIDTH = DISPLAY_HEIGHT * DISPLAY_ASPECT
 rawset(_G, "_DEBUG_", 2) -- <5 will only print to stdout, >= 5 also adds visual changes to the screen
 
 
@@ -82,6 +84,11 @@ end)
 
 
 function node.render()
+    -- for debug purposes
+    NATIVE_ASPECT = NATIVE_WIDTH / NATIVE_HEIGHT
+    DISPLAY_HEIGHT = HEIGHT
+    DISPLAY_WIDTH = DISPLAY_HEIGHT * DISPLAY_ASPECT
+
     local now = sys.now()
     local dt = (state.lastnow and now - state.lastnow) or 0
     state.lastnow = now
@@ -92,8 +99,6 @@ function node.render()
        state.slidedeck  = SlideDeck.new(state.current_schedule)
     end
 
-    local aspect = WIDTH / HEIGHT
-    FAKEWIDTH = HEIGHT * SCREEN_ASPECT
-    state.background:draw(aspect)
-    state.slidedeck:draw(aspect)
+    state.background:draw(NATIVE_ASPECT)
+    state.slidedeck:draw(NATIVE_ASPECT)
 end

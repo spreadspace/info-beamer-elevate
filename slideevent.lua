@@ -21,7 +21,7 @@ local function layouttime(self, mul)
     local wm = font:width(m, scale)
     local offs = -wh - (wc * 0.5)
     self.tw = tools.ScreenPosToRel(wh + wc + wm)
-    self.tco = offs / FAKEWIDTH
+    self.tco = offs / DISPLAY_WIDTH
 end
 
 local function layout(self, cfg)

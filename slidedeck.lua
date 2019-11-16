@@ -26,7 +26,7 @@ local function drawHeader(aspect)
     -- time
     local timesize = 0.08
     local timestr = fg.gettimestr()
-    local timew = fontbold:width(timestr .. "     ", timesize*HEIGHT) / FAKEWIDTH
+    local timew = fontbold:width(timestr .. "     ", timesize*HEIGHT) / DISPLAY_WIDTH
     local timex = 1.0 - timew
     tools.drawFont(fontbold, timex, hy, timestr, timesize, fgcol, bgcol)
 
@@ -36,7 +36,7 @@ local function drawHeader(aspect)
     local titlex = 0.15
     tools.drawFont(font, titlex, hy, titlestr, titlesize, fgcol, bgcol)
 
-    return FAKEWIDTH*titlex,  HEIGHT*(hy + titlesize + 0.02)
+    return DISPLAY_WIDTH*titlex,  HEIGHT*(hy + titlesize + 0.02)
 end
 
 
