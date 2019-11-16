@@ -1,13 +1,13 @@
 local Background = {}
 Background.__index = Background
 
-local function drawBGSimple(res, aspect)
+local function drawBGSimple(res)
     gl.ortho()
     gl.pushMatrix()
         gl.scale(WIDTH, HEIGHT)
         res:draw(0, 0, 1, 1)
     gl.popMatrix()
-    tools.fixAspect(aspect)
+    tools.fixAspect()
 end
 
 function Background.new(style)
@@ -19,27 +19,27 @@ function Background.new(style)
     if style == "static" then
         tools.debugPrint(1, "background style: " .. style)
 
-        self._draw = function(aspect)
+        self._draw = function()
             local res = CONFIG.background_static.ensure_loaded()
-            drawBGSimple(res, aspect)
+            drawBGSimple(res)
         end
     elseif style == "video" then
         tools.debugPrint(1, "background style: " .. style)
 
-        self._draw = function(aspect)
+        self._draw = function()
             local res = CONFIG.background_video.ensure_loaded({looped=true})
-            drawBGSimple(res, aspect)
+            drawBGSimple(res)
         end
     elseif fancymode then
         tools.debugPrint(1, "background style: " .. style)
 
         local fancy = require "fancy"
         fancy.fixaspect = tools.fixAspect
-        self._draw = function(aspect)
+        self._draw = function()
             gl.ortho()
-            fancy.render(fancymode, aspect) -- resets the matrix
+            fancy.render(fancymode) -- resets the matrix
             gl.ortho()
-            tools.fixAspect(aspect)
+            tools.fixAspect()
         end
     else
         tools.debugPrint(1, "WARNING: invalid background style: " .. style)
@@ -48,9 +48,9 @@ function Background.new(style)
     return setmetatable(self, Background)
 end
 
-function Background:draw(aspect)
+function Background:draw()
     if self._draw then
-        self._draw(aspect)
+        self._draw()
     end
 end
 

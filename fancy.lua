@@ -69,8 +69,7 @@ end
 ----------------------------------------------
 -- modes: "minimal", "full".
 
-function fancy.render(mode, aspect)
-    aspect = aspect or (WIDTH / HEIGHT)
+function fancy.render(mode)
     local now = sys.now()
 
     if mode == "minimal" then
@@ -83,18 +82,18 @@ function fancy.render(mode, aspect)
                         WIDTH/2, HEIGHT/2, 0)
 
         gl.translate(WIDTH/2, HEIGHT/2)
-        gl.scale(WIDTH * (1/aspect), HEIGHT)
+        gl.scale(WIDTH * (1/NATIVE_ASPECT), HEIGHT)
         if fancy.fixaspect then
-            fancy.fixaspect(aspect)
+            fancy.fixaspect()
         end
         -- TODO: draw fancy animation
     end
 
     gl.ortho()
     gl.translate(WIDTH/2, HEIGHT/2)
-    gl.scale(WIDTH * (1/aspect), HEIGHT)
+    gl.scale(WIDTH * (1/NATIVE_ASPECT), HEIGHT)
     if fancy.fixaspect then
-        fancy.fixaspect(aspect)
+        fancy.fixaspect()
     end
     drawQueru(now)
 end

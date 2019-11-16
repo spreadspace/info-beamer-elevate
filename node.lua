@@ -99,6 +99,6 @@ function node.render()
        state.slidedeck  = SlideDeck.new(state.current_schedule)
     end
 
-    state.background:draw(NATIVE_ASPECT)
-    state.slidedeck:draw(NATIVE_ASPECT)
+    state.background:draw()
+    state.slidedeck:draw()
 end

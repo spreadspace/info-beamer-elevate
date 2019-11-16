@@ -75,8 +75,8 @@ function tools.newAutoExtendTable()
 end
 
 
-function tools.fixAspect(aspect)
-    gl.scale(1 / (DISPLAY_ASPECT / aspect), 1)
+function tools.fixAspect()
+    gl.scale(1 / (DISPLAY_ASPECT / NATIVE_ASPECT), 1)
 end
 
 function tools.RelPosToScreen(x, y)

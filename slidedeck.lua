@@ -11,7 +11,7 @@ end)
 local TimerQueue = require "timerqueue"
 
 
-local function drawHeader(aspect)
+local function drawHeader()
     local logo = CONFIG.logo.ensure_loaded()
     local font = CONFIG.font
     local fontbold = CONFIG.font_bold
@@ -21,7 +21,7 @@ local function drawHeader(aspect)
 
     -- logo
     local logosize = 0.23
-    tools.drawImage(logo, -0.01, 0.01, logosize/aspect, logosize)
+    tools.drawImage(logo, -0.01, 0.01, logosize/NATIVE_ASPECT, logosize)
 
     -- time
     local timesize = 0.08
@@ -102,8 +102,8 @@ function SlideDeck:update(dt)
     self.tq:update(dt)
 end
 
-function SlideDeck:draw(aspect)
-    local hx, hy = drawHeader(aspect) -- returns where header ends
+function SlideDeck:draw()
+    local hx, hy = drawHeader() -- returns where header ends
     self.current:draw(hx, hy)
 end
 
