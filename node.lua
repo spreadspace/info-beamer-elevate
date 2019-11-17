@@ -77,7 +77,7 @@ end)
 
 
 node.event("config_update", function()
-    config = assert(CONFIG, "ERROR: no CONFIG or found")
+    config = assert(CONFIG, "ERROR: no CONFIG found")
     device.updateConfig()
     tools.clearColorTex()
     state.background = Background.new(device.getBackgroundStyle())
