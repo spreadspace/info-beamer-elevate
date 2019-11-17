@@ -8,7 +8,7 @@ gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
 DISPLAY_ASPECT = 16 / 9
 DISPLAY_HEIGHT = HEIGHT
 DISPLAY_WIDTH = DISPLAY_HEIGHT * DISPLAY_ASPECT
-rawset(_G, "_DEBUG_", 3) -- <5 will only print to stdout, >= 5 also adds visual changes to the screen
+rawset(_G, "_DEBUG_", 4) -- <5 will only print to stdout, >= 5 also adds visual changes to the screen
 
 
 -- persistent state, survives file reloads
@@ -36,9 +36,9 @@ util.file_watch("tools.lua", function(content)
 end)
 
 -- this will install itself onto _G
-util.file_watch("fg.lua", function(content)
-    print("Reloading fg.lua...")
-    assert(loadstring(content, "fg.lua"))()
+util.file_watch("device.lua", function(content)
+    print("Reloading device.lua...")
+    assert(loadstring(content, "device.lua"))()
 end)
 
 
@@ -51,7 +51,7 @@ end)
 
 util.data_mapper{
     ["clock/set"] = function(tm)
-        fg.onUpdateTime(tm)
+        device.updateTime(tm)
     end,
 }
 
@@ -61,7 +61,7 @@ util.file_watch("background.lua", function(content)
     print("Reloading background.lua...")
     local x = assert(loadstring(content, "background.lua"))()
     Background = x
-    state.background = Background.new(fg.getbgstyle())
+    state.background = Background.new(device.getBackgroundStyle())
 end)
 
 
@@ -77,9 +77,10 @@ end)
 
 
 node.event("config_update", function()
-    fg.onUpdateConfig()
+    config = assert(CONFIG, "ERROR: no CONFIG or found")
+    device.updateConfig()
     tools.clearColorTex()
-    state.background = Background.new(fg.getbgstyle())
+    state.background = Background.new(device.getBackgroundStyle())
 end)
 
 

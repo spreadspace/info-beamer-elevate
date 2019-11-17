@@ -56,7 +56,7 @@ local function _orderEvent(a, b)
 end
 
 local function _generate404Slide()
-    tools.debugPrint(3, "Generating backup slide")
+    tools.debugPrint(3, "Generating 404 slide")
     return Slide.newLocal(1, nil, false)
 end
 
@@ -105,8 +105,8 @@ end
 local function _scheduleToSlides(schedule)
     local slides = {}
     local localEvents = {}
-    local ts = math.floor(fg.getts())
-    local here = fg.location()
+    local ts = math.floor(device.getTime())
+    local here = device.getLocation()
 
     local tracks = assert(CONFIG.tracks, "CONFIG.tracks missing")
     local lutTracks = tools.createLookupTable(tracks)
@@ -137,15 +137,15 @@ local function _scheduleToSlides(schedule)
                 end
             end
         else
-            tools.debugPrint(3, "Location " .. location.id .. " has no upcoming events")
+            tools.debugPrint(3, "..skipping location[" .. location.id .. "] (no upcoming events)")
         end
     end
-
     tools.debugPrint(2, "found " .. nEvents .. " events, generating slides...")
+
     _generateLocalSlide(slides, localEvents, here)
     _generateRemoteSlides(slides, events, tracks, locations)
     _generateSponsorSlides(slides)
-    tools.debugPrint(2, "generated slide deck containing " .. #slides .. " slides")
+    tools.debugPrint(2, "generated " .. #slides .. " slides")
     return slides
 end
 
@@ -168,7 +168,7 @@ local function _drawHeader()
 
     -- time
     local timesize = 0.08
-    local timestr = fg.gettimestr()
+    local timestr = device.getTimeString()
     local timew = fontbold:width(timestr .. "     ", tools.RelSizeToScreen(timesize)) / DISPLAY_WIDTH
     local timex = 1.0 - timew
     tools.drawFont(fontbold, timex, hy, timestr, timesize, fgcol, bgcol)
