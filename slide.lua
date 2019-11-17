@@ -50,7 +50,7 @@ local function setupTitle(self)
         title = SPONSORS_TITLE
         titlesize = 0.1
     elseif self.here then
-        title = self.location.name
+        title = (self.location and self.location.name) or device.getLocation().name
         titlesize = 0.1
     else
         title = ("%s / %s"):format(self.location.name, self.track.name)
@@ -171,11 +171,11 @@ function Slide.newLocal(locdef, events)
     if not events or #events == 0 then
         events = {NO_EVENT}
         empty = true
-        time = 3
+        time = 3 -- TODO: make this configurable?
     end
     local self = {
         here = true,
-        location = assert(locdef),
+        location = locdef,
         events = assert(events),
         empty = empty,
         type = "local",

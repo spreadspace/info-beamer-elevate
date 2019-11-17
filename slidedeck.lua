@@ -10,13 +10,13 @@ end)
 local TimerQueue = require "timerqueue"
 
 -- FOR TESTING --
-local NO_REMOTE_EVENTS = false
-local NO_LOCAL_EVENTS = false
-local NO_SPONSOR_SLIDES = false
-local EMPTY_WHEN_NO_LOCAL = false
-local ALWAYS_PUSH_EMPTY = false
+local SHOW_LOCAL_EVENTS = true
+local SHOW_REMOTE_EVENTS = true
+local SHOW_SPONSORS = true
+local SHOW_EMPTY_WHEN_NO_LOCAL = true
 -----------------
-local EMC_LOCATION_ID = "emc"
+-- events on this location will be skipped in remote slides
+local PSEUDO_LOCATION_ID = "emc"
 
 
 -- returns nil when event is not to be shown
@@ -55,33 +55,33 @@ local function _orderEvent(a, b)
     return a.prio > b.prio or (a.prio == b.prio and a.startts < b.startts)
 end
 
-local function _generate404Slide()
-    tools.debugPrint(3, "Generating 404 slide")
-    return Slide.newLocal(1, nil, false)
+local function _generateEmptyLocalSlide()
+    tools.debugPrint(3, "Generating Empty slide")
+    return Slide.newLocal(nil, false)
 end
 
 local function _generateLocalSlide(slides, localEvents, here)
-    local haslocal
-    if not NO_LOCAL_EVENTS and here then
+    local hasLocal
+    if SHOW_LOCAL_EVENTS and here then
         tools.debugPrint(3, "generating local slide: location[" .. here.id .. "] = " .. #localEvents .. " events")
         table.sort(localEvents, _orderEvent)
         local slide = Slide.newLocal(here, localEvents)
         table.insert(slides, slide)
-        haslocal = true
+        hasLocal = true
     end
 
-    if (not haslocal and EMPTY_WHEN_NO_LOCAL) or ALWAYS_PUSH_EMPTY then
-        table.insert(slides, _generate404Slide())
+    if (not hasLocal and SHOW_EMPTY_WHEN_NO_LOCAL) then
+        table.insert(slides, _generateEmptyLocalSlide())
     end
 end
 
 local function _generateRemoteSlides(slides, events, tracks, locations)
-    if NO_REMOTE_EVENTS then return end
+    if not SHOW_REMOTE_EVENTS then return end
 
     for _, track in ipairs(tracks) do
         for _, location in ipairs(locations) do
             local tlevs = events[track.id][location.id]
-            if tlevs and #tlevs > 0 and not (location.id == EMC_LOCATION_ID) then
+            if tlevs and #tlevs > 0 and not (location.id == PSEUDO_LOCATION_ID) then
                 table.sort(tlevs, _orderEvent)
                 tools.debugPrint(3, "generating remote slide: track[" .. track.id .. "] location[" .. location.id .. "] = " .. #tlevs .. " events")
                 local slide = Slide.newRemote(track, location, tlevs)
@@ -92,7 +92,7 @@ local function _generateRemoteSlides(slides, events, tracks, locations)
 end
 
 local function _generateSponsorSlides(slides)
-    if NO_SPONSOR_SLIDES and not CONFIG.sponsors then return end
+    if not SHOW_SPONSORS or not CONFIG.sponsors then return end
 
     -- TODO: implemnt sponsor skip counter!
     for _, sponsor in ipairs(CONFIG.sponsors) do
@@ -206,7 +206,7 @@ function SlideDeck.new(schedule)
        slides = _scheduleToSlides(schedule)
     end
     if not slides or #slides == 0 then
-       slides = {_generate404Slide()}
+       slides = {_generateEmptyLocalSlide()}
     end
 
     local it = coroutine.wrap(_slideiter)
