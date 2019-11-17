@@ -72,6 +72,14 @@ function tools.newAutoExtendTable()
     return setmetatable({}, _autoextendmeta1)
 end
 
+function tools.createLookupTable(list)
+    local lut = {}
+    for _, element in pairs(list) do
+        lut[element.id] = element
+    end
+    return lut
+end
+
 
 function tools.fixAspect()
     gl.scale(1 / (DISPLAY_ASPECT / NATIVE_ASPECT), 1)

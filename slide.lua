@@ -165,15 +165,16 @@ local function commonInit(self)
     return self
 end
 
-function Slide.newLocal(id, locdef, events)
+function Slide.newLocal(locdef, events)
     local empty
     local time = CONFIG.current_location
     if not events or #events == 0 then
         events = {NO_EVENT}
         empty = true
-        time = CONFIG.empty_slide_time or 3
+        time = 3
     end
-    local self = { id = id, here = true,
+    local self = {
+        here = true,
         location = assert(locdef),
         events = assert(events),
         empty = empty,
@@ -183,8 +184,8 @@ function Slide.newLocal(id, locdef, events)
     return setmetatable(commonInit(self), Slide)
 end
 
-function Slide.newRemote(id, trackdef, locdef, events)
-    local self = { id = id,
+function Slide.newRemote(trackdef, locdef, events)
+    local self = {
         track = assert(trackdef),
         location = assert(locdef),
         events = assert(events),
@@ -194,8 +195,8 @@ function Slide.newRemote(id, trackdef, locdef, events)
     return setmetatable(commonInit(self), Slide)
 end
 
-function Slide.newSponsor(id, spon)
-    local self = { id = id,
+function Slide.newSponsor(spon)
+    local self = {
         image = spon.image,
         sponsor = spon,
         type = "sponsor",
