@@ -1,6 +1,4 @@
 function string.fwrap(str, font, h, xpos, width)
-    width = width or WIDTH
-    xpos = xpos or 0
     local xstart = xpos
     -- always allow wrapping after punctuation chars
     str = str:match("(.-)%\n*$") -- kill trailing newlines
@@ -80,19 +78,19 @@ function tools.fixAspect()
 end
 
 function tools.RelPosToScreen(x, y)
-    return x * DISPLAY_WIDTH, y and y * HEIGHT
+    return x * DISPLAY_WIDTH, y and y * DISPLAY_HEIGHT
 end
 
 function tools.RelSizeToScreen(sz)
-    return sz * HEIGHT
+    return sz * DISPLAY_HEIGHT
 end
 
 function tools.ScreenPosToRel(x, y)
-    return x / DISPLAY_WIDTH, y and y / HEIGHT
+    return x / DISPLAY_WIDTH, y and y / DISPLAY_HEIGHT
 end
 
 function tools.ScreenSizeToRel(sz)
-    return sz / HEIGHT
+    return sz / DISPLAY_HEIGHT
 end
 
 -- takes x, y, sz in resolution-independent coords
@@ -113,10 +111,9 @@ end
 
 -- takes x, y, w, h in resolution-independent coords
 -- (0, 0) = upper left corner, (1, 1) = lower right corner
--- TODO: change scaling so aspect ratio correction is only needed in here
 function tools.drawImage(img, x, y, w, h)
     gl.pushMatrix()
-        gl.scale(WIDTH, HEIGHT)
+        gl.scale(DISPLAY_WIDTH, DISPLAY_HEIGHT)
         img:draw(x, y, w, h)
     gl.popMatrix()
 end

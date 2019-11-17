@@ -101,8 +101,8 @@ local BLUE = resource.create_colored_texture(0, 0, 1, 0.2)
 
 function SlideEvent:drawtick(fgcol, sx, sy)
     local fgtex = tools.getColorTex(fgcol)
-    local gxo = 0.04 * WIDTH
-    local gyo = HEIGHT * 0.004
+    local gxo = 0.04 * DISPLAY_WIDTH
+    local gyo = 0.004 * DISPLAY_HEIGHT
     local ystart = tools.RelSizeToScreen(self.ybegin)
     local scale = tools.RelSizeToScreen(self.fontscale)
     local x, y = sx, sy + ystart + (scale*0.5)

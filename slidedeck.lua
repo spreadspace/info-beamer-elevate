@@ -20,13 +20,13 @@ local function drawHeader()
     local hy = 0.05
 
     -- logo
-    local logosize = 0.23
-    tools.drawImage(logo, -0.01, 0.01, logosize/NATIVE_ASPECT, logosize)
+    local logosize = 0.23 -- the logo texture is square
+    tools.drawImage(logo, -0.01, 0.01, logosize/DISPLAY_ASPECT, logosize)
 
     -- time
     local timesize = 0.08
     local timestr = fg.gettimestr()
-    local timew = fontbold:width(timestr .. "     ", timesize*HEIGHT) / DISPLAY_WIDTH
+    local timew = fontbold:width(timestr .. "     ", tools.RelSizeToScreen(timesize)) / DISPLAY_WIDTH
     local timex = 1.0 - timew
     tools.drawFont(fontbold, timex, hy, timestr, timesize, fgcol, bgcol)
 
@@ -36,7 +36,7 @@ local function drawHeader()
     local titlex = 0.15
     tools.drawFont(font, titlex, hy, titlestr, titlesize, fgcol, bgcol)
 
-    return DISPLAY_WIDTH*titlex,  HEIGHT*(hy + titlesize + 0.02)
+    return tools.RelPosToScreen(titlex,  hy + titlesize + 0.02)
 end
 
 

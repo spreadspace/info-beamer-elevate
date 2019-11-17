@@ -3,10 +3,8 @@ Background.__index = Background
 
 local function drawBGSimple(res)
     gl.ortho()
-    gl.pushMatrix()
-        gl.scale(WIDTH, HEIGHT)
-        res:draw(0, 0, 1, 1)
-    gl.popMatrix()
+    -- we assume the background has the correct aspect ratio
+    res:draw(0, 0, NATIVE_WIDTH, NATIVE_HEIGHT)
     tools.fixAspect()
 end
 

@@ -25,7 +25,7 @@ local SPONSORS_TITLE = "SPONSORS"
 -- TODO this values need to fixed for aspect ratio
 local SPONSORSLIDE_X = 0.2
 local SPONSORSLIDE_Y = 0.3
-local SPONSORSLIDE_W = (0.8*DISPLAY_WIDTH)/WIDTH
+local SPONSORSLIDE_W = 0.8
 local SPONSORSLIDE_H = 0.9
 
 local SLIDE_SPACE_X = 0.845
@@ -61,17 +61,18 @@ local function setupTitle(self)
     self.titleoffset = titlesize + 0.03
 
     AddDrawAbs(self, function(slide, sx, sy)
-        tools.drawFont(font, sx/DISPLAY_WIDTH, sy/HEIGHT, title, titlesize, fgcol, bgcol)
+        local x, y = tools.ScreenPosToRel(sx, sy)
+        tools.drawFont(font, x, y, title, titlesize, fgcol, bgcol)
     end)
 end
 
 local function setupGradient(self)
-    local beginy = 0.15 * HEIGHT
-    local thickness = WIDTH*0.006
+    local beginy = 0.15 * DISPLAY_HEIGHT
+    local thickness = 0.006 * DISPLAY_WIDTH
 
     AddDrawAbs(self, function(slide, sx, sy)
         local gx = sx - 0.035 * DISPLAY_WIDTH
-        Resources.gradient:draw(gx - thickness/2, beginy, gx + thickness/2, HEIGHT)
+        Resources.gradient:draw(gx - thickness/2, beginy, gx + thickness/2, DISPLAY_HEIGHT)
     end)
 end
 
@@ -94,7 +95,7 @@ local function setupEvents(self, protos, getconfig, ...)
     end)
 
     -- draw ticks
-    local beginy = 0.15 * HEIGHT
+    local beginy = 0.15 * DISPLAY_HEIGHT
 
     if self.type == "local" then
         AddDrawAbs(self, function(slide, sx, sy)
@@ -102,7 +103,7 @@ local function setupEvents(self, protos, getconfig, ...)
             local gx = sx - 0.035 * DISPLAY_WIDTH
             local fgcolor = CONFIG.foreground_color
             for i, ev in ipairs(evs) do
-                ev:drawtick(fgcolor, sx-gx*HACK_FACTOR,sy+(self.titleoffset*HEIGHT))
+                ev:drawtick(fgcolor, sx-gx*HACK_FACTOR,sy+(self.titleoffset*DISPLAY_HEIGHT))
             end
         end)
     end
@@ -221,7 +222,8 @@ end
 
 local TESTBG = resource.create_colored_texture(0, 0.5, 1, 0.15)
 local function drawTestBG()
-    TESTBG:draw(0,0, DISPLAY_WIDTH * SLIDE_SPACE_X, HEIGHT * SLIDE_SPACE_Y)
+    local x, y = tools.RelPosToScreen(SLIDE_SPACE_X, SLIDE_SPACE_Y)
+    TESTBG:draw(0, 0, x, y)
 end
 
 function Slide:drawRel(...)
@@ -242,7 +244,7 @@ function Slide:draw(sx, sy)
     -- start positions after header
     gl.pushMatrix()
         self:drawAbs(sx, sy)
-        sy = sy + self.titleoffset*HEIGHT
+        sy = sy + self.titleoffset*DISPLAY_HEIGHT
         gl.translate(sx, sy)
         self:drawRel()
     gl.popMatrix()
