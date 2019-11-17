@@ -14,15 +14,15 @@ Slide.__index = Slide
 
 local NO_EVENT = {
     start = "404",
-    --title = "Event not found blah rofl lolo omg wtf long title right let's see where this goes or otherwise things might break",
     title = "Event not found",
-    --subtitle = "There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along.",
     subtitle = "There is currently no event to display.\nMove along.",
+
+    -- title = "Event not found blah rofl lolo omg wtf long title right let's see where this goes or otherwise things might break",
+    -- subtitle = "There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along.",
 }
 
--- in relative [0..1] screen coords
 local SPONSORS_TITLE = "SPONSORS"
--- TODO this values need to fixed for aspect ratio
+-- in relative [0..1] screen coords
 local SPONSORSLIDE_X = 0.2
 local SPONSORSLIDE_Y = 0.3
 local SPONSORSLIDE_W = 0.8
@@ -221,15 +221,14 @@ end
 --     end
 -- end
 
-local TESTBG = resource.create_colored_texture(0, 0.5, 1, 0.15)
-local function drawTestBG()
-    local x, y = tools.RelPosToScreen(SLIDE_SPACE_X, SLIDE_SPACE_Y)
-    TESTBG:draw(0, 0, x, y)
+local DEBUG_BG = resource.create_colored_texture(0, 0.5, 1, 0.15)
+local function drawDebugBG(x1, y1, x2, y2)
+    local rx1, ry1 = tools.RelPosToScreen(x1, y1)
+    local rx2, ry2 = tools.RelPosToScreen(x2, y2)
+    DEBUG_BG:draw(rx1, ry1, rx2, ry2)
 end
 
 function Slide:drawRel(...)
-    tools.debugDraw(5, drawTestBG)
-
     for _, f in ipairs(self._drawrel) do
         f(self, ...)
     end
@@ -244,6 +243,8 @@ end
 function Slide:draw(sx, sy)
     -- start positions after header
     gl.pushMatrix()
+        local rsx, rsy = tools.ScreenPosToRel(sx, sy)
+        tools.debugDraw(5, drawDebugBG, rsx, rsy, 1, 1)
         self:drawAbs(sx, sy)
         sy = sy + self.titleoffset*DISPLAY_HEIGHT
         gl.translate(sx, sy)
