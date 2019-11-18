@@ -152,13 +152,13 @@
             "default": ""
         }, {
             "title": "Background color",
-            "ui_width": 4,
+            "ui_width": 3,
             "name": "background_color",
             "type": "color",
             "default": [0,0,0,1]
         }, {
             "title": "Foreground color",
-            "ui_width": 4,
+            "ui_width": 3,
             "name": "foreground_color",
             "type": "color",
             "default": [1,1,1,1]
@@ -195,7 +195,7 @@
         "itemname": "Slide",
         "items": [{
             "title": "Image",
-            "ui_width": 8,
+            "ui_width": 12,
             "name": "image",
             "type": "resource",
             "valid": ["image"],
@@ -214,13 +214,13 @@
             "type": "device"
         }, {
             "title": "Location ID",
-            "ui_width": 5,
+            "ui_width": 6,
             "name": "location",
             "type": "string",
             "default": ""
         }, {
             "title": "BG Style",
-            "ui_width": 7,
+            "ui_width": 12,
             "name": "bg_style",
             "hint": "Background animation style",
             "type": "select",
