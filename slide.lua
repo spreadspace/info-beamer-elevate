@@ -94,15 +94,12 @@ local function setupEvents(self, protos, getconfig, ...)
     end)
 
     -- draw ticks
-    local beginy = 0.15 * DISPLAY_HEIGHT
-
     if self.type == "local" then
         AddDrawAbs(self, function(slide, sx, sy)
-            local HACK_FACTOR = 0.3 -- no time to explain
             local gx = sx - 0.035
-            local fgcolor = CONFIG.foreground_color
+            local fgcol = CONFIG.foreground_color
             for i, ev in ipairs(evs) do
-                ev:drawtick(fgcolor, sx-gx*HACK_FACTOR,sy+(self.titleoffset))
+                ev:drawtick(fgcol, gx, sy+self.titleoffset)
             end
         end)
     end

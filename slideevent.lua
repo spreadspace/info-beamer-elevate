@@ -95,18 +95,14 @@ function SlideEvent.new(proto, cfg) -- proto is an event def from json
     return self
 end
 
-local RED = resource.create_colored_texture(1, 0, 0, 0.2)
-local GREEN = resource.create_colored_texture(0, 1, 0, 0.2)
-local BLUE = resource.create_colored_texture(0, 0, 1, 0.2)
-
 function SlideEvent:drawtick(fgcol, sx, sy)
-    local fgtex = tools.getColorTex(fgcol)
-    local gxo = 0.02
-    local gyo = 0.004
-    local centerx, centery = sx, sy + self.ybegin + (self.fontscale*0.5)
-    tools.drawResource(fgtex, centerx-gxo, centery-gyo, centerx+gxo, centery+gyo)
-end
+    local dx = 0.02
+    local dy = 0.004
+    local x, y = sx, sy + self.ybegin + (self.fontscale*0.5)
 
+    local fgtex = tools.getColorTex(fgcol)
+    tools.drawResource(fgtex, x-dx, y-dy, x+dx, y+dy)
+end
 
 -- this ensures that all colons are aligned
 function SlideEvent:draw(fgcol, bgcol)
