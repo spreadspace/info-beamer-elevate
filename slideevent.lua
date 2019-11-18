@@ -1,6 +1,12 @@
+-------------------------------------------------------------------------------
+--- Classes
+
 local SlideEvent = {}
 SlideEvent.__index = SlideEvent
 
+
+-------------------------------------------------------------------------------
+--- Helper Functions
 
 -- final alignment step for all events generated for a single slide
 -- align to relative screen size (w, h) (w == 0.9 means fill up to 90% of the screen width)
@@ -52,8 +58,6 @@ function SlideEvent.Align(evs, w, h)
     end
 end
 
-
--- returns w, h, colonOffset as relative sizes (center of colon = w + colonOffs)
 local function _layoutTime(self)
     local h, m = self.start:match("(%d+):(%d+)")
     if not h then h = '--' end
@@ -67,6 +71,10 @@ local function _layoutTime(self)
     self.tw = tools.ScreenPosToRel(wh + wc + wm)
     self.tco = tools.ScreenPosToRel(offs)
 end
+
+
+-------------------------------------------------------------------------------
+--- Constructors
 
 function SlideEvent.new(proto, cfg) -- proto is an event def from json
     local self = table.shallowcopy(proto)
@@ -87,7 +95,10 @@ function SlideEvent.new(proto, cfg) -- proto is an event def from json
     return self
 end
 
--- this ensures that all colons are aligned
+
+-------------------------------------------------------------------------------
+--- Member Functions
+
 function SlideEvent:draw(sx, sy, fgcol, bgcol)
 
     local timex = sx + self.tco + self.timexoffs
@@ -114,6 +125,8 @@ function SlideEvent:draw(sx, sy, fgcol, bgcol)
     end
 end
 
+
+-------------------------------------------------------------------------------
 
 print("slideevent.lua loaded completely")
 return SlideEvent

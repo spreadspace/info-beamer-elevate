@@ -1,25 +1,5 @@
-local SlideEvent = {}
-util.file_watch("slideevent.lua", function(content)
-    print("Reloading slideevent.lua...")
-    x = assert(loadstring(content, "slideevent.lua"))()
-    SlideEvent = x
-    if _DEBUG_ then regenerateSlideDeck() end
-end)
-
-
-
-
-local Slide = {}
-Slide.__index = Slide
-
--- constants
-local NO_EVENT = {
-    start = "404",
-    title = "Event not found",
-    subtitle = "There is currently no event to display.\nMove along.",
-    -- title = "Event not found blah rofl lolo omg wtf long title right let's see where this goes or otherwise things might break",
-    -- subtitle = "There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along.",
-}
+-------------------------------------------------------------------------------
+--- Constants (configuration)
 
 local LOCAL_TITLE_SIZE = 0.1
 local LOCAL_TIMEBAR_X_OFFSET = -0.035
@@ -38,7 +18,7 @@ local SPONSOR_Y1 = 0.3
 local SPONSOR_X2 = 0.8
 local SPONSOR_Y2 = 0.9
 
-local FORMAT_CFG_DEFAULT = {
+local EVENT_FORMAT_DEFAULT = {
     font = CONFIG.font,
     fontsize = 0.07,
     linespacing = 0.01,
@@ -53,7 +33,7 @@ local FORMAT_CFG_DEFAULT = {
     titlexoffs = 0.02
 }
 
-local FORMAT_CFG_LOCAL_TOP = {
+local EVENT_FORMAT_LOCAL_TOP = {
     font = CONFIG.font,
     fontsize = 0.091,
     linespacing = 0.01,
@@ -69,6 +49,37 @@ local FORMAT_CFG_LOCAL_TOP = {
 }
 
 
+local NO_EVENT = {
+    start = "404",
+    title = "Event not found",
+    subtitle = "There is currently no event to display.\nMove along.",
+    -- title = "Event not found blah rofl lolo omg wtf long title right let's see where this goes or otherwise things might break",
+    -- subtitle = "There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along.",
+}
+
+
+-------------------------------------------------------------------------------
+--- Classes
+
+local SlideEvent = {}
+util.file_watch("slideevent.lua", function(content)
+    print("Reloading slideevent.lua...")
+    x = assert(loadstring(content, "slideevent.lua"))()
+    SlideEvent = x
+    if _DEBUG_ then regenerateSlideDeck() end
+end)
+
+local Slide = {}
+Slide.__index = Slide
+
+
+-------------------------------------------------------------------------------
+--- Helper Functions
+
+local DEBUG_BG = resource.create_colored_texture(0, 0.5, 1, 0.15)
+local function drawDebugBG(x1, y1, x2, y2)
+    tools.drawResource(DEBUG_BG, x1, y1, x2, y2)
+end
 
 local function AddDrawCB(self, f)
     table.insert(self._drawCBs, f)
@@ -156,28 +167,29 @@ local function setupSponsor(self)
     end)
 end
 
-
-local function fLocal(i)
+local function formatLocal(i)
     if i == 1 then
-        return FORMAT_CFG_LOCAL_TOP
+        return EVENT_FORMAT_LOCAL_TOP
     else
-        return FORMAT_CFG_DEFAULT
+        return EVENT_FORMAT_DEFAULT
     end
 
 end
-local function fDefault(i)
-    return FORMAT_CFG_DEFAULT
+
+local function formatDefault(i)
+    return EVENT_FORMAT_DEFAULT
 end
+
 
 local function layoutlocal(self)
     setupTitle(self)
     setupTimebar(self)
-    setupEvents(self, self.events, fLocal)
+    setupEvents(self, self.events, formatLocal)
 end
 
 local function layoutremote(self, sx, sy)
     setupTitle(self)
-    setupEvents(self, self.events, fDefault)
+    setupEvents(self, self.events, formatDefault)
 end
 
 local function layoutsponsor(self)
@@ -185,11 +197,10 @@ local function layoutsponsor(self)
     setupSponsor(self)
 end
 
-local layouts =
-{
+local layouts = {
     ["local"] = layoutlocal,
-    remote = layoutremote,
-    sponsor = layoutsponsor,
+    ["remote"] = layoutremote,
+    ["sponsor"] = layoutsponsor,
 }
 
 local function commonInit(self)
@@ -197,6 +208,10 @@ local function commonInit(self)
     layouts[self.type](self)
     return self
 end
+
+
+-------------------------------------------------------------------------------
+--- Constructors
 
 function Slide.newLocal(locdef, events)
     local empty
@@ -238,10 +253,9 @@ function Slide.newSponsor(spon)
     return setmetatable(commonInit(self), Slide)
 end
 
-local DEBUG_BG = resource.create_colored_texture(0, 0.5, 1, 0.15)
-local function drawDebugBG(x1, y1, x2, y2)
-    tools.drawResource(DEBUG_BG, x1, y1, x2, y2)
-end
+
+-------------------------------------------------------------------------------
+--- Member Functions
 
 function Slide:draw(sx, sy)
     gl.pushMatrix()
@@ -251,6 +265,9 @@ function Slide:draw(sx, sy)
         end
     gl.popMatrix()
 end
+
+
+-------------------------------------------------------------------------------
 
 print("slide.lua loaded completely")
 return Slide

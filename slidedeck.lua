@@ -1,3 +1,35 @@
+-------------------------------------------------------------------------------
+--- Constants (configuration)
+
+local HEADER_Y_BEGIN = 0.05
+local HEADER_Y_PADDING = 0.02
+
+local HEADER_LOGO_X = -0.005
+local HEADER_LOGO_Y = 0.01
+local HEADER_LOGO_H = 0.23
+local HEADER_LOGO_W = HEADER_LOGO_H/DISPLAY_ASPECT  -- the logo texture is square
+
+local HEADER_TIME_SIZE = 0.08
+local HEADER_TIME_PADDING_RIGHT = 0.05
+
+local HEADER_TITLE_SIZE = 0.06
+local HEADER_TITLE_TEXT = "ELEVATE INFOSCREEN"
+local HEADER_TITLE_X = 0.15
+
+
+-- FOR TESTING --
+local SHOW_LOCAL_EVENTS = true
+local SHOW_REMOTE_EVENTS = true
+local SHOW_SPONSORS = true
+local SHOW_EMPTY_WHEN_NO_LOCAL = true
+-----------------
+-- events on this location will be skipped in remote slides
+local PSEUDO_LOCATION_ID = "emc"
+
+
+-------------------------------------------------------------------------------
+--- Classes
+
 local Slide = {}
 util.file_watch("slide.lua", function(content)
     print("Reloading slide.lua...")
@@ -6,18 +38,12 @@ util.file_watch("slide.lua", function(content)
     if _DEBUG_ then regenerateSlideDeck() end
 end)
 
+local SlideDeck = {}
+SlideDeck.__index = SlideDeck
 
-local TimerQueue = require "timerqueue"
 
--- FOR TESTING --
-local SHOW_LOCAL_EVENTS = false
-local SHOW_REMOTE_EVENTS = false
-local SHOW_SPONSORS = false
-local SHOW_EMPTY_WHEN_NO_LOCAL = true
------------------
--- events on this location will be skipped in remote slides
-local PSEUDO_LOCATION_ID = "emc"
-
+-------------------------------------------------------------------------------
+--- Helper Functions
 
 -- returns nil when event is not to be shown
 local function _sanitizeEvent(ev, ts, locid)
@@ -93,7 +119,7 @@ end
 local function _generateSponsorSlides(slides)
     if not SHOW_SPONSORS or not CONFIG.sponsors then return end
 
-    -- TODO: implemnt sponsor skip counter!
+    -- TODO: implement sponsor skip counter!
     for _, sponsor in ipairs(CONFIG.sponsors) do
         tools.debugPrint(3, "generating sponsor slide: " .. sponsor.image.filename)
         local slide = Slide.newSponsor(sponsor)
@@ -148,39 +174,33 @@ local function _scheduleToSlides(schedule)
     return slides
 end
 
-
-
-local SlideDeck = {}
-SlideDeck.__index = SlideDeck
-
 local function _drawHeader()
     local logo = CONFIG.logo.ensure_loaded()
     local font = CONFIG.font
     local fontbold = CONFIG.font_bold
     local fgcol = CONFIG.foreground_color
     local bgcol = CONFIG.background_color
-    local hy = 0.05
+    local hy = HEADER_Y_BEGIN
 
     -- logo
-    local logox, logoy = -0.005, 0.01
-    local logoh = 0.23
-    local logow = logoh/DISPLAY_ASPECT  -- the logo texture is square
+    local logox, logoy = HEADER_LOGO_X, HEADER_LOGO_Y
+    local logoh, logow = HEADER_LOGO_H, HEADER_LOGO_W
     tools.drawResource(logo, logox, logoy, logox+logow, logoy+logoh)
 
     -- time
-    local timesize = 0.08
+    local timesize = HEADER_TIME_SIZE
     local timestr = device.getTimeString()
     local timew = tools.ScreenPosToRel(fontbold:width(timestr, tools.RelSizeToScreen(timesize)))
-    local timex = 0.95 - timew
+    local timex = 1 - HEADER_TIME_PADDING_RIGHT - timew
     tools.drawFont(fontbold, timex, hy, timestr, timesize, fgcol, bgcol)
 
     -- top title
-    local titlesize = 0.06
-    local titlestr = "ELEVATE INFOSCREEN"
-    local titlex = 0.15
+    local titlesize = HEADER_TITLE_SIZE
+    local titlestr = HEADER_TITLE_TEXT
+    local titlex = HEADER_TITLE_X
     tools.drawFont(font, titlex, hy, titlestr, titlesize, fgcol, bgcol)
 
-    return titlex, hy + titlesize + 0.02
+    return titlex, hy + titlesize + HEADER_Y_PADDING
 end
 
 local function _slideiter(slides)
@@ -192,6 +212,11 @@ local function _slideiter(slides)
     end
 end
 
+
+-------------------------------------------------------------------------------
+--- Constructors
+
+local TimerQueue = require "timerqueue"
 
 function SlideDeck.new(schedule)
     tools.debugPrint(2, "generating new slide deck")
@@ -216,6 +241,10 @@ function SlideDeck.new(schedule)
     self:next()
     return self
 end
+
+
+-------------------------------------------------------------------------------
+--- Member Functions
 
 function SlideDeck:next()
     local it = self.iter
@@ -245,6 +274,9 @@ function SlideDeck:draw()
     local hx, hy = _drawHeader() -- returns where header ends
     self.current:draw(hx, hy)
 end
+
+
+-------------------------------------------------------------------------------
 
 print("slidedeck.lua loaded completely")
 return SlideDeck
