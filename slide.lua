@@ -267,7 +267,7 @@ function Slide.newLocal(locdef, events)
     if not events or #events == 0 then
         events = {NO_EVENT}
         empty = true
-        time = 3 -- TODO: make this configurable?
+        time = CONFIG.slide_time_empty
     end
     local self = {
         here = true,

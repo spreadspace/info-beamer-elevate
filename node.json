@@ -72,7 +72,7 @@
     },
 
     {
-        "title": "Slides",
+        "title": "Slide Display Times",
         "type": "section"
     }, {
         "title": "Current Locations",
@@ -82,6 +82,13 @@
         "hint": "How long to display current location information in seconds",
         "default": 15
     }, {
+        "title": "Empty",
+        "ui_width": 2,
+        "name": "slide_time_empty",
+        "type": "duration",
+        "hint": "How long to display any empty slide if there are now local events",
+        "default": 3
+    }, {
         "title": "Other Locations",
         "ui_width": 3,
         "name": "slide_time_remote",
@@ -90,14 +97,14 @@
         "default": 10
     }, {
         "title": "Sponsors",
-        "ui_width": 3,
+        "ui_width": 2,
         "name": "slide_time_sponsor",
         "type": "duration",
         "hint": "How long to display sponsor slides in seconds",
         "default": 5
     }, {
         "title": "Sponsors Skip",
-        "ui_width": 3,
+        "ui_width": 2,
         "name": "slide_sponsor_skip",
         "type": "integer",
         "hint": "Skip sponser slide every x iterations, 0 shows it in all iterations, 1 will skip every other iteration ...",
