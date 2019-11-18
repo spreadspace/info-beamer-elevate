@@ -4,7 +4,7 @@
 local SLIDE_Y_BEGIN = 0.13
 local SLIDE_TITLE_X_OFFSET = 0.15
 local SLIDE_X_MAX = 0.95
-local SLIDE_BODY_MINSPACE_TOP = 0.03
+local SLIDE_BODY_MINSPACE_TOP = 0.065
 local SLIDE_BODY_MINSPACE_BOTTOM = 0.07
 
 local LOCAL_TITLE_SIZE = 0.1
@@ -14,11 +14,11 @@ local LOCAL_TIMEBAR_Y_END = 0.98
 local LOCAL_TIMEBAR_WIDTH = 0.006
 local LOCAL_TIMEBAR_TICK_WITH = 0.018
 local LOCAL_TIMEBAR_TICK_HEIGHT = LOCAL_TIMEBAR_WIDTH/DISPLAY_ASPECT
-local LOCAL_EVENT_TIME_X_OFFSET = 0.2
+local LOCAL_EVENT_TIME_X_OFFSET = 0.21
 local LOCAL_EVENT_TEXT_X_OFFSET = 0.3
 
 local REMOTE_TITLE_SIZE = 0.08
-local REMOTE_EVENT_TIME_X_OFFSET = 0.20
+local REMOTE_EVENT_TIME_X_OFFSET = 0.21
 local REMOTE_EVENT_TEXT_X_OFFSET = 0.28
 
 local SPONSOR_TITLE = "SPONSOR"
@@ -42,19 +42,19 @@ local EVENT_FORMAT_DEFAULT = {
 
 local EVENT_FORMAT_LOCAL_TOP = {
     font = CONFIG.font,
-    fontsize = 0.091,
+    fontsize = 0.094,
     linespacing = 0.01,
 
     fontSub = CONFIG.font,
-    fontsizeSub = 0.059,
+    fontsizeSub = 0.06,
     linespacingSub = 0,
 
-    ypadding = 0.03,
+    ypadding = 0.042,
 }
 
 
 local NO_EVENT = {
-    start = "404",
+    start = "4:04",
     title = "Event not found",
     subtitle = "There is currently no event to display.\nMove along.",
     -- title = "Event not found blah rofl lolo omg wtf long title right let's see where this goes or otherwise things might break",
@@ -160,21 +160,27 @@ local function setupEvents(self, events, getFormatConfig)
     local y0 = SLIDE_Y_BEGIN
     local timex, textx
     if self.type == "local" then
-        y0 = y0 + LOCAL_TITLE_SIZE + SLIDE_BODY_MINSPACE_TOP
+        y0 = y0 + LOCAL_TITLE_SIZE
         timex, textx = LOCAL_EVENT_TIME_X_OFFSET, LOCAL_EVENT_TEXT_X_OFFSET
     else
-        y0 = y0 + REMOTE_TITLE_SIZE + SLIDE_BODY_MINSPACE_TOP
+        y0 = y0 + REMOTE_TITLE_SIZE
         timex, textx = REMOTE_EVENT_TIME_X_OFFSET, REMOTE_EVENT_TEXT_X_OFFSET
     end
-    SlideEvent.Align(evs, timex, textx, SLIDE_X_MAX-textx, 1-y0-SLIDE_BODY_MINSPACE_BOTTOM)
+    local maxH = 1 - y0 - SLIDE_BODY_MINSPACE_TOP - SLIDE_BODY_MINSPACE_BOTTOM
+    local sumPadding, yRemain = SlideEvent.Arrange(evs, timex, textx, SLIDE_X_MAX-textx, maxH)
+
+    local expand = 1 + (yRemain / (sumPadding + SLIDE_BODY_MINSPACE_TOP + SLIDE_BODY_MINSPACE_BOTTOM))
+    y0 = y0 + SLIDE_BODY_MINSPACE_TOP * expand
 
     AddDrawCB(self, function(slide)
         local fgcol = (self.track and self.track.foreground_color) or CONFIG.foreground_color
         local bgcol = (self.track and self.track.background_color) or CONFIG.background_color
+        local y = y0
         for i, ev in ipairs(evs) do
             fgcol = (ev.track and ev.track.foreground_color) or fgcol
             bgcol = (ev.track and ev.track.background_color) or bgcol
-            ev:draw(y0, fgcol, bgcol)
+            ev:draw(y, fgcol, bgcol)
+            y = y + ev.height + ev.ypadding * expand
         end
     end)
 
@@ -185,7 +191,7 @@ local function setupEvents(self, events, getFormatConfig)
             local dy = LOCAL_TIMEBAR_TICK_HEIGHT
             local fgcol = tools.getColorTex(CONFIG.foreground_color)
             for i, ev in ipairs(evs) do
-                local y = y0 + ev.ybegin + (ev.fontsize*0.5)
+                local y = ev.ybegin + (ev.fontsize*0.5)
                 tools.drawResource(fgcol, x-dx, y-dy, x+dx, y+dy)
             end
         end)

@@ -8,13 +8,14 @@ SlideEvent.__index = SlideEvent
 -------------------------------------------------------------------------------
 --- Helper Functions
 
--- final alignment step for all events generated for a single slide
--- timex means center of time, textx means start of time
+-- timex means center of time, textx means start of text
 -- linewrapping must happen here
-function SlideEvent.Align(evs, timex, textx, textW, maxH)
-    local ybegin = 0
+function SlideEvent.Arrange(evs, timex, textx, textW, maxH)
     local textAvailW = tools.RelPosToScreen(textW)
 
+    local y = 0
+    local sumPadding = 0
+    local lastPadding = 0
     for i, ev in ipairs(evs) do
         local sz = tools.RelSizeToScreen(ev.fontsize)
         local szSub = tools.RelSizeToScreen(ev.fontsizeSub)
@@ -27,34 +28,32 @@ function SlideEvent.Align(evs, timex, textx, textW, maxH)
             ev.subtitleparts = ev.subtitle:fwrap(ev.fontSub, szSub, 0, textAvailW)
             subh = #ev.subtitleparts * (ev.fontsizeSub + ev.linespacingSub)
         end
-        ev.heightNoPadding = #ev.titleparts * (ev.fontsize + ev.linespacing) + subh
+        ev.height = #ev.titleparts * (ev.fontsize + ev.linespacing) + subh
 
-        ev.height = ev.heightNoPadding  + ev.ypadding
-        ev.ybegin = ybegin
-        ybegin = ybegin + ev.height
-
-        -- remove events that don't fit
-        local endY = ev.ybegin + ev.heightNoPadding - ev.linespacing
-        if endY >= maxH then
+        if (y + ev.height) >= maxH then
             for k = i, #evs do
                 evs[k] = nil
             end
-            return
+            break
         end
+        lastPadding = ev.ypadding
+        sumPadding = sumPadding + ev.ypadding
+        y = y + ev.height + ev.ypadding
     end
+
+    return sumPadding - lastPadding, maxH - y
 end
 
 local function _layoutTime(self)
+    local font, sz = self.font, tools.RelSizeToScreen(self.fontsize)
     local h, m = self.start:match("(%d+):(%d+)")
     if not h then h = '--' end
     if not m then m = '--' end
-    local font, sz = self.font, tools.RelSizeToScreen(self.fontsize)
 
     local wh = font:width(h, sz)
     local wc = font:width(":", sz)
-    local wm = font:width(m, sz)
-    local offs = -wh - (wc * 0.5)
-    self.tw = tools.ScreenPosToRel(wh + wc + wm)
+    -- local wm = font:width(m, sz)
+    local offs = - wh - (wc * 0.5)
     self.tco = tools.ScreenPosToRel(offs)
 end
 
@@ -83,28 +82,27 @@ end
 -------------------------------------------------------------------------------
 --- Member Functions
 
-function SlideEvent:draw(y0, fgcol, bgcol)
-
+function SlideEvent:draw(y, fgcol, bgcol)
+    self.ybegin = y
     local timex = self.timex + self.tco
-    local ty = y0 + self.ybegin
     local textx = self.textx
     local lineh = self.fontsize + self.linespacing
     local linehSub = self.fontsizeSub + self.linespacingSub
 
     -- time text
-    tools.drawFont(self.font, timex, ty, self.start, self.fontsize, fgcol, bgcol)
+    tools.drawFont(self.font, timex, y, self.start, self.fontsize, fgcol, bgcol)
 
     -- title
     for _, s in ipairs(self.titleparts) do
-        tools.drawFont(self.font, textx, ty, s, self.fontsize, fgcol, bgcol)
-        ty = ty + lineh
+        tools.drawFont(self.font, textx, y, s, self.fontsize, fgcol, bgcol)
+        y = y + lineh
     end
 
     -- subtitle
     if self.subtitleparts then
         for _, s in ipairs(self.subtitleparts) do
-            tools.drawFont(self.fontSub, textx, ty, s, self.fontsizeSub, fgcol, bgcol)
-            ty = ty + linehSub
+            tools.drawFont(self.fontSub, textx, y, s, self.fontsizeSub, fgcol, bgcol)
+            y = y + linehSub
         end
     end
 end
