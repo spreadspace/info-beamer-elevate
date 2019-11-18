@@ -83,7 +83,6 @@ end
 --- Member Functions
 
 function SlideEvent:draw(y, fgcol, bgcol)
-    self.ybegin = y
     local timex = self.timex + self.tco
     local textx = self.textx
     local lineh = self.fontsize + self.linespacing

@@ -178,7 +178,7 @@ local function setupEvents(self, events, getFormatConfig)
         local fgcol = (self.track and self.track.foreground_color) or CONFIG.foreground_color
         local bgcol = (self.track and self.track.background_color) or CONFIG.background_color
         local y = y0
-        for i, ev in ipairs(evs) do
+        for _, ev in ipairs(evs) do
             fgcol = (ev.track and ev.track.foreground_color) or fgcol
             bgcol = (ev.track and ev.track.background_color) or bgcol
             ev:draw(y, fgcol, bgcol)
@@ -187,14 +187,16 @@ local function setupEvents(self, events, getFormatConfig)
     end)
 
     if self.type == "local" then
+        local x = LOCAL_TIMEBAR_X_OFFSET
+        local dx = LOCAL_TIMEBAR_TICK_WITH
+        local dy = LOCAL_TIMEBAR_TICK_HEIGHT
+        local fgcol = tools.getColorTex(CONFIG.foreground_color)
         AddDrawCB(self, function(slide)
-            local x = LOCAL_TIMEBAR_X_OFFSET
-            local dx = LOCAL_TIMEBAR_TICK_WITH
-            local dy = LOCAL_TIMEBAR_TICK_HEIGHT
-            local fgcol = tools.getColorTex(CONFIG.foreground_color)
-            for i, ev in ipairs(evs) do
-                local y = ev.ybegin + (ev.fontsize*0.5)
-                tools.drawResource(fgcol, x-dx, y-dy, x+dx, y+dy)
+            local y = y0
+            for _, ev in ipairs(evs) do
+                local yt = y + (ev.fontsize*0.5)
+                tools.drawResource(fgcol, x-dx, yt-dy, x+dx, yt+dy)
+                y = y + ev.height + ev.ypadding * expand
             end
         end)
     end
