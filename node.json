@@ -51,8 +51,8 @@
         "name": "background_video",
         "hint": "This is only used if device background style is set to video",
         "type": "resource",
-        "valid": ["video", "image"],
-        "default": "empty.png"
+        "valid": ["video"],
+        "default": ""
     },
 
     {
