@@ -23,10 +23,10 @@ local REMOTE_EVENT_TEXT_X_OFFSET = 0.28
 
 local SPONSOR_TITLE = "SPONSOR"
 local SPONSOR_TITLE_SIZE = 0.1
-local SPONSOR_X1 = 0.2
-local SPONSOR_Y1 = 0.3
-local SPONSOR_X2 = 0.8
-local SPONSOR_Y2 = 0.9
+local SPONSOR_X_CENTER = 0.5
+local SPONSOR_Y_CENTER = 0.6
+local SPONSOR_MAX_W = 0.8
+local SPONSOR_MAX_H = 0.6
 
 local EVENT_FORMAT_DEFAULT = {
     font = CONFIG.font,
@@ -80,37 +80,39 @@ Slide.__index = Slide
 -------------------------------------------------------------------------------
 --- Helper Functions
 
-local RED = resource.create_colored_texture(0.5, 0, 0, 1)
-local function drawLineH(y)
-    tools.drawResource(RED, 0, y, 1, y+(1/DISPLAY_HEIGHT))
+local RED = resource.create_colored_texture(0.7, 0, 0, 1)
+local GREEN = resource.create_colored_texture(0, 0.7, 0, 1)
+local BLUE = resource.create_colored_texture(0, 0, 0.7, 1)
+local function drawLineH(col, y)
+    tools.drawResource(col, 0, y, 1, y+(1/DISPLAY_HEIGHT))
 end
 
-local function drawLineV(x)
-    tools.drawResource(RED, x, 0, x+(1/DISPLAY_WIDTH), 1)
+local function drawLineV(col, x)
+    tools.drawResource(col, x, 0, x+(1/DISPLAY_WIDTH), 1)
 end
 
 local function drawGrid(type)
-    drawLineH(SLIDE_Y_BEGIN)
-    drawLineV(SLIDE_TITLE_X_OFFSET)
+    drawLineH(BLUE, SLIDE_Y_BEGIN)
+    drawLineV(BLUE, SLIDE_TITLE_X_OFFSET)
 
     if type == "sponsor" then
-        drawLineV(SPONSOR_X1)
-        drawLineH(SPONSOR_Y1)
-        drawLineV(SPONSOR_X2)
-        drawLineH(SPONSOR_Y2)
+        drawLineV(GREEN, SPONSOR_X_CENTER - SPONSOR_MAX_W/2)
+        drawLineV(GREEN, SPONSOR_X_CENTER + SPONSOR_MAX_W/2)
+        drawLineH(GREEN, SPONSOR_Y_CENTER - SPONSOR_MAX_H/2)
+        drawLineH(GREEN, SPONSOR_Y_CENTER + SPONSOR_MAX_H/2)
     elseif type == "local" then
-        drawLineV(SLIDE_X_MAX)
-        drawLineH(SLIDE_Y_BEGIN + LOCAL_TITLE_SIZE + SLIDE_BODY_MINSPACE_TOP)
-        drawLineH(1-SLIDE_BODY_MINSPACE_BOTTOM)
-        drawLineV(LOCAL_TIMEBAR_X_OFFSET)
-        drawLineV(LOCAL_EVENT_TIME_X_OFFSET)
-        drawLineV(LOCAL_EVENT_TEXT_X_OFFSET)
+        drawLineV(RED, SLIDE_X_MAX)
+        drawLineH(RED, SLIDE_Y_BEGIN + LOCAL_TITLE_SIZE + SLIDE_BODY_MINSPACE_TOP)
+        drawLineH(RED, 1-SLIDE_BODY_MINSPACE_BOTTOM)
+        drawLineV(RED, LOCAL_TIMEBAR_X_OFFSET)
+        drawLineV(RED, LOCAL_EVENT_TIME_X_OFFSET)
+        drawLineV(RED, LOCAL_EVENT_TEXT_X_OFFSET)
     else
-        drawLineV(SLIDE_X_MAX)
-        drawLineH(SLIDE_Y_BEGIN + REMOTE_TITLE_SIZE + SLIDE_BODY_MINSPACE_TOP)
-        drawLineH(1-SLIDE_BODY_MINSPACE_BOTTOM)
-        drawLineV(REMOTE_EVENT_TIME_X_OFFSET)
-        drawLineV(REMOTE_EVENT_TEXT_X_OFFSET)
+        drawLineV(RED, SLIDE_X_MAX)
+        drawLineH(RED, SLIDE_Y_BEGIN + REMOTE_TITLE_SIZE + SLIDE_BODY_MINSPACE_TOP)
+        drawLineH(RED, 1-SLIDE_BODY_MINSPACE_BOTTOM)
+        drawLineV(RED, REMOTE_EVENT_TIME_X_OFFSET)
+        drawLineV(RED, REMOTE_EVENT_TEXT_X_OFFSET)
     end
 end
 
@@ -201,7 +203,13 @@ end
 local function setupSponsor(self)
     AddDrawCB(self, function()
         local img = self.image.ensure_loaded()
-        tools.drawResource(img, SPONSOR_X1, SPONSOR_Y1, SPONSOR_X2, SPONSOR_Y2)
+        local w, h = tools.ScreenPosToRel(img:size())
+        local scale = SPONSOR_MAX_W / w
+        if (SPONSOR_MAX_H / h) < scale then
+            scale = SPONSOR_MAX_H / h
+        end
+        w, h = w*scale, h*scale
+        tools.drawResource(img, SPONSOR_X_CENTER - w/2, SPONSOR_Y_CENTER - h/2, SPONSOR_X_CENTER + w/2, SPONSOR_Y_CENTER + h/2)
     end)
 end
 
