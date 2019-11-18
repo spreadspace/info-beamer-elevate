@@ -10,6 +10,7 @@ local RADTODEG = 180.0 / 3.14159265359
 local DEGTORAD = 3.14159265359 / 180.0
 local ROT1 = RADTODEG * PI
 
+local SHOW_QUERULANT = true
 local QSIZE = 0.12
 local QPOSX, QPOSY = 0.4, 0.3   -- querulant base position [(0,0) = center, (1,1) = bottom right corner]
 local QMOVESCALE = 0.20
@@ -74,6 +75,8 @@ function fancy.render(mode)
 
     if mode == "minimal" then
         Resources.fancy_minimalbg:draw(0, 0, WIDTH, HEIGHT)
+
+        -- TODO: draw minimal animation
     elseif mode == "full" then
         Resources.fancy_bgcolor:draw(0, 0, WIDTH, HEIGHT)
 
@@ -89,13 +92,16 @@ function fancy.render(mode)
         -- TODO: draw fancy animation
     end
 
-    gl.ortho()
-    gl.translate(WIDTH/2, HEIGHT/2)
-    gl.scale(WIDTH * (1/NATIVE_ASPECT), HEIGHT)
-    if fancy.fixaspect then
-        fancy.fixaspect()
+    -- TODO: draw common animation
+    if SHOW_QUERULANT then
+        gl.ortho()
+        gl.translate(WIDTH/2, HEIGHT/2)
+        gl.scale(WIDTH * (1/NATIVE_ASPECT), HEIGHT)
+        if fancy.fixaspect then
+            fancy.fixaspect()
+        end
+        drawQueru(now)
     end
-    drawQueru(now)
 end
 
 ----------------------------------------------

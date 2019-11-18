@@ -2,10 +2,8 @@ local Background = {}
 Background.__index = Background
 
 local function drawBGSimple(res)
-    gl.ortho()
     -- we assume the background has the correct aspect ratio
     res:draw(0, 0, NATIVE_WIDTH, NATIVE_HEIGHT)
-    tools.fixAspect()
 end
 
 function Background.new(style)
@@ -34,10 +32,7 @@ function Background.new(style)
         local fancy = require "fancy"
         fancy.fixaspect = tools.fixAspect
         self._draw = function()
-            gl.ortho()
-            fancy.render(fancymode) -- resets the matrix
-            gl.ortho()
-            tools.fixAspect()
+            fancy.render(fancymode)
         end
     else
         tools.debugPrint(1, "WARNING: invalid background style: " .. style)
@@ -47,6 +42,7 @@ function Background.new(style)
 end
 
 function Background:draw()
+    gl.ortho()
     if self._draw then
         self._draw()
     end

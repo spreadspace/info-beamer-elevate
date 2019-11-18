@@ -61,18 +61,17 @@ local function setupTitle(self)
     self.titleoffset = titlesize + 0.03
 
     AddDrawAbs(self, function(slide, sx, sy)
-        local x, y = tools.ScreenPosToRel(sx, sy)
-        tools.drawFont(font, x, y, title, titlesize, fgcol, bgcol)
+        tools.drawFont(font, sx, sy, title, titlesize, fgcol, bgcol)
     end)
 end
 
 local function setupGradient(self)
-    local beginy = 0.15 * DISPLAY_HEIGHT
-    local thickness = 0.006 * DISPLAY_WIDTH
+    local beginy = 0.15
+    local thickness = 0.006
 
     AddDrawAbs(self, function(slide, sx, sy)
-        local gx = sx - 0.035 * DISPLAY_WIDTH
-        Resources.gradient:draw(gx - thickness/2, beginy, gx + thickness/2, DISPLAY_HEIGHT)
+        local gx = sx - 0.035
+        tools.drawResource(Resources.gradient, gx - thickness/2, beginy, gx + thickness/2, 1)
     end)
 end
 
@@ -100,10 +99,10 @@ local function setupEvents(self, protos, getconfig, ...)
     if self.type == "local" then
         AddDrawAbs(self, function(slide, sx, sy)
             local HACK_FACTOR = 0.3 -- no time to explain
-            local gx = sx - 0.035 * DISPLAY_WIDTH
+            local gx = sx - 0.035
             local fgcolor = CONFIG.foreground_color
             for i, ev in ipairs(evs) do
-                ev:drawtick(fgcolor, sx-gx*HACK_FACTOR,sy+(self.titleoffset*DISPLAY_HEIGHT))
+                ev:drawtick(fgcolor, sx-gx*HACK_FACTOR,sy+(self.titleoffset))
             end
         end)
     end
@@ -143,7 +142,7 @@ end
 
 local function _drawsponsor(self)
     local img = self.image.ensure_loaded()
-    tools.drawImage(img, SPONSORSLIDE_X, SPONSORSLIDE_Y, SPONSORSLIDE_W, SPONSORSLIDE_H)
+    tools.drawResource(img, SPONSORSLIDE_X, SPONSORSLIDE_Y, SPONSORSLIDE_W, SPONSORSLIDE_H)
 end
 
 local function layoutsponsor(self)
@@ -223,9 +222,7 @@ end
 
 local DEBUG_BG = resource.create_colored_texture(0, 0.5, 1, 0.15)
 local function drawDebugBG(x1, y1, x2, y2)
-    local rx1, ry1 = tools.RelPosToScreen(x1, y1)
-    local rx2, ry2 = tools.RelPosToScreen(x2, y2)
-    DEBUG_BG:draw(rx1, ry1, rx2, ry2)
+    tools.drawResource(DEBUG_BG, x1, y1, x2, y2)
 end
 
 function Slide:drawRel(...)
@@ -241,13 +238,11 @@ function Slide:drawAbs(...)
 end
 
 function Slide:draw(sx, sy)
-    -- start positions after header
     gl.pushMatrix()
-        local rsx, rsy = tools.ScreenPosToRel(sx, sy)
-        tools.debugDraw(5, drawDebugBG, rsx, rsy, 1, 1)
+        tools.debugDraw(5, drawDebugBG, sx, sy, 1, 1)
         self:drawAbs(sx, sy)
-        sy = sy + self.titleoffset*DISPLAY_HEIGHT
-        gl.translate(sx, sy)
+        sy = sy + self.titleoffset
+        gl.translate(tools.RelPosToScreen(sx, sy))
         self:drawRel()
     gl.popMatrix()
 end

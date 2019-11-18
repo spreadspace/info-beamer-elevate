@@ -164,13 +164,13 @@ local function _drawHeader()
 
     -- logo
     local logosize = 0.23 -- the logo texture is square
-    tools.drawImage(logo, -0.01, 0.01, logosize/DISPLAY_ASPECT, logosize)
+    tools.drawResource(logo, -0.01, 0.01, logosize/DISPLAY_ASPECT, logosize)
 
     -- time
     local timesize = 0.08
     local timestr = device.getTimeString()
-    local timew = fontbold:width(timestr .. "     ", tools.RelSizeToScreen(timesize)) / DISPLAY_WIDTH
-    local timex = 1.0 - timew
+    local timew = fontbold:width(timestr, tools.RelSizeToScreen(timesize)) / DISPLAY_WIDTH
+    local timex = 0.95 - timew
     tools.drawFont(fontbold, timex, hy, timestr, timesize, fgcol, bgcol)
 
     -- top title
@@ -179,7 +179,7 @@ local function _drawHeader()
     local titlex = 0.15
     tools.drawFont(font, titlex, hy, titlestr, titlesize, fgcol, bgcol)
 
-    return tools.RelPosToScreen(titlex,  hy + titlesize + 0.02)
+    return titlex, hy + titlesize + 0.02
 end
 
 local function _slideiter(slides)
@@ -239,6 +239,8 @@ function SlideDeck:update(dt)
 end
 
 function SlideDeck:draw()
+    gl.ortho()
+    tools.fixAspect()
     local hx, hy = _drawHeader() -- returns where header ends
     self.current:draw(hx, hy)
 end

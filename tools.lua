@@ -104,7 +104,6 @@ end
 -- takes x, y, sz in resolution-independent coords
 -- (0, 0) = upper left corner, (1, 1) = lower right corner
 -- sz == 0.5 -> half as high as the screen
--- TODO: change scaling so aspect ratio correction is only needed in here
 function tools.drawFont(font, x, y, text, sz, fgcol, bgcol)
     local xx, yy  = tools.RelPosToScreen(x, y)
     local zz = tools.RelSizeToScreen(sz)
@@ -119,10 +118,10 @@ end
 
 -- takes x, y, w, h in resolution-independent coords
 -- (0, 0) = upper left corner, (1, 1) = lower right corner
-function tools.drawImage(img, x, y, w, h)
+function tools.drawResource(res, x1, y1, x2, y2)
     gl.pushMatrix()
         gl.scale(DISPLAY_WIDTH, DISPLAY_HEIGHT)
-        img:draw(x, y, w, h)
+        res:draw(x1, y1, x2, y2)
     gl.popMatrix()
 end
 
