@@ -17,6 +17,7 @@ if not state then
     state = {}
     state.background = nil
     state.slidedeck = nil
+    state.slidedeckIteration = 0
     state.current_schedule = nil
     state.lastnow = nil
     rawset(_G, "._state", state)
@@ -71,7 +72,8 @@ util.file_watch("slidedeck.lua", function(content)
     local x = assert(loadstring(content, "slidedeck.lua"))()
     SlideDeck = x
     if _DEBUG_ or not state.slidedeck then
-       state.slidedeck = SlideDeck.new(state.current_schedule)
+       state.slidedeck = SlideDeck.new(state.current_schedule, state.slidedeckIteration)
+       state.slidedeckIteration = state.slidedeckIteration + 1
     end
 end)
 
@@ -97,7 +99,8 @@ function node.render()
     -- slidedeck.update() might set state.slidedeck to nil if we reached the end of the slides
     if state.slidedeck then state.slidedeck:update(dt) end
     if not state.slidedeck then
-       state.slidedeck  = SlideDeck.new(state.current_schedule)
+       state.slidedeck  = SlideDeck.new(state.current_schedule, state.slidedeckIteration)
+       state.slidedeckIteration = state.slidedeckIteration + 1
     end
 
     state.background:draw()

@@ -115,10 +115,14 @@ local function _generateRemoteSlides(slides, events, tracks, locations)
     end
 end
 
-local function _generateSponsorSlides(slides)
+local function _generateSponsorSlides(slides, iteration)
     if not SHOW_SPONSORS or not CONFIG.sponsors then return end
 
-    -- TODO: implement sponsor skip counter!
+    if iteration % (CONFIG.slide_sponsor_skip + 1) > 0 then
+        tools.debugPrint(3, "skipping sponsor slides for iteration " .. iteration)
+        return
+    end
+
     for _, sponsor in ipairs(CONFIG.sponsors) do
         tools.debugPrint(3, "generating sponsor slide: " .. sponsor.image.filename)
         local slide = Slide.newSponsor(sponsor)
@@ -126,7 +130,7 @@ local function _generateSponsorSlides(slides)
     end
 end
 
-local function _scheduleToSlides(schedule)
+local function _scheduleToSlides(schedule, iteration)
     local slides = {}
     local localEvents = {}
     local ts = math.floor(device.getTime())
@@ -168,7 +172,7 @@ local function _scheduleToSlides(schedule)
 
     _generateLocalSlide(slides, localEvents, here)
     _generateRemoteSlides(slides, events, tracks, locations)
-    _generateSponsorSlides(slides)
+    _generateSponsorSlides(slides, iteration)
     tools.debugPrint(2, "generated " .. #slides .. " slides")
     return slides
 end
@@ -214,8 +218,8 @@ end
 
 local TimerQueue = require "timerqueue"
 
-function SlideDeck.new(schedule)
-    tools.debugPrint(2, "generating new slide deck")
+function SlideDeck.new(schedule, iteration)
+    tools.debugPrint(2, "generating new slide deck (iteration " .. iteration .. ")")
     local self = {
         tq = TimerQueue.new(),
         iter = nil,
@@ -225,7 +229,7 @@ function SlideDeck.new(schedule)
 
     local slides = nil
     if schedule then
-       slides = _scheduleToSlides(schedule)
+       slides = _scheduleToSlides(schedule, iteration)
     end
     if not slides or #slides == 0 then
        slides = {_generateEmptyLocalSlide()}
