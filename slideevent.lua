@@ -1,39 +1,6 @@
 local SlideEvent = {}
 SlideEvent.__index = SlideEvent
 
-local config =
-{
-    fontscale1 = 0.07, -- fontscale is in total screen height
-    fontscale2 = 0.045,
-    font = CONFIG.font,
-}
-
-
--- returns w, h, colonOffset as relative sizes (center of colon = w + colonOffs)
-local function layouttime(self, mul)
-    local h, m = self.start:match("(%d+):(%d+)")
-    if not h then h = '--' end
-    if not m then m = '--' end
-    local relscale = config.fontscale1 * mul
-    local font, scale = config.font, tools.RelSizeToScreen(self.fontscale)
-    local wh = font:width(h, scale)
-    local wc = font:width(":", scale)
-    local wm = font:width(m, scale)
-    local offs = -wh - (wc * 0.5)
-    self.tw = tools.ScreenPosToRel(wh + wc + wm)
-    self.tco = offs / DISPLAY_WIDTH
-end
-
-local function layout(self, cfg)
-    local mul = assert(cfg.sizemult)
-    self.fontscale = assert(config.fontscale1) * mul
-    self.fontscale2 = assert(config.fontscale2) * mul
-    self.linespacing = assert(cfg.linespacing)
-    self.ypadding = assert(cfg.ypadding)
-    self.timexoffs = assert(cfg.timexoffs)
-    self.titlexoffs = assert(cfg.titlexoffs)
-    layouttime(self, mul)
-end
 
 -- final alignment step for all events generated for a single slide
 -- align to relative screen size (w, h) (w == 0.9 means fill up to 90% of the screen width)
@@ -43,7 +10,6 @@ function SlideEvent.Align(evs, w, h)
     local maxtend = 0
     local ybegin = 0
     local totalAvailW, totalAvailH = tools.RelPosToScreen(w, h)
-    local font = config.font
 
     for i, ev in ipairs(evs) do
         maxtw = math.max(maxtw, ev.tw)
@@ -55,19 +21,19 @@ function SlideEvent.Align(evs, w, h)
     local textAvailW = totalAvailW - absTimeW
 
     for i, ev in ipairs(evs) do
-        local fontsize = tools.RelSizeToScreen(ev.fontscale)
-        local subfontsize = tools.RelSizeToScreen(ev.fontscale2)
+        local sz = tools.RelSizeToScreen(ev.fontsize)
+        local szSub = tools.RelSizeToScreen(ev.fontsizeSub)
 
         ev.maxtw = maxtw
         ev.textx = 0
 
-        ev.titleparts = ev.title:fwrap(font, fontsize, 0, textAvailW)
+        ev.titleparts = ev.title:fwrap(ev.font, sz, 0, textAvailW)
         local subh = 0
         if ev.subtitle and #ev.subtitle > 0 then
-            ev.subtitleparts = ev.subtitle:fwrap(font, subfontsize, 0, textAvailW)
-            subh = #ev.subtitleparts * ev.fontscale2
+            ev.subtitleparts = ev.subtitle:fwrap(ev.fontSub, szSub, 0, textAvailW)
+            subh = #ev.subtitleparts * ev.fontsizeSub
         end
-        ev.heightNoPadding = (ev.fontscale + ev.linespacing) * #ev.titleparts
+        ev.heightNoPadding = (ev.fontsize + ev.linespacing) * #ev.titleparts
             + subh
 
         ev.height = ev.heightNoPadding  + ev.ypadding
@@ -87,21 +53,36 @@ function SlideEvent.Align(evs, w, h)
     end
 end
 
+
+-- returns w, h, colonOffset as relative sizes (center of colon = w + colonOffs)
+local function _layoutTime(self)
+    local h, m = self.start:match("(%d+):(%d+)")
+    if not h then h = '--' end
+    if not m then m = '--' end
+    local font, sz = self.font, tools.RelSizeToScreen(self.fontsize)
+
+    local wh = font:width(h, sz)
+    local wc = font:width(":", sz)
+    local wm = font:width(m, sz)
+    local offs = -wh - (wc * 0.5)
+    self.tw = tools.ScreenPosToRel(wh + wc + wm)
+    self.tco = tools.ScreenPosToRel(offs)
+end
+
 function SlideEvent.new(proto, cfg) -- proto is an event def from json
     local self = table.shallowcopy(proto)
     setmetatable(self, SlideEvent)
 
-    layout(self, cfg)
+    self.font = assert(cfg.font)
+    self.fontsize = assert(cfg.fontsize)
+    self.fontSub = assert(cfg.fontSub)
+    self.fontsizeSub = assert(cfg.fontsizeSub)
+    self.linespacing = assert(cfg.linespacing)
+    self.ypadding = assert(cfg.ypadding)
+    self.timexoffs = assert(cfg.timexoffs)
+    self.titlexoffs = assert(cfg.titlexoffs)
+    _layoutTime(self)
     return self
-end
-
-function SlideEvent:drawtick(fgcol, sx, sy)
-    local dx = 0.02
-    local dy = 0.004
-    local x, y = sx, sy + self.ybegin + (self.fontscale*0.5)
-
-    local fgtex = tools.getColorTex(fgcol)
-    tools.drawResource(fgtex, x-dx, y-dy, x+dx, y+dy)
 end
 
 -- this ensures that all colons are aligned
@@ -109,24 +90,23 @@ function SlideEvent:draw(fgcol, bgcol)
 
     local timex = self.tco + self.timexoffs
     local ty = self.ybegin
-    local font = config.font
     local textx = self.maxtw + self.titlexoffs
-    local relLineDist = self.linespacing + self.fontscale
-    local relSubLineDist = self.fontscale2
+    local relLineDist = self.linespacing + self.fontsize
+    local relSubLineDist = self.fontsizeSub
 
     -- time text
-    tools.drawFont(font, timex, ty, self.start, self.fontscale, fgcol, bgcol)
+    tools.drawFont(self.font, timex, ty, self.start, self.fontsize, fgcol, bgcol)
 
     -- title
     for _, s in ipairs(self.titleparts) do
-        tools.drawFont(font, textx, ty, s, self.fontscale, fgcol, bgcol)
+        tools.drawFont(self.font, textx, ty, s, self.fontsize, fgcol, bgcol)
         ty = ty + relLineDist
     end
 
     -- subtitle
     if self.subtitleparts then
         for _, s in ipairs(self.subtitleparts) do
-            tools.drawFont(font, textx, ty, s, self.fontscale2, fgcol, bgcol)
+            tools.drawFont(self.fontSub, textx, ty, s, self.fontsizeSub, fgcol, bgcol)
             ty = ty + relSubLineDist
         end
     end

@@ -12,24 +12,61 @@ end)
 local Slide = {}
 Slide.__index = Slide
 
+-- constants
 local NO_EVENT = {
     start = "404",
     title = "Event not found",
     subtitle = "There is currently no event to display.\nMove along.",
-
     -- title = "Event not found blah rofl lolo omg wtf long title right let's see where this goes or otherwise things might break",
     -- subtitle = "There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along. There is currently no event to display. Move along.",
 }
 
-local SPONSORS_TITLE = "SPONSORS"
--- in relative [0..1] screen coords
-local SPONSORSLIDE_X = 0.2
-local SPONSORSLIDE_Y = 0.3
-local SPONSORSLIDE_W = 0.8
-local SPONSORSLIDE_H = 0.9
+local LOCAL_TITLE_SIZE = 0.1
+local LOCAL_TIMEBAR_X_OFFSET = -0.034
+local LOCAL_TIMEBAR_Y_BEGIN = 0.15
+local LOCAL_TIMEBAR_Y_END = 0.98
+local LOCAL_TIMEBAR_WIDTH = 0.006
+local LOCAL_TIMEBAR_TICK_WITH = 0.018
+local LOCAL_TIMEBAR_TICK_HEIGHT = LOCAL_TIMEBAR_WIDTH/DISPLAY_ASPECT
 
-local SLIDE_SPACE_X = 0.845
-local SLIDE_SPACE_Y = 0.745
+local REMOTE_TITLE_SIZE = 0.08
+
+local SPONSOR_TITLE = "SPONSOR"
+local SPONSOR_TITLE_SIZE = 0.1
+local SPONSOR_X1 = 0.2
+local SPONSOR_Y1 = 0.3
+local SPONSOR_X2 = 0.8
+local SPONSOR_Y2 = 0.9
+
+local FORMAT_CFG_DEFAULT = {
+    font = CONFIG.font,
+    fontsize = 0.07,
+
+    fontSub = CONFIG.font,
+    fontsizeSub = 0.045,
+
+    linespacing = 0.01,
+    ypadding = 0.03,
+
+    timexoffs = 0.05,
+    titlexoffs = 0.02
+}
+
+local FORMAT_CFG_LOCAL_TOP = {
+    font = CONFIG.font,
+    fontsize = 0.091,
+
+    fontSub = CONFIG.font,
+    fontsizeSub = 0.059,
+
+    linespacing = 0.01,
+    ypadding = 0.03,
+
+    timexoffs = 0.05,
+    titlexoffs = 0.02
+}
+
+
 
 local function AddDrawRel(self, f)
     table.insert(self._drawrel, f)
@@ -47,17 +84,17 @@ local function setupTitle(self)
     local title
     local titlesize
     if self.sponsor then
-        title = SPONSORS_TITLE
-        titlesize = 0.1
+        title = SPONSOR_TITLE
+        titlesize = SPONSOR_TITLE_SIZE
     elseif self.here then
         title = (self.location and self.location.name) or device.getLocation().name
-        titlesize = 0.1
+        titlesize = LOCAL_TITLE_SIZE
     else
         title = ("%s / %s"):format(self.location.name, self.track.name)
-        titlesize = 0.08
+        titlesize = REMOTE_TITLE_SIZE
     end
 
-    -- TODO: this not nice...
+    -- TODO: this is ugly
     self.titleoffset = titlesize + 0.03
 
     AddDrawAbs(self, function(slide, sx, sy)
@@ -65,13 +102,12 @@ local function setupTitle(self)
     end)
 end
 
-local function setupGradient(self)
-    local beginy = 0.15
-    local thickness = 0.006
-
+local function setupTimebar(self)
     AddDrawAbs(self, function(slide, sx, sy)
-        local gx = sx - 0.035
-        tools.drawResource(Resources.gradient, gx - thickness/2, beginy, gx + thickness/2, 1)
+        local x = sx + LOCAL_TIMEBAR_X_OFFSET
+        local y1, y2 = LOCAL_TIMEBAR_Y_BEGIN, LOCAL_TIMEBAR_Y_END
+        local w = LOCAL_TIMEBAR_WIDTH
+        tools.drawResource(Resources.timebar, x-w/2, y1, x+w/2, y2)
     end)
 end
 
@@ -82,7 +118,12 @@ local function setupEvents(self, protos, getconfig, ...)
         local cfg = assert(getconfig(i))
         evs[i] = SlideEvent.new(p, cfg, ...)
     end
-    SlideEvent.Align(evs, SLIDE_SPACE_X, SLIDE_SPACE_Y) -- FIXME: proper screen size?
+
+    -- TODO: refactor alignment
+    local SLIDE_SPACE_X = 0.845
+    local SLIDE_SPACE_Y = 0.745
+    SlideEvent.Align(evs, SLIDE_SPACE_X, SLIDE_SPACE_Y)
+
     AddDrawRel(self, function(...)
         local fgcol = (self.track and self.track.foreground_color) or CONFIG.foreground_color
         local bgcol = (self.track and self.track.background_color) or CONFIG.background_color
@@ -96,37 +137,42 @@ local function setupEvents(self, protos, getconfig, ...)
     -- draw ticks
     if self.type == "local" then
         AddDrawAbs(self, function(slide, sx, sy)
-            local gx = sx - 0.035
-            local fgcol = CONFIG.foreground_color
+            local x = sx + LOCAL_TIMEBAR_X_OFFSET
+            local y0 = sy + self.titleoffset
+            local dx = LOCAL_TIMEBAR_TICK_WITH
+            local dy = LOCAL_TIMEBAR_TICK_HEIGHT
+            local fgcol = tools.getColorTex(CONFIG.foreground_color)
             for i, ev in ipairs(evs) do
-                ev:drawtick(fgcol, gx, sy+self.titleoffset)
+                local y = y0 + ev.ybegin + (ev.fontsize*0.5)
+                tools.drawResource(fgcol, x-dx, y-dy, x+dx, y+dy)
             end
         end)
     end
 end
 
--- TODO: for layouting, pass remaining space
--- use functions to:
----- draw BEFORE translating space
----- draw AFTER translating space
+local function setupSponsor(self)
+    AddDrawAbs(self, function()
+        local img = self.image.ensure_loaded()
+        tools.drawResource(img, SPONSOR_X1, SPONSOR_Y1, SPONSOR_X2, SPONSOR_Y2)
+    end)
+end
 
-local cfgDefault = { sizemult = 1, linespacing = 0.01, ypadding = 0.03, timexoffs = 0.05, titlexoffs = 0.02, }
-local cfgLocalTop = { sizemult = 1.3, linespacing = 0.01, ypadding = 0.03, timexoffs = 0.05, titlexoffs = 0.02, }
+
 local function fLocal(i)
     if i == 1 then
-        return cfgLocalTop
+        return FORMAT_CFG_LOCAL_TOP
     else
-        return cfgDefault
+        return FORMAT_CFG_DEFAULT
     end
+
 end
 local function fDefault(i)
-    return cfgDefault
+    return FORMAT_CFG_DEFAULT
 end
 
-
 local function layoutlocal(self)
-    setupGradient(self)
     setupTitle(self)
+    setupTimebar(self)
     setupEvents(self, self.events, fLocal)
 end
 
@@ -135,16 +181,9 @@ local function layoutremote(self, sx, sy)
     setupEvents(self, self.events, fDefault)
 end
 
-
-
-local function _drawsponsor(self)
-    local img = self.image.ensure_loaded()
-    tools.drawResource(img, SPONSORSLIDE_X, SPONSORSLIDE_Y, SPONSORSLIDE_W, SPONSORSLIDE_H)
-end
-
 local function layoutsponsor(self)
     setupTitle(self)
-    AddDrawAbs(self, _drawsponsor)
+    setupSponsor(self)
 end
 
 local layouts =
@@ -197,25 +236,9 @@ function Slide.newSponsor(spon)
         sponsor = spon,
         type = "sponsor",
         time = CONFIG.sponsor_slides,
-        --abspos = true, -- don't translate before drawing content
     }
     return setmetatable(commonInit(self), Slide)
 end
-
--- local function printevent(ev)
---     print(("[%s] %s - %s: %s [%s]")
---         :format(tostring(ev.status), tostring(ev.start), tostring(ev["end"]),
---                 tostring(ev.title), tostring(ev.track))
---     )
--- end
--- function Slide:print()
---     print("  ** [SLIDE] **")
---     print(" - Location: ", self.location.name, "[" .. tostring(self.location.id) .. "]")
---     print(" - Events (" .. #self.events .. " shown):")
---     for i, ev in ipairs(self.events) do
---         printevent(ev)
---     end
--- end
 
 local DEBUG_BG = resource.create_colored_texture(0, 0.5, 1, 0.15)
 local function drawDebugBG(x1, y1, x2, y2)

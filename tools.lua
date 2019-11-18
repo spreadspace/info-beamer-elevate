@@ -1,13 +1,13 @@
-function string.fwrap(str, font, h, xpos, width)
-    local xstart = xpos
+function string.fwrap(str, font, sz, x, wAvail)
+    local x0 = x
     -- always allow wrapping after punctuation chars
     str = str:match("(.-)%\n*$") -- kill trailing newlines
     local wrapped = str:gsub("(%s*)([^%s%-%,%.%;%:%/]*[%-%,%.%;%:%/]*)", function(sp, word)
-        local ws = font:width(sp, h)
-        local ww = font:width(word, h)
-        xpos = xpos + ws + ww
-        if xpos > width or sp:find("\n", 1, true) then -- always wrap when there's a newline
-            xpos = xstart + ww
+        local ws = font:width(sp, sz)
+        local ww = font:width(word, sz)
+        x = x + ws + ww
+        if x > wAvail or sp:find("\n", 1, true) then -- always wrap when there's a newline
+            x = x0 + ww
             return "\n"..word
         end
     end)
@@ -16,15 +16,6 @@ function string.fwrap(str, font, h, xpos, width)
         splitted[#splitted + 1] = token
     end
     return splitted
-end
-
--- scale t from [lower, upper] into [rangeMin, rangeMax]
-function math.rescale(t, lower, upper, rangeMin, rangeMax)
-    if upper == lower then
-        return rangeMin
-    end
-
-    return (((t - lower) / (upper - lower)) * (rangeMax - rangeMin)) + rangeMin
 end
 
 function table.shallowcopy(t)

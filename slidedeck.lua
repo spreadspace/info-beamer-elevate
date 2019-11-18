@@ -169,7 +169,7 @@ local function _drawHeader()
     -- time
     local timesize = 0.08
     local timestr = device.getTimeString()
-    local timew = fontbold:width(timestr, tools.RelSizeToScreen(timesize)) / DISPLAY_WIDTH
+    local timew = tools.ScreenPosToRel(fontbold:width(timestr, tools.RelSizeToScreen(timesize)))
     local timex = 0.95 - timew
     tools.drawFont(fontbold, timex, hy, timestr, timesize, fgcol, bgcol)
 
