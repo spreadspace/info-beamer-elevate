@@ -3,18 +3,23 @@
 
 local SLIDE_Y_BEGIN = 0.13
 local SLIDE_TITLE_X_OFFSET = 0.15
+local SLIDE_X_MAX = 0.95
+local SLIDE_BODY_MINSPACE_TOP = 0.03
+local SLIDE_BODY_MINSPACE_BOTTOM = 0.07
 
 local LOCAL_TITLE_SIZE = 0.1
-local LOCAL_TITLE_Y_PADDING = 0.03
 local LOCAL_TIMEBAR_X_OFFSET = 0.115
 local LOCAL_TIMEBAR_Y_BEGIN = SLIDE_Y_BEGIN + 0.02
 local LOCAL_TIMEBAR_Y_END = 0.98
 local LOCAL_TIMEBAR_WIDTH = 0.006
 local LOCAL_TIMEBAR_TICK_WITH = 0.018
 local LOCAL_TIMEBAR_TICK_HEIGHT = LOCAL_TIMEBAR_WIDTH/DISPLAY_ASPECT
+local LOCAL_EVENT_TIME_X_OFFSET = 0.2
+local LOCAL_EVENT_TEXT_X_OFFSET = 0.3
 
 local REMOTE_TITLE_SIZE = 0.08
-local REMOTE_TITLE_Y_PADDING = 0.03
+local REMOTE_EVENT_TIME_X_OFFSET = 0.20
+local REMOTE_EVENT_TEXT_X_OFFSET = 0.28
 
 local SPONSOR_TITLE = "SPONSOR"
 local SPONSOR_TITLE_SIZE = 0.1
@@ -33,9 +38,6 @@ local EVENT_FORMAT_DEFAULT = {
     linespacingSub = 0,
 
     ypadding = 0.03,
-
-    timexoffs = 0.05,
-    titlexoffs = 0.02
 }
 
 local EVENT_FORMAT_LOCAL_TOP = {
@@ -48,9 +50,6 @@ local EVENT_FORMAT_LOCAL_TOP = {
     linespacingSub = 0,
 
     ypadding = 0.03,
-
-    timexoffs = 0.05,
-    titlexoffs = 0.02
 }
 
 
@@ -90,10 +89,29 @@ local function drawLineV(x)
     tools.drawResource(RED, x, 0, x+(1/DISPLAY_WIDTH), 1)
 end
 
-local function drawGrid()
+local function drawGrid(type)
     drawLineH(SLIDE_Y_BEGIN)
     drawLineV(SLIDE_TITLE_X_OFFSET)
-    drawLineV(LOCAL_TIMEBAR_X_OFFSET)
+
+    if type == "sponsor" then
+        drawLineV(SPONSOR_X1)
+        drawLineH(SPONSOR_Y1)
+        drawLineV(SPONSOR_X2)
+        drawLineH(SPONSOR_Y2)
+    elseif type == "local" then
+        drawLineV(SLIDE_X_MAX)
+        drawLineH(SLIDE_Y_BEGIN + LOCAL_TITLE_SIZE + SLIDE_BODY_MINSPACE_TOP)
+        drawLineH(1-SLIDE_BODY_MINSPACE_BOTTOM)
+        drawLineV(LOCAL_TIMEBAR_X_OFFSET)
+        drawLineV(LOCAL_EVENT_TIME_X_OFFSET)
+        drawLineV(LOCAL_EVENT_TEXT_X_OFFSET)
+    else
+        drawLineV(SLIDE_X_MAX)
+        drawLineH(SLIDE_Y_BEGIN + REMOTE_TITLE_SIZE + SLIDE_BODY_MINSPACE_TOP)
+        drawLineH(1-SLIDE_BODY_MINSPACE_BOTTOM)
+        drawLineV(REMOTE_EVENT_TIME_X_OFFSET)
+        drawLineV(REMOTE_EVENT_TEXT_X_OFFSET)
+    end
 end
 
 local function AddDrawCB(self, f)
@@ -107,10 +125,10 @@ local function setupTitle(self)
 
     local title
     local titlesize
-    if self.sponsor then
+    if self.type == "sponsor" then
         title = SPONSOR_TITLE
         titlesize = SPONSOR_TITLE_SIZE
-    elseif self.here then
+    elseif self.type == "local" then
         title = (self.location and self.location.name) or device.getLocation().name
         titlesize = LOCAL_TITLE_SIZE
     else
@@ -132,7 +150,6 @@ local function setupTimebar(self)
     end)
 end
 
-
 local function setupEvents(self, events, getFormatConfig)
     local evs = {}
     for i, event in ipairs(events) do
@@ -140,17 +157,16 @@ local function setupEvents(self, events, getFormatConfig)
         evs[i] = SlideEvent.new(event, cfg)
     end
 
-    -- TODO: refactor alignment
-    local SLIDE_SPACE_X = 0.845
-    local SLIDE_SPACE_Y = 0.745
-    SlideEvent.Align(evs, SLIDE_SPACE_X, SLIDE_SPACE_Y)
-
     local y0 = SLIDE_Y_BEGIN
-    if self.here then
-        y0 = y0 + LOCAL_TITLE_SIZE + LOCAL_TITLE_Y_PADDING
+    local timex, textx
+    if self.type == "local" then
+        y0 = y0 + LOCAL_TITLE_SIZE + SLIDE_BODY_MINSPACE_TOP
+        timex, textx = LOCAL_EVENT_TIME_X_OFFSET, LOCAL_EVENT_TEXT_X_OFFSET
     else
-        y0 = y0 + REMOTE_TITLE_SIZE + REMOTE_TITLE_Y_PADDING
+        y0 = y0 + REMOTE_TITLE_SIZE + SLIDE_BODY_MINSPACE_TOP
+        timex, textx = REMOTE_EVENT_TIME_X_OFFSET, REMOTE_EVENT_TEXT_X_OFFSET
     end
+    SlideEvent.Align(evs, timex, textx, SLIDE_X_MAX-textx, 1-y0-SLIDE_BODY_MINSPACE_BOTTOM)
 
     AddDrawCB(self, function(slide)
         local fgcol = (self.track and self.track.foreground_color) or CONFIG.foreground_color
@@ -158,11 +174,10 @@ local function setupEvents(self, events, getFormatConfig)
         for i, ev in ipairs(evs) do
             fgcol = (ev.track and ev.track.foreground_color) or fgcol
             bgcol = (ev.track and ev.track.background_color) or bgcol
-            ev:draw(SLIDE_TITLE_X_OFFSET, y0, fgcol, bgcol)
+            ev:draw(y0, fgcol, bgcol)
         end
     end)
 
-    -- draw ticks
     if self.type == "local" then
         AddDrawCB(self, function(slide)
             local x = LOCAL_TIMEBAR_X_OFFSET
@@ -260,10 +275,9 @@ function Slide.newRemote(trackdef, locdef, events)
     return setmetatable(commonInit(self), Slide)
 end
 
-function Slide.newSponsor(spon)
+function Slide.newSponsor(sponsor)
     local self = {
-        image = spon.image,
-        sponsor = spon,
+        image = sponsor.image,
         type = "sponsor",
         time = CONFIG.sponsor_slides,
     }
@@ -275,7 +289,7 @@ end
 --- Member Functions
 
 function Slide:draw()
-    tools.debugDraw(5, drawGrid)
+    tools.debugDraw(5, drawGrid, self.type)
     for _, cb in ipairs(self._drawCBs) do
         cb(self)
     end

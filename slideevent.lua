@@ -9,30 +9,18 @@ SlideEvent.__index = SlideEvent
 --- Helper Functions
 
 -- final alignment step for all events generated for a single slide
--- align to relative screen size (w, h) (w == 0.9 means fill up to 90% of the screen width)
+-- timex means center of time, textx means start of time
 -- linewrapping must happen here
-function SlideEvent.Align(evs, w, h)
-    local maxtw = 0
-    local maxtend = 0
+function SlideEvent.Align(evs, timex, textx, textW, maxH)
     local ybegin = 0
-    local totalAvailW, totalAvailH = tools.RelPosToScreen(w, h)
-
-    for i, ev in ipairs(evs) do
-        maxtw = math.max(maxtw, ev.tw)
-        maxtend = math.max(maxtend, ev.tw + math.abs(ev.tco))
-        --ev.subtitle = "Suppress normal output; instead print the name of each input file from which no output would normally have been printed. The scanning will stop on the first match."
-    end
-
-    local absTimeW = tools.RelPosToScreen(maxtend)
-    local textAvailW = totalAvailW - absTimeW
+    local textAvailW = tools.RelPosToScreen(textW)
 
     for i, ev in ipairs(evs) do
         local sz = tools.RelSizeToScreen(ev.fontsize)
         local szSub = tools.RelSizeToScreen(ev.fontsizeSub)
 
-        ev.maxtw = maxtw
-        ev.textx = 0
-
+        ev.timex = timex
+        ev.textx = textx
         ev.titleparts = ev.title:fwrap(ev.font, sz, 0, textAvailW)
         local subh = 0
         if ev.subtitle and #ev.subtitle > 0 then
@@ -42,14 +30,12 @@ function SlideEvent.Align(evs, w, h)
         ev.heightNoPadding = #ev.titleparts * (ev.fontsize + ev.linespacing) + subh
 
         ev.height = ev.heightNoPadding  + ev.ypadding
-        ev.maxwidth = w
-        ev.maxheight = h
         ev.ybegin = ybegin
         ybegin = ybegin + ev.height
 
         -- remove events that don't fit
         local endY = ev.ybegin + ev.heightNoPadding - ev.linespacing
-        if endY >= ev.maxheight then
+        if endY >= maxH then
             for k = i, #evs do
                 evs[k] = nil
             end
@@ -89,8 +75,6 @@ function SlideEvent.new(proto, cfg) -- proto is an event def from json
     self.linespacingSub = assert(cfg.linespacingSub)
 
     self.ypadding = assert(cfg.ypadding)
-    self.timexoffs = assert(cfg.timexoffs)
-    self.titlexoffs = assert(cfg.titlexoffs)
     _layoutTime(self)
     return self
 end
@@ -99,11 +83,11 @@ end
 -------------------------------------------------------------------------------
 --- Member Functions
 
-function SlideEvent:draw(sx, sy, fgcol, bgcol)
+function SlideEvent:draw(y0, fgcol, bgcol)
 
-    local timex = sx + self.tco + self.timexoffs
-    local ty = sy + self.ybegin
-    local textx = sx + self.maxtw + self.titlexoffs
+    local timex = self.timex + self.tco
+    local ty = y0 + self.ybegin
+    local textx = self.textx
     local lineh = self.fontsize + self.linespacing
     local linehSub = self.fontsizeSub + self.linespacingSub
 
