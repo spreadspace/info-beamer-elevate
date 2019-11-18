@@ -263,7 +263,7 @@ end
 
 function Slide.newLocal(locdef, events)
     local empty
-    local time = CONFIG.current_location
+    local time = CONFIG.slide_time_local
     if not events or #events == 0 then
         events = {NO_EVENT}
         empty = true
@@ -286,7 +286,7 @@ function Slide.newRemote(trackdef, locdef, events)
         location = assert(locdef),
         events = assert(events),
         type = "remote",
-        time = CONFIG.other_locations,
+        time = CONFIG.slide_time_remote,
     }
     return setmetatable(commonInit(self), Slide)
 end
@@ -295,7 +295,7 @@ function Slide.newSponsor(sponsor)
     local self = {
         image = sponsor.image,
         type = "sponsor",
-        time = CONFIG.sponsor_slides,
+        time = CONFIG.slide_time_sponsor,
     }
     return setmetatable(commonInit(self), Slide)
 end

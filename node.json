@@ -77,28 +77,28 @@
     }, {
         "title": "Current Locations",
         "ui_width": 3,
-        "name": "current_location",
+        "name": "slide_time_local",
         "type": "duration",
         "hint": "How long to display current location information in seconds",
         "default": 15
     }, {
         "title": "Other Locations",
         "ui_width": 3,
-        "name": "other_locations",
+        "name": "slide_time_remote",
         "type": "duration",
         "hint": "How long to display other locations information in seconds",
         "default": 10
     }, {
         "title": "Sponsors",
         "ui_width": 3,
-        "name": "sponsor_slides",
+        "name": "slide_time_sponsor",
         "type": "duration",
         "hint": "How long to display sponsor slides in seconds",
         "default": 5
     }, {
         "title": "Sponsors Skip",
         "ui_width": 3,
-        "name": "sponsor_slides_skip",
+        "name": "slide_sponsor_skip",
         "type": "integer",
         "hint": "Skip sponser slide every x iterations, 0 shows it in all iterations, 1 will skip every other iteration ...",
         "default": 0
