@@ -105,18 +105,20 @@ end
 -- (0, 0) = upper left corner, (1, 1) = lower right corner
 -- sz == 0.5 -> half as high as the screen
 function tools.drawFont(font, x, y, text, sz, fgcol, bgcol)
-    local xx, yy  = tools.RelPosToScreen(x, y)
-    local zz = tools.RelSizeToScreen(sz)
+    local xS, yS  = tools.RelPosToScreen(x, y)
+    local h = tools.RelSizeToScreen(sz)
+    local w = font:width(text, h)
+
     local yborder = tools.RelSizeToScreen(0.01)
     local xborder = tools.RelSizeToScreen(0.01)
-    local w = font:write(xx, yy, text, zz, fgcol:rgba())
     local bgtex = tools.getColorTex(bgcol)
-    bgtex:draw(xx-xborder, yy-yborder, xx+w+xborder, yy+zz+yborder)
-    font:write(xx, yy, text, zz, fgcol:rgba())
-    return xx, yy+zz, w
+    bgtex:draw(xS-xborder, yS-yborder, xS+w+xborder, yS+h+yborder)
+
+    font:write(xS, yS, text, h, fgcol:rgba())
+    return xS, yS+h, w
 end
 
--- takes x, y, w, h in resolution-independent coords
+-- takes x1, y1, x2, y2 in resolution-independent coords
 -- (0, 0) = upper left corner, (1, 1) = lower right corner
 function tools.drawResource(res, x1, y1, x2, y2)
     gl.pushMatrix()
