@@ -1,15 +1,20 @@
 -------------------------------------------------------------------------------
 --- Constants (configuration)
 
+local SLIDE_Y_BEGIN = 0.13
+local SLIDE_TITLE_X_OFFSET = 0.15
+
 local LOCAL_TITLE_SIZE = 0.1
-local LOCAL_TIMEBAR_X_OFFSET = -0.035
-local LOCAL_TIMEBAR_Y_BEGIN = 0.15
+local LOCAL_TITLE_Y_PADDING = 0.03
+local LOCAL_TIMEBAR_X_OFFSET = 0.115
+local LOCAL_TIMEBAR_Y_BEGIN = SLIDE_Y_BEGIN + 0.02
 local LOCAL_TIMEBAR_Y_END = 0.98
 local LOCAL_TIMEBAR_WIDTH = 0.006
 local LOCAL_TIMEBAR_TICK_WITH = 0.018
 local LOCAL_TIMEBAR_TICK_HEIGHT = LOCAL_TIMEBAR_WIDTH/DISPLAY_ASPECT
 
 local REMOTE_TITLE_SIZE = 0.08
+local REMOTE_TITLE_Y_PADDING = 0.03
 
 local SPONSOR_TITLE = "SPONSOR"
 local SPONSOR_TITLE_SIZE = 0.1
@@ -76,9 +81,19 @@ Slide.__index = Slide
 -------------------------------------------------------------------------------
 --- Helper Functions
 
-local DEBUG_BG = resource.create_colored_texture(0, 0.5, 1, 0.15)
-local function drawDebugBG(x1, y1, x2, y2)
-    tools.drawResource(DEBUG_BG, x1, y1, x2, y2)
+local RED = resource.create_colored_texture(0.5, 0, 0, 1)
+local function drawLineH(y)
+    tools.drawResource(RED, 0, y, 1, y+(1/DISPLAY_HEIGHT))
+end
+
+local function drawLineV(x)
+    tools.drawResource(RED, x, 0, x+(1/DISPLAY_WIDTH), 1)
+end
+
+local function drawGrid()
+    drawLineH(SLIDE_Y_BEGIN)
+    drawLineV(SLIDE_TITLE_X_OFFSET)
+    drawLineV(LOCAL_TIMEBAR_X_OFFSET)
 end
 
 local function AddDrawCB(self, f)
@@ -103,17 +118,14 @@ local function setupTitle(self)
         titlesize = REMOTE_TITLE_SIZE
     end
 
-    -- TODO: this is ugly
-    self.titleoffset = titlesize + 0.03
-
-    AddDrawCB(self, function(slide, sx, sy)
-        tools.drawFont(font, sx, sy, title, titlesize, fgcol, bgcol)
+    AddDrawCB(self, function(slide)
+        tools.drawFont(font, SLIDE_TITLE_X_OFFSET, SLIDE_Y_BEGIN, title, titlesize, fgcol, bgcol)
     end)
 end
 
 local function setupTimebar(self)
-    AddDrawCB(self, function(slide, sx, sy)
-        local x = sx + LOCAL_TIMEBAR_X_OFFSET
+    AddDrawCB(self, function(slide)
+        local x = LOCAL_TIMEBAR_X_OFFSET
         local y1, y2 = LOCAL_TIMEBAR_Y_BEGIN, LOCAL_TIMEBAR_Y_END
         local w = LOCAL_TIMEBAR_WIDTH
         tools.drawResource(Resources.timebar, x-w/2, y1, x+w/2, y2)
@@ -133,22 +145,27 @@ local function setupEvents(self, events, getFormatConfig)
     local SLIDE_SPACE_Y = 0.745
     SlideEvent.Align(evs, SLIDE_SPACE_X, SLIDE_SPACE_Y)
 
-    AddDrawCB(self, function(slide, sx, sy)
+    local y0 = SLIDE_Y_BEGIN
+    if self.here then
+        y0 = y0 + LOCAL_TITLE_SIZE + LOCAL_TITLE_Y_PADDING
+    else
+        y0 = y0 + REMOTE_TITLE_SIZE + REMOTE_TITLE_Y_PADDING
+    end
+
+    AddDrawCB(self, function(slide)
         local fgcol = (self.track and self.track.foreground_color) or CONFIG.foreground_color
         local bgcol = (self.track and self.track.background_color) or CONFIG.background_color
-        local y = sy + self.titleoffset
         for i, ev in ipairs(evs) do
             fgcol = (ev.track and ev.track.foreground_color) or fgcol
             bgcol = (ev.track and ev.track.background_color) or bgcol
-            ev:draw(sx, y, fgcol, bgcol)
+            ev:draw(SLIDE_TITLE_X_OFFSET, y0, fgcol, bgcol)
         end
     end)
 
     -- draw ticks
     if self.type == "local" then
-        AddDrawCB(self, function(slide, sx, sy)
-            local x = sx + LOCAL_TIMEBAR_X_OFFSET
-            local y0 = sy + self.titleoffset
+        AddDrawCB(self, function(slide)
+            local x = LOCAL_TIMEBAR_X_OFFSET
             local dx = LOCAL_TIMEBAR_TICK_WITH
             local dy = LOCAL_TIMEBAR_TICK_HEIGHT
             local fgcol = tools.getColorTex(CONFIG.foreground_color)
@@ -187,7 +204,7 @@ local function layoutlocal(self)
     setupEvents(self, self.events, formatLocal)
 end
 
-local function layoutremote(self, sx, sy)
+local function layoutremote(self)
     setupTitle(self)
     setupEvents(self, self.events, formatDefault)
 end
@@ -257,13 +274,11 @@ end
 -------------------------------------------------------------------------------
 --- Member Functions
 
-function Slide:draw(sx, sy)
-    gl.pushMatrix()
-        tools.debugDraw(5, drawDebugBG, sx, sy, 1, 1)
-        for _, cb in ipairs(self._drawCBs) do
-            cb(self, sx, sy)
-        end
-    gl.popMatrix()
+function Slide:draw()
+    tools.debugDraw(5, drawGrid)
+    for _, cb in ipairs(self._drawCBs) do
+        cb(self)
+    end
 end
 
 

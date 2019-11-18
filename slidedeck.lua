@@ -2,7 +2,6 @@
 --- Constants (configuration)
 
 local HEADER_Y_BEGIN = 0.05
-local HEADER_Y_PADDING = 0.02
 
 local HEADER_LOGO_X = -0.005
 local HEADER_LOGO_Y = 0.01
@@ -180,7 +179,6 @@ local function _drawHeader()
     local fontbold = CONFIG.font_bold
     local fgcol = CONFIG.foreground_color
     local bgcol = CONFIG.background_color
-    local hy = HEADER_Y_BEGIN
 
     -- logo
     local logox, logoy = HEADER_LOGO_X, HEADER_LOGO_Y
@@ -191,21 +189,19 @@ local function _drawHeader()
     local timesize = HEADER_TIME_SIZE
     local timestr = device.getTimeString()
     local timew = tools.ScreenPosToRel(fontbold:width(timestr, tools.RelSizeToScreen(timesize)))
-    local timex = 1 - HEADER_TIME_PADDING_RIGHT - timew
-    tools.drawFont(fontbold, timex, hy, timestr, timesize, fgcol, bgcol)
+    local timex, timey = 1 - HEADER_TIME_PADDING_RIGHT - timew, HEADER_Y_BEGIN
+    tools.drawFont(fontbold, timex, timey, timestr, timesize, fgcol, bgcol)
 
     -- top title
     local titlesize = HEADER_TITLE_SIZE
     local titlestr = HEADER_TITLE_TEXT
-    local titlex = HEADER_TITLE_X
-    tools.drawFont(font, titlex, hy, titlestr, titlesize, fgcol, bgcol)
-
-    return titlex, hy + titlesize + HEADER_Y_PADDING
+    local titlex, titley = HEADER_TITLE_X, HEADER_Y_BEGIN
+    tools.drawFont(font, titlex, titley, titlestr, titlesize, fgcol, bgcol)
 end
 
 local function _slideiter(slides)
     coroutine.yield()
-    n = #slides
+    local n = #slides
     for i, slide in ipairs(slides) do
        tools.debugPrint(3, "showing slide " .. i .. " of " .. n)
        coroutine.yield(slide)
@@ -271,8 +267,8 @@ end
 function SlideDeck:draw()
     gl.ortho()
     tools.fixAspect()
-    local hx, hy = _drawHeader() -- returns where header ends
-    self.current:draw(hx, hy)
+    _drawHeader()
+    self.current:draw()
 end
 
 
