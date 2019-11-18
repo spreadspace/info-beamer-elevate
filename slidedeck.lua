@@ -11,8 +11,8 @@ local TimerQueue = require "timerqueue"
 
 -- FOR TESTING --
 local SHOW_LOCAL_EVENTS = true
-local SHOW_REMOTE_EVENTS = false
-local SHOW_SPONSORS = false
+local SHOW_REMOTE_EVENTS = true
+local SHOW_SPONSORS = true
 local SHOW_EMPTY_WHEN_NO_LOCAL = true
 -----------------
 -- events on this location will be skipped in remote slides
@@ -56,21 +56,20 @@ local function _orderEvent(a, b)
 end
 
 local function _generateEmptyLocalSlide()
-    tools.debugPrint(3, "Generating Empty slide")
+    tools.debugPrint(3, "generating empty local slide")
     return Slide.newLocal(nil, false)
 end
 
 local function _generateLocalSlide(slides, localEvents, here)
-    local hasLocal
     if SHOW_LOCAL_EVENTS and here then
         tools.debugPrint(3, "generating local slide: location[" .. here.id .. "] = " .. #localEvents .. " events")
         table.sort(localEvents, _orderEvent)
         local slide = Slide.newLocal(here, localEvents)
         table.insert(slides, slide)
-        hasLocal = true
+        return
     end
 
-    if (not hasLocal and SHOW_EMPTY_WHEN_NO_LOCAL) then
+    if SHOW_EMPTY_WHEN_NO_LOCAL then
         table.insert(slides, _generateEmptyLocalSlide())
     end
 end
@@ -96,7 +95,7 @@ local function _generateSponsorSlides(slides)
 
     -- TODO: implemnt sponsor skip counter!
     for _, sponsor in ipairs(CONFIG.sponsors) do
-        tools.debugPrint(3, "generating sponsor slides: " .. sponsor.image.filename)
+        tools.debugPrint(3, "generating sponsor slide: " .. sponsor.image.filename)
         local slide = Slide.newSponsor(sponsor)
         table.insert(slides, slide)
     end
@@ -163,8 +162,10 @@ local function _drawHeader()
     local hy = 0.05
 
     -- logo
-    local logosize = 0.23 -- the logo texture is square
-    tools.drawResource(logo, -0.01, 0.01, logosize/DISPLAY_ASPECT, logosize)
+    local logox, logoy = -0.005, 0.01
+    local logoh = 0.23
+    local logow = logoh/DISPLAY_ASPECT  -- the logo texture is square
+    tools.drawResource(logo, logox, logoy, logox+logow, logoy+logoh)
 
     -- time
     local timesize = 0.08

@@ -1,7 +1,8 @@
 function string.fwrap(str, font, sz, x, wAvail)
+    str = str:match("(.-)%\n*$") -- kill trailing newlines
+
     local x0 = x
     -- always allow wrapping after punctuation chars
-    str = str:match("(.-)%\n*$") -- kill trailing newlines
     local wrapped = str:gsub("(%s*)([^%s%-%,%.%;%:%/]*[%-%,%.%;%:%/]*)", function(sp, word)
         local ws = font:width(sp, sz)
         local ww = font:width(word, sz)
