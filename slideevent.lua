@@ -31,10 +31,9 @@ function SlideEvent.Align(evs, w, h)
         local subh = 0
         if ev.subtitle and #ev.subtitle > 0 then
             ev.subtitleparts = ev.subtitle:fwrap(ev.fontSub, szSub, 0, textAvailW)
-            subh = #ev.subtitleparts * ev.fontsizeSub
+            subh = #ev.subtitleparts * (ev.fontsizeSub + ev.linespacingSub)
         end
-        ev.heightNoPadding = (ev.fontsize + ev.linespacing) * #ev.titleparts
-            + subh
+        ev.heightNoPadding = #ev.titleparts * (ev.fontsize + ev.linespacing) + subh
 
         ev.height = ev.heightNoPadding  + ev.ypadding
         ev.maxwidth = w
@@ -75,9 +74,12 @@ function SlideEvent.new(proto, cfg) -- proto is an event def from json
 
     self.font = assert(cfg.font)
     self.fontsize = assert(cfg.fontsize)
+    self.linespacing = assert(cfg.linespacing)
+
     self.fontSub = assert(cfg.fontSub)
     self.fontsizeSub = assert(cfg.fontsizeSub)
-    self.linespacing = assert(cfg.linespacing)
+    self.linespacingSub = assert(cfg.linespacingSub)
+
     self.ypadding = assert(cfg.ypadding)
     self.timexoffs = assert(cfg.timexoffs)
     self.titlexoffs = assert(cfg.titlexoffs)
@@ -86,13 +88,13 @@ function SlideEvent.new(proto, cfg) -- proto is an event def from json
 end
 
 -- this ensures that all colons are aligned
-function SlideEvent:draw(fgcol, bgcol)
+function SlideEvent:draw(sx, sy, fgcol, bgcol)
 
-    local timex = self.tco + self.timexoffs
-    local ty = self.ybegin
-    local textx = self.maxtw + self.titlexoffs
-    local relLineDist = self.linespacing + self.fontsize
-    local relSubLineDist = self.fontsizeSub
+    local timex = sx + self.tco + self.timexoffs
+    local ty = sy + self.ybegin
+    local textx = sx + self.maxtw + self.titlexoffs
+    local lineh = self.fontsize + self.linespacing
+    local linehSub = self.fontsizeSub + self.linespacingSub
 
     -- time text
     tools.drawFont(self.font, timex, ty, self.start, self.fontsize, fgcol, bgcol)
@@ -100,14 +102,14 @@ function SlideEvent:draw(fgcol, bgcol)
     -- title
     for _, s in ipairs(self.titleparts) do
         tools.drawFont(self.font, textx, ty, s, self.fontsize, fgcol, bgcol)
-        ty = ty + relLineDist
+        ty = ty + lineh
     end
 
     -- subtitle
     if self.subtitleparts then
         for _, s in ipairs(self.subtitleparts) do
             tools.drawFont(self.fontSub, textx, ty, s, self.fontsizeSub, fgcol, bgcol)
-            ty = ty + relSubLineDist
+            ty = ty + linehSub
         end
     end
 end

@@ -41,11 +41,12 @@ local SPONSOR_Y2 = 0.9
 local FORMAT_CFG_DEFAULT = {
     font = CONFIG.font,
     fontsize = 0.07,
+    linespacing = 0.01,
 
     fontSub = CONFIG.font,
     fontsizeSub = 0.045,
+    linespacingSub = 0,
 
-    linespacing = 0.01,
     ypadding = 0.03,
 
     timexoffs = 0.05,
@@ -55,11 +56,12 @@ local FORMAT_CFG_DEFAULT = {
 local FORMAT_CFG_LOCAL_TOP = {
     font = CONFIG.font,
     fontsize = 0.091,
+    linespacing = 0.01,
 
     fontSub = CONFIG.font,
     fontsizeSub = 0.059,
+    linespacingSub = 0,
 
-    linespacing = 0.01,
     ypadding = 0.03,
 
     timexoffs = 0.05,
@@ -68,12 +70,8 @@ local FORMAT_CFG_LOCAL_TOP = {
 
 
 
-local function AddDrawRel(self, f)
-    table.insert(self._drawrel, f)
-end
-
-local function AddDrawAbs(self, f)
-    table.insert(self._drawabs, f)
+local function AddDrawCB(self, f)
+    table.insert(self._drawCBs, f)
 end
 
 local function setupTitle(self)
@@ -97,13 +95,13 @@ local function setupTitle(self)
     -- TODO: this is ugly
     self.titleoffset = titlesize + 0.03
 
-    AddDrawAbs(self, function(slide, sx, sy)
+    AddDrawCB(self, function(slide, sx, sy)
         tools.drawFont(font, sx, sy, title, titlesize, fgcol, bgcol)
     end)
 end
 
 local function setupTimebar(self)
-    AddDrawAbs(self, function(slide, sx, sy)
+    AddDrawCB(self, function(slide, sx, sy)
         local x = sx + LOCAL_TIMEBAR_X_OFFSET
         local y1, y2 = LOCAL_TIMEBAR_Y_BEGIN, LOCAL_TIMEBAR_Y_END
         local w = LOCAL_TIMEBAR_WIDTH
@@ -112,11 +110,11 @@ local function setupTimebar(self)
 end
 
 
-local function setupEvents(self, protos, getconfig, ...)
+local function setupEvents(self, events, getFormatConfig)
     local evs = {}
-    for i, p in ipairs(protos) do
-        local cfg = assert(getconfig(i))
-        evs[i] = SlideEvent.new(p, cfg, ...)
+    for i, event in ipairs(events) do
+        local cfg = assert(getFormatConfig(i))
+        evs[i] = SlideEvent.new(event, cfg)
     end
 
     -- TODO: refactor alignment
@@ -124,19 +122,20 @@ local function setupEvents(self, protos, getconfig, ...)
     local SLIDE_SPACE_Y = 0.745
     SlideEvent.Align(evs, SLIDE_SPACE_X, SLIDE_SPACE_Y)
 
-    AddDrawRel(self, function(...)
+    AddDrawCB(self, function(slide, sx, sy)
         local fgcol = (self.track and self.track.foreground_color) or CONFIG.foreground_color
         local bgcol = (self.track and self.track.background_color) or CONFIG.background_color
+        local y = sy + self.titleoffset
         for i, ev in ipairs(evs) do
             fgcol = (ev.track and ev.track.foreground_color) or fgcol
             bgcol = (ev.track and ev.track.background_color) or bgcol
-            ev:draw(fgcol, bgcol)
+            ev:draw(sx, y, fgcol, bgcol)
         end
     end)
 
     -- draw ticks
     if self.type == "local" then
-        AddDrawAbs(self, function(slide, sx, sy)
+        AddDrawCB(self, function(slide, sx, sy)
             local x = sx + LOCAL_TIMEBAR_X_OFFSET
             local y0 = sy + self.titleoffset
             local dx = LOCAL_TIMEBAR_TICK_WITH
@@ -151,7 +150,7 @@ local function setupEvents(self, protos, getconfig, ...)
 end
 
 local function setupSponsor(self)
-    AddDrawAbs(self, function()
+    AddDrawCB(self, function()
         local img = self.image.ensure_loaded()
         tools.drawResource(img, SPONSOR_X1, SPONSOR_Y1, SPONSOR_X2, SPONSOR_Y2)
     end)
@@ -194,8 +193,7 @@ local layouts =
 }
 
 local function commonInit(self)
-    self._drawabs = {}
-    self._drawrel = {}
+    self._drawCBs = {}
     layouts[self.type](self)
     return self
 end
@@ -245,25 +243,12 @@ local function drawDebugBG(x1, y1, x2, y2)
     tools.drawResource(DEBUG_BG, x1, y1, x2, y2)
 end
 
-function Slide:drawRel(...)
-    for _, f in ipairs(self._drawrel) do
-        f(self, ...)
-    end
-end
-
-function Slide:drawAbs(...)
-    for _, f in ipairs(self._drawabs) do
-        f(self, ...)
-    end
-end
-
 function Slide:draw(sx, sy)
     gl.pushMatrix()
         tools.debugDraw(5, drawDebugBG, sx, sy, 1, 1)
-        self:drawAbs(sx, sy)
-        sy = sy + self.titleoffset
-        gl.translate(tools.RelPosToScreen(sx, sy))
-        self:drawRel()
+        for _, cb in ipairs(self._drawCBs) do
+            cb(self, sx, sy)
+        end
     gl.popMatrix()
 end
 
