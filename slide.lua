@@ -4,8 +4,8 @@
 local SLIDE_Y_BEGIN = 0.13
 local SLIDE_TITLE_X_OFFSET = 0.15
 local SLIDE_X_MAX = 0.95
-local SLIDE_BODY_MINSPACE_TOP = 0.065
-local SLIDE_BODY_MINSPACE_BOTTOM = 0.07
+local SLIDE_BODY_MINSPACE_TOP = 0.05
+local SLIDE_BODY_MINSPACE_BOTTOM = 0.1
 
 local LOCAL_TITLE_SIZE = 0.1
 local LOCAL_TIMEBAR_X_OFFSET = 0.115
@@ -96,10 +96,13 @@ local function drawGrid(type)
     drawLineV(BLUE, SLIDE_TITLE_X_OFFSET)
 
     if type == "sponsor" then
-        drawLineV(GREEN, SPONSOR_X_CENTER - SPONSOR_MAX_W/2)
-        drawLineV(GREEN, SPONSOR_X_CENTER + SPONSOR_MAX_W/2)
-        drawLineH(GREEN, SPONSOR_Y_CENTER - SPONSOR_MAX_H/2)
-        drawLineH(GREEN, SPONSOR_Y_CENTER + SPONSOR_MAX_H/2)
+        drawLineV(RED, SPONSOR_X_CENTER - SPONSOR_MAX_W/2)
+        drawLineV(RED, SPONSOR_X_CENTER + SPONSOR_MAX_W/2)
+        drawLineH(RED, SPONSOR_Y_CENTER - SPONSOR_MAX_H/2)
+        drawLineH(RED, SPONSOR_Y_CENTER + SPONSOR_MAX_H/2)
+
+        drawLineV(GREEN, SPONSOR_X_CENTER)
+        drawLineH(GREEN, SPONSOR_Y_CENTER)
     elseif type == "local" then
         drawLineV(RED, SLIDE_X_MAX)
         drawLineH(RED, SLIDE_Y_BEGIN + LOCAL_TITLE_SIZE + SLIDE_BODY_MINSPACE_TOP)
@@ -107,12 +110,18 @@ local function drawGrid(type)
         drawLineV(RED, LOCAL_TIMEBAR_X_OFFSET)
         drawLineV(RED, LOCAL_EVENT_TIME_X_OFFSET)
         drawLineV(RED, LOCAL_EVENT_TEXT_X_OFFSET)
+
+        local bodyBegin = SLIDE_Y_BEGIN + LOCAL_TITLE_SIZE + SLIDE_BODY_MINSPACE_TOP
+        drawLineH(GREEN, bodyBegin + (1 - bodyBegin - SLIDE_BODY_MINSPACE_BOTTOM) / 2)
     else
         drawLineV(RED, SLIDE_X_MAX)
         drawLineH(RED, SLIDE_Y_BEGIN + REMOTE_TITLE_SIZE + SLIDE_BODY_MINSPACE_TOP)
         drawLineH(RED, 1-SLIDE_BODY_MINSPACE_BOTTOM)
         drawLineV(RED, REMOTE_EVENT_TIME_X_OFFSET)
         drawLineV(RED, REMOTE_EVENT_TEXT_X_OFFSET)
+
+        local bodyBegin = SLIDE_Y_BEGIN + LOCAL_TITLE_SIZE + SLIDE_BODY_MINSPACE_TOP
+        drawLineH(GREEN, bodyBegin + (1 - bodyBegin - SLIDE_BODY_MINSPACE_BOTTOM) / 2)
     end
 end
 
@@ -169,10 +178,11 @@ local function setupEvents(self, events, getFormatConfig)
         timex, textx = REMOTE_EVENT_TIME_X_OFFSET, REMOTE_EVENT_TEXT_X_OFFSET
     end
     local maxH = 1 - y0 - SLIDE_BODY_MINSPACE_TOP - SLIDE_BODY_MINSPACE_BOTTOM
-    local sumPadding, yRemain = SlideEvent.Arrange(evs, timex, textx, SLIDE_X_MAX-textx, maxH)
+    local sumH, sumPadding = SlideEvent.Arrange(evs, timex, textx, SLIDE_X_MAX-textx, maxH)
 
-    local expand = 1 + (yRemain / (sumPadding + SLIDE_BODY_MINSPACE_TOP + SLIDE_BODY_MINSPACE_BOTTOM))
-    y0 = y0 + SLIDE_BODY_MINSPACE_TOP * expand
+    local expand = 1 + (maxH - sumH)/sumPadding
+    expand = math.min(expand, 2)
+    y0 = y0 + SLIDE_BODY_MINSPACE_TOP + (maxH - sumH - sumPadding * (expand-1))/2
 
     AddDrawCB(self, function(slide)
         local fgcol = (self.track and self.track.foreground_color) or CONFIG.foreground_color

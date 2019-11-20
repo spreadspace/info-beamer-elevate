@@ -13,7 +13,7 @@ SlideEvent.__index = SlideEvent
 function SlideEvent.Arrange(evs, timex, textx, textW, maxH)
     local textAvailW = tools.RelPosToScreen(textW)
 
-    local y = 0
+    local sumH = 0
     local sumPadding = 0
     local lastPadding = 0
     for i, ev in ipairs(evs) do
@@ -26,22 +26,22 @@ function SlideEvent.Arrange(evs, timex, textx, textW, maxH)
         local subh = 0
         if ev.subtitle and #ev.subtitle > 0 then
             ev.subtitleparts = ev.subtitle:fwrap(ev.fontSub, szSub, 0, textAvailW)
-            subh = #ev.subtitleparts * (ev.fontsizeSub + ev.linespacingSub)
+            subh = #ev.subtitleparts * (ev.fontsizeSub + ev.linespacingSub) - ev.linespacingSub
         end
-        ev.height = #ev.titleparts * (ev.fontsize + ev.linespacing) + subh
+        ev.height = #ev.titleparts * (ev.fontsize + ev.linespacing) - ev.linespacing + subh
 
-        if (y + ev.height) >= maxH then
+        if (sumH + ev.height) >= maxH then
             for k = i, #evs do
                 evs[k] = nil
             end
             break
         end
-        lastPadding = ev.ypadding
+        sumH = sumH + ev.height + ev.ypadding
         sumPadding = sumPadding + ev.ypadding
-        y = y + ev.height + ev.ypadding
+        lastPadding = ev.ypadding
     end
 
-    return sumPadding - lastPadding, maxH - y
+    return sumH - lastPadding, sumPadding - lastPadding
 end
 
 local function _layoutTime(self)
