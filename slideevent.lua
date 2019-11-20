@@ -11,21 +11,16 @@ SlideEvent.__index = SlideEvent
 -- timex means center of time, textx means start of text
 -- linewrapping must happen here
 function SlideEvent.Arrange(evs, timex, textx, textW, maxH)
-    local textAvailW = tools.RelPosToScreen(textW)
-
     local sumH = 0
     local sumPadding = 0
     local lastPadding = 0
     for i, ev in ipairs(evs) do
-        local sz = tools.RelSizeToScreen(ev.fontsize)
-        local szSub = tools.RelSizeToScreen(ev.fontsizeSub)
-
         ev.timex = timex
         ev.textx = textx
-        ev.titleparts = ev.title:fwrap(ev.font, sz, 0, textAvailW)
+        ev.titleparts = ev.title:fwrap(ev.font, ev.fontsize, textW)
         local subh = 0
         if ev.subtitle and #ev.subtitle > 0 then
-            ev.subtitleparts = ev.subtitle:fwrap(ev.fontSub, szSub, 0, textAvailW)
+            ev.subtitleparts = ev.subtitle:fwrap(ev.fontSub, ev.fontsizeSub, textW)
             subh = #ev.subtitleparts * (ev.fontsizeSub + ev.linespacingSub) - ev.linespacingSub
         end
         ev.height = #ev.titleparts * (ev.fontsize + ev.linespacing) - ev.linespacing + subh
@@ -44,17 +39,16 @@ function SlideEvent.Arrange(evs, timex, textx, textW, maxH)
     return sumH - lastPadding, sumPadding - lastPadding
 end
 
-local function _layoutTime(self)
-    local font, sz = self.font, tools.RelSizeToScreen(self.fontsize)
+local function _calcTimeCenterOffset(self)
     local h, m = self.start:match("(%d+):(%d+)")
     if not h then h = '--' end
     if not m then m = '--' end
 
-    local wh = font:width(h, sz)
-    local wc = font:width(":", sz)
-    -- local wm = font:width(m, sz)
-    local offs = - wh - (wc * 0.5)
-    self.tco = tools.ScreenPosToRel(offs)
+    local font, sz = self.font, self.fontsize
+    local wh = tools.textWidth(font, h, sz)
+    local wc = tools.textWidth(font, ":", sz)
+    -- local wm = tools.textWidth(font, m, sz)
+    self.timeCenterOffset = - wh - (wc * 0.5)
 end
 
 
@@ -74,7 +68,7 @@ function SlideEvent.new(proto, cfg) -- proto is an event def from json
     self.linespacingSub = assert(cfg.linespacingSub)
 
     self.ypadding = assert(cfg.ypadding)
-    _layoutTime(self)
+    _calcTimeCenterOffset(self)
     return self
 end
 
@@ -83,7 +77,7 @@ end
 --- Member Functions
 
 function SlideEvent:draw(y, fgcol, bgcol)
-    local timex = self.timex + self.tco
+    local timex = self.timex + self.timeCenterOffset
     local textx = self.textx
     local lineh = self.fontsize + self.linespacing
     local linehSub = self.fontsizeSub + self.linespacingSub

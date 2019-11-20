@@ -1,39 +1,5 @@
-function string.fwrap(str, font, sz, x, wAvail)
-    str = str:match("(.-)%\n*$") -- kill trailing newlines
-
-    local x0 = x
-    -- always allow wrapping after punctuation chars
-    local wrapped = str:gsub("(%s*)([^%s%-%,%.%;%:%/]*[%-%,%.%;%:%/]*)", function(sp, word)
-        local ws = font:width(sp, sz)
-        local ww = font:width(word, sz)
-        x = x + ws + ww
-        if x > wAvail or sp:find("\n", 1, true) then -- always wrap when there's a newline
-            x = x0 + ww
-            return "\n"..word
-        end
-    end)
-    local splitted = {}
-    for token in string.gmatch(wrapped, "[^\n]+") do
-        splitted[#splitted + 1] = token
-    end
-    return splitted
-end
-
-function table.shallowcopy(t)
-    local tt = {}
-    for k, v in pairs(t) do
-        tt[k] = v
-    end
-    return tt
-end
-
-function table.clear(t)
-    for k in pairs(t) do
-        t[k] = nil
-    end
-    return t
-end
-
+-------------------------------------------------------------------------------
+--- generic tools
 
 -- register self
 local tools = rawget(_G, "tools")
@@ -91,6 +57,14 @@ end
 
 function tools.ScreenSizeToRel(sz)
     return sz / DISPLAY_HEIGHT
+end
+
+-- takes sz in resolution-independent coords
+-- sz == 0.5 -> half as high as the screen
+function tools.textWidth(font, text, sz)
+    local h = tools.RelSizeToScreen(sz)
+    local w = font:width(text, h)
+    return tools.ScreenPosToRel(w)
 end
 
 -- takes x, y, sz in resolution-independent coords
@@ -153,6 +127,56 @@ end
 function tools.clearColorTex()
     table.clear(_colorTex)
 end
+
+
+-------------------------------------------------------------------------------
+--- extend string class
+
+function string.fwrap(str, font, sz, max)
+    local h = tools.RelSizeToScreen(sz)
+    local wAvail = tools.RelPosToScreen(max)
+    str = str:match("(.-)%\n*$") -- kill trailing newlines
+
+    local x = 0
+    local x0 = x
+    -- always allow wrapping after punctuation chars
+    local wrapped = str:gsub("(%s*)([^%s%-%,%.%;%:%/]*[%-%,%.%;%:%/]*)", function(sp, word)
+        local ws = font:width(sp, h)
+        local ww = font:width(word, h)
+        x = x + ws + ww
+        if x > wAvail or sp:find("\n", 1, true) then -- always wrap when there's a newline
+            x = x0 + ww
+            return "\n"..word
+        end
+    end)
+    local splitted = {}
+    for token in string.gmatch(wrapped, "[^\n]+") do
+        splitted[#splitted + 1] = token
+    end
+    return splitted
+end
+
+
+-------------------------------------------------------------------------------
+--- extend table class
+
+function table.shallowcopy(t)
+    local tt = {}
+    for k, v in pairs(t) do
+        tt[k] = v
+    end
+    return tt
+end
+
+function table.clear(t)
+    for k in pairs(t) do
+        t[k] = nil
+    end
+    return t
+end
+
+
+-------------------------------------------------------------------------------
 
 print("tools.lua loaded completely")
 return tools

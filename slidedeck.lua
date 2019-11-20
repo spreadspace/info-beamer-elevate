@@ -192,7 +192,7 @@ local function _drawHeader()
     -- time
     local timesize = HEADER_TIME_SIZE
     local timestr = device.getTimeString()
-    local timew = tools.ScreenPosToRel(fontbold:width(timestr, tools.RelSizeToScreen(timesize)))
+    local timew = tools.textWidth(fontbold, timestr, timesize)
     local timex, timey = 1 - HEADER_TIME_PADDING_RIGHT - timew, HEADER_Y_BEGIN
     tools.drawText(fontbold, timex, timey, timestr, timesize, fgcol, bgcol)
 
