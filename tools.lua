@@ -110,11 +110,14 @@ function tools.drawFont(font, x, y, text, sz, fgcol, bgcol)
     return xS, yS+h, w
 end
 
+local SHADOW = resource.create_colored_texture(0,0,0, 0.1)
+
 -- takes x1, y1, x2, y2 in resolution-independent coords
 -- (0, 0) = upper left corner, (1, 1) = lower right corner
 function tools.drawResource(res, x1, y1, x2, y2)
     gl.pushMatrix()
         gl.scale(DISPLAY_WIDTH, DISPLAY_HEIGHT)
+        -- SHADOW:draw(x1, y1, x2, y2)
         res:draw(x1, y1, x2, y2)
     gl.popMatrix()
 end

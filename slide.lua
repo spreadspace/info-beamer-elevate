@@ -206,10 +206,7 @@ local function setupSponsor(self)
     AddDrawCB(self, function()
         local img = self.image.ensure_loaded()
         local w, h = tools.ScreenPosToRel(img:size())
-        local scale = SPONSOR_MAX_W / w
-        if (SPONSOR_MAX_H / h) < scale then
-            scale = SPONSOR_MAX_H / h
-        end
+        local scale = math.min(SPONSOR_MAX_W / w, SPONSOR_MAX_H / h)
         w, h = w*scale, h*scale
         tools.drawResource(img, SPONSOR_X_CENTER - w/2, SPONSOR_Y_CENTER - h/2, SPONSOR_X_CENTER + w/2, SPONSOR_Y_CENTER + h/2)
     end)
