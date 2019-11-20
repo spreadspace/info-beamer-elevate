@@ -70,16 +70,15 @@ end
 -- takes x, y, sz in resolution-independent coords
 -- (0, 0) = upper left corner, (1, 1) = lower right corner
 -- sz == 0.5 -> half as high as the screen
-function tools.drawText(font, x, y, text, sz, fgcol, bgcol)
+function tools.drawText(font, x, y, text, sz, fgcol, bgcol, border)
     local xS, yS  = tools.RelPosToScreen(x, y)
     local h = tools.RelSizeToScreen(sz)
 
-    if bgcol then
+    if bgcol and bgcol.a > 0 and border then
         local w = font:width(text, h)
-        local yborder = tools.RelSizeToScreen(0.01)
-        local xborder = tools.RelSizeToScreen(0.01)
+        local b = tools.RelSizeToScreen(border)
         local bgtex = tools.getColorTex(bgcol)
-        bgtex:draw(xS-xborder, yS-yborder, xS+w+xborder, yS+h+yborder)
+        bgtex:draw(xS-b, yS-b, xS+w+b, yS+h+b)
     end
     font:write(xS, yS, text, h, fgcol:rgba())
 end

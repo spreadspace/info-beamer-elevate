@@ -3,6 +3,8 @@
 
 local HEADER_Y_BEGIN = 0.05
 
+local HEADER_TEXT_BORDER = 0.01
+
 local HEADER_LOGO_X = -0.005
 local HEADER_LOGO_Y = 0.01
 local HEADER_LOGO_H = 0.23
@@ -194,13 +196,13 @@ local function _drawHeader()
     local timestr = device.getTimeString()
     local timew = tools.textWidth(fontbold, timestr, timesize)
     local timex, timey = 1 - HEADER_TIME_PADDING_RIGHT - timew, HEADER_Y_BEGIN
-    tools.drawText(fontbold, timex, timey, timestr, timesize, fgcol, bgcol)
+    tools.drawText(fontbold, timex, timey, timestr, timesize, fgcol, bgcol, HEADER_TEXT_BORDER)
 
     -- top title
     local titlesize = HEADER_TITLE_SIZE
     local titlestr = HEADER_TITLE_TEXT
     local titlex, titley = HEADER_TITLE_X, HEADER_Y_BEGIN
-    tools.drawText(font, titlex, titley, titlestr, titlesize, fgcol, bgcol)
+    tools.drawText(font, titlex, titley, titlestr, titlesize, fgcol, bgcol, HEADER_TEXT_BORDER)
 end
 
 local function _slideiter(slides)
