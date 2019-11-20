@@ -1,5 +1,4 @@
 util.init_hosted()
-
 node.set_flag("no_clear")
 
 NATIVE_ASPECT = NATIVE_WIDTH / NATIVE_HEIGHT
@@ -99,7 +98,7 @@ function node.render()
     -- slidedeck.update() might set state.slidedeck to nil if we reached the end of the slides
     if state.slidedeck then state.slidedeck:update(dt) end
     if not state.slidedeck then
-       state.slidedeck  = SlideDeck.new(state.current_schedule, state.slidedeckIteration)
+       state.slidedeck = SlideDeck.new(state.current_schedule, state.slidedeckIteration)
        state.slidedeckIteration = state.slidedeckIteration + 1
     end
 
