@@ -194,13 +194,13 @@ local function _drawHeader()
     local timestr = device.getTimeString()
     local timew = tools.ScreenPosToRel(fontbold:width(timestr, tools.RelSizeToScreen(timesize)))
     local timex, timey = 1 - HEADER_TIME_PADDING_RIGHT - timew, HEADER_Y_BEGIN
-    tools.drawFont(fontbold, timex, timey, timestr, timesize, fgcol, bgcol)
+    tools.drawText(fontbold, timex, timey, timestr, timesize, fgcol, bgcol)
 
     -- top title
     local titlesize = HEADER_TITLE_SIZE
     local titlestr = HEADER_TITLE_TEXT
     local titlex, titley = HEADER_TITLE_X, HEADER_Y_BEGIN
-    tools.drawFont(font, titlex, titley, titlestr, titlesize, fgcol, bgcol)
+    tools.drawText(font, titlex, titley, titlestr, titlesize, fgcol, bgcol)
 end
 
 local function _slideiter(slides)

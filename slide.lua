@@ -148,7 +148,7 @@ local function setupTitle(self)
     end
 
     AddDrawCB(self, function(slide)
-        tools.drawFont(font, SLIDE_TITLE_X_OFFSET, SLIDE_Y_BEGIN, title, titlesize, fgcol, bgcol)
+        tools.drawText(font, SLIDE_TITLE_X_OFFSET, SLIDE_Y_BEGIN, title, titlesize, fgcol, bgcol)
     end)
 end
 

@@ -96,18 +96,18 @@ end
 -- takes x, y, sz in resolution-independent coords
 -- (0, 0) = upper left corner, (1, 1) = lower right corner
 -- sz == 0.5 -> half as high as the screen
-function tools.drawFont(font, x, y, text, sz, fgcol, bgcol)
+function tools.drawText(font, x, y, text, sz, fgcol, bgcol)
     local xS, yS  = tools.RelPosToScreen(x, y)
     local h = tools.RelSizeToScreen(sz)
-    local w = font:width(text, h)
 
-    local yborder = tools.RelSizeToScreen(0.01)
-    local xborder = tools.RelSizeToScreen(0.01)
-    local bgtex = tools.getColorTex(bgcol)
-    bgtex:draw(xS-xborder, yS-yborder, xS+w+xborder, yS+h+yborder)
-
+    if bgcol then
+        local w = font:width(text, h)
+        local yborder = tools.RelSizeToScreen(0.01)
+        local xborder = tools.RelSizeToScreen(0.01)
+        local bgtex = tools.getColorTex(bgcol)
+        bgtex:draw(xS-xborder, yS-yborder, xS+w+xborder, yS+h+yborder)
+    end
     font:write(xS, yS, text, h, fgcol:rgba())
-    return xS, yS+h, w
 end
 
 local SHADOW = resource.create_colored_texture(0,0,0, 0.1)

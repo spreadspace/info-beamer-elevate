@@ -89,18 +89,18 @@ function SlideEvent:draw(y, fgcol, bgcol)
     local linehSub = self.fontsizeSub + self.linespacingSub
 
     -- time text
-    tools.drawFont(self.font, timex, y, self.start, self.fontsize, fgcol, bgcol)
+    tools.drawText(self.font, timex, y, self.start, self.fontsize, fgcol, bgcol)
 
     -- title
     for _, s in ipairs(self.titleparts) do
-        tools.drawFont(self.font, textx, y, s, self.fontsize, fgcol, bgcol)
+        tools.drawText(self.font, textx, y, s, self.fontsize, fgcol, bgcol)
         y = y + lineh
     end
 
     -- subtitle
     if self.subtitleparts then
         for _, s in ipairs(self.subtitleparts) do
-            tools.drawFont(self.fontSub, textx, y, s, self.fontsizeSub, fgcol, bgcol)
+            tools.drawText(self.fontSub, textx, y, s, self.fontsizeSub, fgcol, bgcol)
             y = y + linehSub
         end
     end
