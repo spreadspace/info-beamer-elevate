@@ -70,7 +70,7 @@ util.file_watch("slidedeck.lua", function(content)
     print("Reloading slidedeck.lua...")
     local x = assert(loadstring(content, "slidedeck.lua"))()
     SlideDeck = x
-    if _DEBUG_ or not state.slidedeck then
+    if not state.slidedeck  or _DEBUG_ then
        state.slidedeck = SlideDeck.new(state.current_schedule, state.slidedeckIteration)
        state.slidedeckIteration = state.slidedeckIteration + 1
     end

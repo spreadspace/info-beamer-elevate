@@ -184,20 +184,20 @@ local function setupEvents(self, events, getFormatConfig)
         timex, textx = REMOTE_EVENT_TIME_X_OFFSET, REMOTE_EVENT_TEXT_X_OFFSET
     end
     local maxH = 1 - y0 - SLIDE_BODY_MINSPACE_TOP - SLIDE_BODY_MINSPACE_BOTTOM
-    local sumH, sumPadding = SlideEvent.Arrange(evs, timex, textx, SLIDE_X_MAX-textx, maxH)
+    local sumH, sumPadding = SlideEvent.Arrange(evs, SLIDE_X_MAX-textx, maxH)
 
     local expand = 1 + (maxH - sumH)/sumPadding
     expand = math.min(expand, 2)
     y0 = y0 + SLIDE_BODY_MINSPACE_TOP + (maxH - sumH - sumPadding * (expand-1))/2
 
     AddDrawCB(self, function(slide)
-        local fgcol = (self.track and self.track.foreground_color) or CONFIG.foreground_color
-        local bgcol = (self.track and self.track.background_color) or CONFIG.background_color
+        local fgcol = (slide.track and slide.track.foreground_color) or CONFIG.foreground_color
+        local bgcol = (slide.track and slide.track.background_color) or CONFIG.background_color
         local y = y0
         for _, ev in ipairs(evs) do
             fgcol = (ev.track and ev.track.foreground_color) or fgcol
             bgcol = (ev.track and ev.track.background_color) or bgcol
-            ev:draw(y, fgcol, bgcol)
+            ev:draw(timex, textx, y, fgcol, bgcol)
             y = y + ev.height + ev.ypadding * expand
         end
     end)
@@ -219,8 +219,8 @@ local function setupEvents(self, events, getFormatConfig)
 end
 
 local function setupSponsor(self)
-    AddDrawCB(self, function()
-        local img = self.image.ensure_loaded()
+    AddDrawCB(self, function(slide)
+        local img = slide.image.ensure_loaded()
         local w, h = tools.ScreenPosToRel(img:size())
         local scale = math.min(SPONSOR_MAX_W / w, SPONSOR_MAX_H / h)
         w, h = w*scale, h*scale
@@ -274,17 +274,19 @@ end
 -------------------------------------------------------------------------------
 --- Constructors
 
-function Slide.newLocal(locdef, events)
+function Slide.newLocal(location, events)
     local empty
     local time = CONFIG.slide_time_local
     if not events or #events == 0 then
         events = {NO_EVENT}
         empty = true
         time = CONFIG.slide_time_empty
+    else
+        assert(location)
     end
     local self = {
         here = true,
-        location = locdef,
+        location = location,
         events = assert(events),
         empty = empty,
         type = "local",
@@ -293,10 +295,10 @@ function Slide.newLocal(locdef, events)
     return setmetatable(commonInit(self), Slide)
 end
 
-function Slide.newRemote(trackdef, locdef, events)
+function Slide.newRemote(track, location, events)
     local self = {
-        track = assert(trackdef),
-        location = assert(locdef),
+        track = assert(track),
+        location = assert(location),
         events = assert(events),
         type = "remote",
         time = CONFIG.slide_time_remote,
@@ -305,6 +307,7 @@ function Slide.newRemote(trackdef, locdef, events)
 end
 
 function Slide.newSponsor(sponsor)
+    assert(sponsor)
     local self = {
         image = sponsor.image,
         type = "sponsor",

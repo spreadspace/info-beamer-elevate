@@ -47,7 +47,7 @@ SlideDeck.__index = SlideDeck
 --- Helper Functions
 
 -- returns nil when event is not to be shown
-local function _sanitizeEvent(ev, ts, locid)
+local function _sanitizeEvent(ev, ts)
     local startts = math.floor(tonumber(ev.startts))
     local endts = math.floor(tonumber(ev.endts))
     local status = "unknown"
@@ -71,7 +71,6 @@ local function _sanitizeEvent(ev, ts, locid)
         local evc = table.shallowcopy(ev)
         evc.prio = prio
         evc.status = status
-        evc.locid = locid
         evc.startts = tonumber(evc.startts)
         evc.endts = tonumber(evc.endts)
         return evc
@@ -149,7 +148,7 @@ local function _scheduleToSlides(schedule, iteration)
         local isHere = (here.id == location.id)
         if levs then
             for _, lev in pairs(levs) do
-                local event = _sanitizeEvent(lev, ts, location.id)
+                local event = _sanitizeEvent(lev, ts)
                 if event then
                     if isHere then
                         table.insert(localEvents, event)
@@ -229,7 +228,7 @@ function SlideDeck.new(schedule, iteration)
     }
     setmetatable(self, SlideDeck)
 
-    local slides = nil
+    local slides
     if schedule then
        slides = _scheduleToSlides(schedule, iteration)
     end
@@ -257,12 +256,8 @@ function SlideDeck:next()
        return
     end
 
-    local t = 1
-    if self.current then
-        t = self.current.time or t
-    end
-
     -- schedule next slide
+    local t = self.current.time or 1
     self.tq:push(t, function() self:next() end)
 end
 

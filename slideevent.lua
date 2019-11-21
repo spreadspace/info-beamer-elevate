@@ -10,13 +10,11 @@ SlideEvent.__index = SlideEvent
 
 -- timecx means center of time, textx means start of text
 -- linewrapping must happen here
-function SlideEvent.Arrange(evs, timecx, textx, textW, maxH)
+function SlideEvent.Arrange(evs, textW, maxH)
     local sumH = 0
     local sumPadding = 0
     local lastPadding = 0
     for i, ev in ipairs(evs) do
-        ev.timecx = timecx
-        ev.textx = textx
         ev.titleparts = ev.title:fwrap(ev.font, ev.fontsize, textW)
         local subh = 0
         if ev.subtitle and #ev.subtitle > 0 then
@@ -78,9 +76,8 @@ end
 -------------------------------------------------------------------------------
 --- Member Functions
 
-function SlideEvent:draw(y, fgcol, bgcol)
-    local timex = self.timecx + self.timeco
-    local textx = self.textx
+function SlideEvent:draw(timecx, textx, y, fgcol, bgcol)
+    local timex = timecx + self.timeco
     local lineh = self.fontsize + self.linespacing
     local linehSub = self.fontsizeSub + self.linespacingSub
 
@@ -94,15 +91,15 @@ function SlideEvent:draw(y, fgcol, bgcol)
     tools.drawText(self.font, timex, y, self.start, self.fontsize, fgcol, bgcol, self.border)
 
     -- title
-    for _, s in ipairs(self.titleparts) do
-        tools.drawText(self.font, textx, y, s, self.fontsize, fgcol, bgcol, self.border)
+    for _, part in ipairs(self.titleparts) do
+        tools.drawText(self.font, textx, y, part, self.fontsize, fgcol, bgcol, self.border)
         y = y + lineh
     end
 
     -- subtitle
     if self.subtitleparts then
-        for _, s in ipairs(self.subtitleparts) do
-            tools.drawText(self.fontSub, textx, y, s, self.fontsizeSub, fgcol, bgcol, self.borderSub)
+        for _, part in ipairs(self.subtitleparts) do
+            tools.drawText(self.fontSub, textx, y, part, self.fontsizeSub, fgcol, bgcol, self.borderSub)
             y = y + linehSub
         end
     end
