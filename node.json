@@ -166,7 +166,22 @@
             "name": "foreground_color",
             "type": "color",
             "default": [0,0,0,1]
-        }]
+        }],
+        "default": [
+            {
+                "id": "discourse",
+                "eis_id": "discourse",
+                "name": "DISCOURSE"
+            }, {
+                "id": "music",
+                "eis_id": "art",
+                "name": "MUSIC"
+            }, {
+                "id": "arts",
+                "eis_id": "campus",
+                "name": "ARTS"
+            }
+        ]
     }, {
         "title": "Locations",
         "name": "locations",
@@ -194,94 +209,77 @@
         }],
         "default": [
             {
-              "eis_id": "0",
-              "id": "emc",
-              "name": "MEDIA CHANNEL"
-            },
-            {
-              "eis_id": "1",
-              "id": "forum",
-              "name": "FORUM STADTPARK"
-            },
-            {
-              "eis_id": "9",
-              "id": "forumsaloon",
-              "name": "FORUM SALOON"
-            },
-            {
-              "eis_id": "35",
-              "id": "forumprojekt",
-              "name": "FORUM PROJEKTRAUM"
-            },
-            {
-              "eis_id": "8",
-              "id": "forumkeller",
-              "name": "FORUM KELLER"
-            },
-            {
-              "eis_id": "36",
-              "id": "orpheum",
-              "name": "ORPHEUM"
-            },
-            {
-              "eis_id": "57",
-              "id": "orpheumfoyer",
-              "name": "ORPHEUM FOYER"
-            },
-            {
-              "eis_id": "50",
-              "id": "orpheumextra",
-              "name": "ORPHEUM EXTRA"
-            },
-            {
-              "eis_id": "34",
-              "id": "kunsthaus",
-              "name": "KUNSTHAUS SPACE04"
-            },
-            {
-              "eis_id": "48",
-              "id": "needle",
-              "name": "KUNSTHAUS NEEDLE"
-            },
-            {
-              "eis_id": "52",
-              "id": "mausoleum",
-              "name": "MAUSOLEUM"
-            },
-            {
-              "eis_id": "2",
-              "id": "dom",
-              "name": "DOM IM BERG"
-            },
-            {
-              "eis_id": "4",
-              "id": "tunnel",
-              "name": "TUNNEL"
-            },
-            {
-              "eis_id": "3",
-              "id": "dungeon",
-              "name": "DUNGEON"
-            },
-            {
-              "eis_id": "6",
-              "id": "parkhouse",
-              "name": "PARKHOUSE"
-            },
-            {
-              "eis_id": "56",
-              "id": "schlossberg",
-              "name": "SCHLOSSBERG"
-            },
-            {
-              "eis_id": "53",
-              "id": "stollen",
-              "name": "SCHLOSSBERGSTOLLEN"
-            },
-            {
-              "eis_id": "58",
-              "id": "schubertkino",
-              "name": "SCHUBERT KINO"
+                "id": "emc",
+                "eis_id": "0",
+                "name": "MEDIA CHANNEL"
+            }, {
+                "id": "forum",
+                "eis_id": "1",
+                "name": "FORUM STADTPARK"
+            }, {
+                "id": "forumsaloon",
+                "eis_id": "9",
+                "name": "FORUM SALOON"
+            }, {
+                "id": "forumprojekt",
+                "eis_id": "35",
+                "name": "FORUM PROJEKTRAUM"
+            }, {
+                "id": "forumkeller",
+                "eis_id": "8",
+                "name": "FORUM KELLER"
+            }, {
+                "id": "orpheum",
+                "eis_id": "36",
+                "name": "ORPHEUM"
+            }, {
+                "id": "orpheumfoyer",
+                "eis_id": "57",
+                "name": "ORPHEUM FOYER"
+            }, {
+                "id": "orpheumextra",
+                "eis_id": "50",
+                "name": "ORPHEUM EXTRA"
+            }, {
+                "id": "kunsthaus",
+                "eis_id": "34",
+                "name": "KUNSTHAUS SPACE04"
+            }, {
+                "id": "needle",
+                "eis_id": "48",
+                "name": "KUNSTHAUS NEEDLE"
+            }, {
+                "id": "mausoleum",
+                "eis_id": "52",
+                "name": "MAUSOLEUM"
+            }, {
+                "id": "dom",
+                "eis_id": "2",
+                "name": "DOM IM BERG"
+            }, {
+                "id": "tunnel",
+                "eis_id": "4",
+                "name": "TUNNEL"
+            }, {
+                "id": "dungeon",
+                "eis_id": "3",
+                "name": "DUNGEON"
+            }, {
+                "id": "parkhouse",
+                "eis_id": "6",
+                "name": "PARKHOUSE"
+            }, {
+                "id": "schlossberg",
+                "eis_id": "56",
+                "name": "SCHLOSSBERG"
+            }, {
+                "id": "stollen",
+                "eis_id": "53",
+                "name": "SCHLOSSBERGSTOLLEN"
+            }, {
+                "id": "schubertkino",
+                "eis_id": "58",
+                "name": "SCHUBERT KINO"
             }
         ]
     }, {
