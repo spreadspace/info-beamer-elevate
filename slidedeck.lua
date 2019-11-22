@@ -215,7 +215,7 @@ end
 
 
 -------------------------------------------------------------------------------
---- Constructors
+--- Constructor
 
 local TimerQueue = require "timerqueue"
 

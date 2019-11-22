@@ -8,7 +8,6 @@ SlideEvent.__index = SlideEvent
 -------------------------------------------------------------------------------
 --- Helper Functions
 
--- timecx means center of time, textx means start of text
 -- linewrapping must happen here
 function SlideEvent.Arrange(evs, textW, maxH)
     local sumH = 0
@@ -51,7 +50,7 @@ end
 
 
 -------------------------------------------------------------------------------
---- Constructors
+--- Constructor
 
 function SlideEvent.new(proto, cfg) -- proto is an event def from json
     local self = table.shallowcopy(proto)
@@ -76,6 +75,7 @@ end
 -------------------------------------------------------------------------------
 --- Member Functions
 
+-- timecx means center of time, textx means start of text
 function SlideEvent:draw(timecx, textx, y, fgcol, bgcol)
     local timex = timecx + self.timeco
     local lineh = self.fontsize + self.linespacing
