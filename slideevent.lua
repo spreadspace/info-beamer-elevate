@@ -36,18 +36,6 @@ function SlideEvent.Arrange(evs, textW, maxH)
     return sumH - lastMargin, sumMargin - lastMargin
 end
 
-local function _calcTimeCenterOffset(self)
-    local h, m = self.start:match("(%d+):(%d+)")
-    if not h then h = '--' end
-    if not m then m = '--' end
-
-    local font, sz = self.font, self.fontsize
-    local wh = tools.textWidth(font, h, sz)
-    local wc = tools.textWidth(font, ":", sz)
-    -- local wm = tools.textWidth(font, m, sz)
-    self.timeco = - wh - (wc * 0.5)
-end
-
 
 -------------------------------------------------------------------------------
 --- Constructor
@@ -67,7 +55,7 @@ function SlideEvent.new(proto, cfg) -- proto is an event def from json
     self.paddingSub = cfg.paddingSub -- allow this to be nil
 
     self.ymargin = assert(cfg.ymargin)
-    _calcTimeCenterOffset(self)
+    self.timeco = tools.timeColonOffset(self.font, self.start, self.fontsize)
     return self
 end
 
@@ -77,7 +65,7 @@ end
 
 -- timecx means center of time, textx means start of text
 function SlideEvent:draw(timecx, textx, y, fgcol, bgcol)
-    local timex = timecx + self.timeco
+    local timex = timecx - self.timeco
     local lineh = self.fontsize + self.linespacing
     local linehSub = self.fontsizeSub + self.linespacingSub
 

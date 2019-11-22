@@ -67,6 +67,15 @@ function tools.textWidth(font, text, sz)
     return tools.ScreenPosToRel(w)
 end
 
+function tools.timeColonOffset(font, time, sz)
+    local hours, _ = time:match("(%d+):(%d+)")
+    if not hours then h = '--' end
+
+    local wh = tools.textWidth(font, hours, sz)
+    local wc = tools.textWidth(font, ":", sz)
+    return wh + (wc * 0.5)
+end
+
 -- takes x, y, sz in resolution-independent coords
 -- (0, 0) = upper left corner, (1, 1) = lower right corner
 -- sz == 0.5 -> half as high as the screen

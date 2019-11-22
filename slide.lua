@@ -337,10 +337,10 @@ end
 --- Member Functions
 
 function Slide:draw()
-    tools.debugDraw(5, drawGrid, self.type)
     for _, cb in ipairs(self._drawCBs) do
         cb(self)
     end
+    tools.debugDraw(5, drawGrid, self.type)
 end
 
 
