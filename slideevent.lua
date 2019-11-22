@@ -11,8 +11,8 @@ SlideEvent.__index = SlideEvent
 -- linewrapping must happen here
 function SlideEvent.Arrange(evs, textW, maxH)
     local sumH = 0
-    local sumPadding = 0
-    local lastPadding = 0
+    local sumMargin = 0
+    local lastMargin = 0
     for i, ev in ipairs(evs) do
         ev.titleparts = ev.title:fwrap(ev.font, ev.fontsize, textW)
         local subh = 0
@@ -28,12 +28,12 @@ function SlideEvent.Arrange(evs, textW, maxH)
             end
             break
         end
-        sumH = sumH + ev.height + ev.ypadding
-        sumPadding = sumPadding + ev.ypadding
-        lastPadding = ev.ypadding
+        sumH = sumH + ev.height + ev.ymargin
+        sumMargin = sumMargin + ev.ymargin
+        lastMargin = ev.ymargin
     end
 
-    return sumH - lastPadding, sumPadding - lastPadding
+    return sumH - lastMargin, sumMargin - lastMargin
 end
 
 local function _calcTimeCenterOffset(self)
@@ -66,7 +66,7 @@ function SlideEvent.new(proto, cfg) -- proto is an event def from json
     self.linespacingSub = assert(cfg.linespacingSub)
     self.borderSub = cfg.borderSub -- allow this to be nil
 
-    self.ypadding = assert(cfg.ypadding)
+    self.ymargin = assert(cfg.ymargin)
     _calcTimeCenterOffset(self)
     return self
 end

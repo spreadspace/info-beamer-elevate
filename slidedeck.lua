@@ -11,7 +11,7 @@ local HEADER_LOGO_H = 0.23
 local HEADER_LOGO_W = HEADER_LOGO_H/DISPLAY_ASPECT  -- the logo texture is square
 
 local HEADER_TIME_SIZE = 0.08
-local HEADER_TIME_PADDING_RIGHT = 0.05
+local HEADER_TIME_MARGIN_RIGHT = 0.05
 
 local HEADER_TITLE_SIZE = 0.06
 local HEADER_TITLE_TEXT = "ELEVATE INFOSCREEN"
@@ -194,7 +194,7 @@ local function _drawHeader()
     local timesize = HEADER_TIME_SIZE
     local timestr = device.getTimeString()
     local timew = tools.textWidth(fontbold, timestr, timesize)
-    local timex, timey = 1 - HEADER_TIME_PADDING_RIGHT - timew, HEADER_Y_BEGIN
+    local timex, timey = 1 - HEADER_TIME_MARGIN_RIGHT - timew, HEADER_Y_BEGIN
     tools.drawText(fontbold, timex, timey, timestr, timesize, fgcol, bgcol, HEADER_TEXT_BORDER)
 
     -- top title

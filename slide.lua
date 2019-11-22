@@ -41,7 +41,7 @@ local EVENT_FORMAT_DEFAULT = {
     linespacingSub = 0,
     borderSub = SLIDE_TEXT_BORDER,
 
-    ypadding = 0.03,
+    ymargin = 0.03,
 }
 
 local EVENT_FORMAT_LOCAL_TOP = {
@@ -55,7 +55,7 @@ local EVENT_FORMAT_LOCAL_TOP = {
     linespacingSub = 0,
     borderSub = SLIDE_TEXT_BORDER,
 
-    ypadding = 0.035,
+    ymargin = 0.035,
 }
 
 
@@ -163,7 +163,7 @@ local function setupTimebar(self)
         local x = LOCAL_TIMEBAR_X_OFFSET
         local y1, y2 = LOCAL_TIMEBAR_Y_BEGIN, LOCAL_TIMEBAR_Y_END
         local w = LOCAL_TIMEBAR_WIDTH
-        tools.drawResource(Resources.timebar, x-w/2, y1, x+w/2, y2)
+        tools.drawResource(Resources.timebar_white, x-w/2, y1, x+w/2, y2)
     end)
 end
 
@@ -184,11 +184,11 @@ local function setupEvents(self, events, getFormatConfig)
         timex, textx = REMOTE_EVENT_TIME_X_OFFSET, REMOTE_EVENT_TEXT_X_OFFSET
     end
     local maxH = 1 - y0 - SLIDE_BODY_MINSPACE_TOP - SLIDE_BODY_MINSPACE_BOTTOM
-    local sumH, sumPadding = SlideEvent.Arrange(evs, SLIDE_X_MAX-textx, maxH)
+    local sumH, sumMargin = SlideEvent.Arrange(evs, SLIDE_X_MAX-textx, maxH)
 
-    local expand = 1 + (maxH - sumH)/sumPadding
+    local expand = 1 + (maxH - sumH)/sumMargin
     expand = math.min(expand, 2)
-    y0 = y0 + SLIDE_BODY_MINSPACE_TOP + (maxH - sumH - sumPadding * (expand-1))/2
+    y0 = y0 + SLIDE_BODY_MINSPACE_TOP + (maxH - sumH - sumMargin * (expand-1))/2
 
     AddDrawCB(self, function(slide)
         local fgcol = (slide.track and slide.track.foreground_color) or CONFIG.foreground_color
@@ -198,7 +198,7 @@ local function setupEvents(self, events, getFormatConfig)
             fgcol = (ev.track and ev.track.foreground_color) or fgcol
             bgcol = (ev.track and ev.track.background_color) or bgcol
             ev:draw(timex, textx, y, fgcol, bgcol)
-            y = y + ev.height + ev.ypadding * expand
+            y = y + ev.height + ev.ymargin * expand
         end
     end)
 
@@ -212,7 +212,7 @@ local function setupEvents(self, events, getFormatConfig)
             for _, ev in ipairs(evs) do
                 local yt = y + (ev.fontsize*0.5)
                 tools.drawResource(fgcol, x-dx, yt-dy, x+dx, yt+dy)
-                y = y + ev.height + ev.ypadding * expand
+                y = y + ev.height + ev.ymargin * expand
             end
         end)
     end
