@@ -7,7 +7,7 @@ local SLIDE_X_MAX = 0.92
 local SLIDE_BODY_MINSPACE_TOP = 0.07
 local SLIDE_BODY_MINSPACE_BOTTOM = 0.07
 
-local SLIDE_TEXT_BORDER = 0.01
+local SLIDE_TEXT_PADDING = 0.01
 
 local LOCAL_TITLE_SIZE = 0.09
 local LOCAL_TIMEBAR_X_OFFSET = 0.115
@@ -34,12 +34,12 @@ local EVENT_FORMAT_DEFAULT = {
     font = CONFIG.font,
     fontsize = 0.07,
     linespacing = 0.01,
-    border = SLIDE_TEXT_BORDER,
+    padding = SLIDE_TEXT_PADDING,
 
     fontSub = CONFIG.font,
     fontsizeSub = 0.045,
     linespacingSub = 0,
-    borderSub = SLIDE_TEXT_BORDER,
+    paddingSub = SLIDE_TEXT_PADDING,
 
     ymargin = 0.03,
 }
@@ -48,12 +48,12 @@ local EVENT_FORMAT_LOCAL_TOP = {
     font = CONFIG.font,
     fontsize = 0.094,
     linespacing = 0.01,
-    border = SLIDE_TEXT_BORDER,
+    padding = SLIDE_TEXT_PADDING,
 
     fontSub = CONFIG.font,
     fontsizeSub = 0.06,
     linespacingSub = 0,
-    borderSub = SLIDE_TEXT_BORDER,
+    paddingSub = SLIDE_TEXT_PADDING,
 
     ymargin = 0.035,
 }
@@ -154,7 +154,7 @@ local function setupTitle(self)
     end
 
     AddDrawCB(self, function(slide)
-        tools.drawText(font, SLIDE_TITLE_X_OFFSET, SLIDE_Y_BEGIN, title, titlesize, fgcol, bgcol, SLIDE_TEXT_BORDER)
+        tools.drawText(font, SLIDE_TITLE_X_OFFSET, SLIDE_Y_BEGIN, title, titlesize, fgcol, bgcol, SLIDE_TEXT_PADDING)
     end)
 end
 

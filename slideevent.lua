@@ -59,12 +59,12 @@ function SlideEvent.new(proto, cfg) -- proto is an event def from json
     self.font = assert(cfg.font)
     self.fontsize = assert(cfg.fontsize)
     self.linespacing = assert(cfg.linespacing)
-    self.border = cfg.border -- allow this to be nil
+    self.padding = cfg.padding -- allow this to be nil
 
     self.fontSub = assert(cfg.fontSub)
     self.fontsizeSub = assert(cfg.fontsizeSub)
     self.linespacingSub = assert(cfg.linespacingSub)
-    self.borderSub = cfg.borderSub -- allow this to be nil
+    self.paddingSub = cfg.paddingSub -- allow this to be nil
 
     self.ymargin = assert(cfg.ymargin)
     _calcTimeCenterOffset(self)
@@ -81,11 +81,11 @@ function SlideEvent:draw(timecx, textx, y, fgcol, bgcol)
     local lineh = self.fontsize + self.linespacing
     local linehSub = self.fontsizeSub + self.linespacingSub
 
-    -- fix ugly gap between time and title borders
-    if bgcol and bgcol.a > 0 and self.border then
+    -- fix ugly gap between time and title padding
+    if bgcol and bgcol.a > 0 and self.padding then
         local bgtex = tools.getColorTex(bgcol)
         local titlew = tools.textWidth(self.font, self.titleparts[1], self.fontsize)
-        tools.drawResource(bgtex, timex - self.border, y - self.border, textx + titlew + self.border, y + self.fontsize + self.border)
+        tools.drawResource(bgtex, timex - self.padding, y - self.padding, textx + titlew + self.padding, y + self.fontsize + self.padding)
     end
 
     -- time text
@@ -94,7 +94,7 @@ function SlideEvent:draw(timecx, textx, y, fgcol, bgcol)
     -- title
     local b = nil
     for idx, part in ipairs(self.titleparts) do
-        if idx > 1 then b = self.border end
+        if idx > 1 then b = self.padding end
         tools.drawText(self.font, textx, y, part, self.fontsize, fgcol, bgcol, b)
         y = y + lineh
     end
@@ -102,7 +102,7 @@ function SlideEvent:draw(timecx, textx, y, fgcol, bgcol)
     -- subtitle
     if self.subtitleparts then
         for _, part in ipairs(self.subtitleparts) do
-            tools.drawText(self.fontSub, textx, y, part, self.fontsizeSub, fgcol, bgcol, self.borderSub)
+            tools.drawText(self.fontSub, textx, y, part, self.fontsizeSub, fgcol, bgcol, self.paddingSub)
             y = y + linehSub
         end
     end
