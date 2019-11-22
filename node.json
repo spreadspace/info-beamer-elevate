@@ -191,7 +191,19 @@
             "name": "name",
             "type": "string",
             "default": ""
-        }]
+        }],
+        "default": [
+            {
+              "eis_id": "0",
+              "id": "emc",
+              "name": "MEDIA CHANNEL"
+            },
+            {
+              "eis_id": "1",
+              "id": "forum",
+              "name": "FORUM STADTPARK"
+            },
+        ]
     }, {
         "title": "Sponsors",
         "name": "sponsors",
