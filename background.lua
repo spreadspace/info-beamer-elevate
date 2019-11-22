@@ -25,23 +25,23 @@ local function drawBGDefault()
     tools.drawText(DEFAULT_FONT, 0.5 - defaultTextWidth/2, 0.5 - DEFAULT_TEXTSIZE/2, DEFAULT_TEXT, DEFAULT_TEXTSIZE, DEFAULT_FG_COLOR)
 end
 
-local function drawBGSimple(res)
-    -- we assume the background has the correct aspect ratio
-    res:draw(0, 0, NATIVE_WIDTH, NATIVE_HEIGHT)
-end
-
 
 local function setupDraw(self, style)
     local fancymode = style:match("^fancy%-(.*)$")
     if style == "static" then
         self._draw = function()
-            local res = CONFIG.background_static.ensure_loaded()
-            drawBGSimple(res)
+            local image = CONFIG.background_static.ensure_loaded()
+            image:draw(0, 0, NATIVE_WIDTH, NATIVE_HEIGHT) -- we assume the background has the correct aspect ratio
         end
     elseif style == "video" then
         self._draw = function()
-            local res = CONFIG.background_video.ensure_loaded({looped=true})
-            drawBGSimple(res)
+            local video = CONFIG.background_video.ensure_loaded({looped=true})
+            -- video place only works on the raspi...
+            if video.place then
+                video:place(0, 0, NATIVE_WIDTH, NATIVE_HEIGHT)
+            else
+                video:draw(0, 0, NATIVE_WIDTH, NATIVE_HEIGHT)
+            end
         end
     elseif fancymode then
         local fancy = require "fancy"
