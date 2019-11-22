@@ -84,15 +84,18 @@ function SlideEvent:draw(timecx, textx, y, fgcol, bgcol)
     -- fix ugly gap between time and title borders
     if bgcol and bgcol.a > 0 and self.border then
         local bgtex = tools.getColorTex(bgcol)
-        tools.drawResource(bgtex, timex, y - self.border, textx, y + self.fontsize + self.border)
+        local titlew = tools.textWidth(self.font, self.titleparts[1], self.fontsize)
+        tools.drawResource(bgtex, timex - self.border, y - self.border, textx + titlew + self.border, y + self.fontsize + self.border)
     end
 
     -- time text
-    tools.drawText(self.font, timex, y, self.start, self.fontsize, fgcol, bgcol, self.border)
+    tools.drawText(self.font, timex, y, self.start, self.fontsize, fgcol)
 
     -- title
-    for _, part in ipairs(self.titleparts) do
-        tools.drawText(self.font, textx, y, part, self.fontsize, fgcol, bgcol, self.border)
+    local b = nil
+    for idx, part in ipairs(self.titleparts) do
+        if idx > 1 then b = self.border end
+        tools.drawText(self.font, textx, y, part, self.fontsize, fgcol, bgcol, b)
         y = y + lineh
     end
 
