@@ -11,13 +11,13 @@
         "ui_width": 3,
         "name": "background_color",
         "type": "color",
-        "default": [0,0,0,1]
+        "default": [1,1,1,0]
     }, {
         "title": "Foreground color",
         "ui_width": 3,
         "name": "foreground_color",
         "type": "color",
-        "default": [1,1,1,1]
+        "default": [0,0,0,1]
     }, {
         "title": "Font",
         "ui_width": 3,
@@ -159,13 +159,13 @@
             "ui_width": 3,
             "name": "background_color",
             "type": "color",
-            "default": [0,0,0,1]
+            "default": [1,1,1,0]
         }, {
             "title": "Foreground color",
             "ui_width": 3,
             "name": "foreground_color",
             "type": "color",
-            "default": [1,1,1,1]
+            "default": [0,0,0,1]
         }]
     }, {
         "title": "Locations",
@@ -233,7 +233,8 @@
                ["video", "use video as background"],
                ["fancy-minimal", "minimal animation (needs minimal GPU power)"],
                ["fancy-full", "animation with maximum fanciness (needs lots of GPU power)"]
-            ]
+            ],
+            "default": "static"
         }]
     }]
 }
