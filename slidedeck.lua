@@ -190,22 +190,24 @@ local function setupHeader(self)
     local fgcol = CONFIG.foreground_color
     local bgcol = CONFIG.background_color
 
-    local logox, logoy = HEADER_LOGO_X, HEADER_LOGO_Y
-    local logoh, logow = HEADER_LOGO_H, HEADER_LOGO_W
-
-    local timesize = HEADER_TIME_SIZE
-    local timestr = device.getTimeString()
-    local timew = tools.textWidth(fontbold, timestr, timesize)
-    local timex, timey = 1 - HEADER_TIME_MARGIN_RIGHT - timew, HEADER_Y_BEGIN
-
-    local titlesize = HEADER_TITLE_SIZE
-    local titlestr = HEADER_TITLE_TEXT
-    local titlex, titley = HEADER_TITLE_X, HEADER_Y_BEGIN
-
     self.drawHeader = function()
+        local logox, logoy = HEADER_LOGO_X, HEADER_LOGO_Y
+        local logoh, logow = HEADER_LOGO_H, HEADER_LOGO_W
+
+        local timesize = HEADER_TIME_SIZE
+        local timestr = device.getTimeString()
+        local timew = tools.textWidth(fontbold, timestr, timesize)
+        local timex, timey = 1 - HEADER_TIME_MARGIN_RIGHT - timew, HEADER_Y_BEGIN
+        local timepadding = HEADER_TEXT_PADDING
+
+        local titlesize = HEADER_TITLE_SIZE
+        local titlestr = HEADER_TITLE_TEXT
+        local titlex, titley = HEADER_TITLE_X, HEADER_Y_BEGIN
+        local titlepadding = HEADER_TEXT_PADDING
+
         tools.drawResource(logo, logox, logoy, logox+logow, logoy+logoh)
-        tools.drawText(fontbold, timex, timey, timestr, timesize, fgcol, bgcol, HEADER_TEXT_PADDING)
-        tools.drawText(font, titlex, titley, titlestr, titlesize, fgcol, bgcol, HEADER_TEXT_PADDING)
+        tools.drawText(fontbold, timex, timey, timestr, timesize, fgcol, bgcol, timepadding)
+        tools.drawText(font, titlex, titley, titlestr, titlesize, fgcol, bgcol, titlepadding)
     end
 end
 

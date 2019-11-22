@@ -67,7 +67,7 @@ function Background.new(style)
         style = style,
         _draw = nil
     }
-    setupDraw(self, style)
+    if style then setupDraw(self, style) end
     return setmetatable(self, Background)
 end
 
