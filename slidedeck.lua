@@ -17,6 +17,10 @@ local HEADER_TITLE_SIZE = 0.06
 local HEADER_TITLE_TEXT = "ELEVATE INFOSCREEN"
 local HEADER_TITLE_X = 0.15
 
+local THEME_LOGOS = {
+    ["light"] = Resources.logo_black,
+    ["dark"] = Resources.logo_white,
+}
 
 -- FOR TESTING --
 local SHOW_LOCAL_EVENTS = true
@@ -178,30 +182,31 @@ local function _scheduleToSlides(schedule, iteration)
     return slides
 end
 
-local function _drawHeader()
-    local logo = CONFIG.logo.ensure_loaded()
+local function setupHeader(self)
+    local logo = THEME_LOGOS[CONFIG.theme]
+
     local font = CONFIG.font
     local fontbold = CONFIG.font_bold
     local fgcol = CONFIG.foreground_color
     local bgcol = CONFIG.background_color
 
-    -- logo
     local logox, logoy = HEADER_LOGO_X, HEADER_LOGO_Y
     local logoh, logow = HEADER_LOGO_H, HEADER_LOGO_W
-    tools.drawResource(logo, logox, logoy, logox+logow, logoy+logoh)
 
-    -- time
     local timesize = HEADER_TIME_SIZE
     local timestr = device.getTimeString()
     local timew = tools.textWidth(fontbold, timestr, timesize)
     local timex, timey = 1 - HEADER_TIME_MARGIN_RIGHT - timew, HEADER_Y_BEGIN
-    tools.drawText(fontbold, timex, timey, timestr, timesize, fgcol, bgcol, HEADER_TEXT_PADDING)
 
-    -- top title
     local titlesize = HEADER_TITLE_SIZE
     local titlestr = HEADER_TITLE_TEXT
     local titlex, titley = HEADER_TITLE_X, HEADER_Y_BEGIN
-    tools.drawText(font, titlex, titley, titlestr, titlesize, fgcol, bgcol, HEADER_TEXT_PADDING)
+
+    self.drawHeader = function()
+        tools.drawResource(logo, logox, logoy, logox+logow, logoy+logoh)
+        tools.drawText(fontbold, timex, timey, timestr, timesize, fgcol, bgcol, HEADER_TEXT_PADDING)
+        tools.drawText(font, titlex, titley, titlestr, titlesize, fgcol, bgcol, HEADER_TEXT_PADDING)
+    end
 end
 
 local function _slideiter(slides)
@@ -226,6 +231,7 @@ function SlideDeck.new(schedule, iteration)
         iter = nil,
         current = nil
     }
+    setupHeader(self)
     setmetatable(self, SlideDeck)
 
     local slides
@@ -268,7 +274,7 @@ end
 function SlideDeck:draw()
     gl.ortho()
     tools.fixAspect()
-    _drawHeader()
+    self.drawHeader()
     self.current:draw()
 end
 

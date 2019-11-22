@@ -34,7 +34,6 @@ local SPONSOR_Y_CENTER = 0.6
 local SPONSOR_MAX_W = 0.8
 local SPONSOR_MAX_H = 0.6
 
-
 local EVENT_FORMAT_DEFAULT = {
     font = CONFIG.font,
     fontsize = SLIDE_TEXT_SIZE,
@@ -61,6 +60,16 @@ local EVENT_FORMAT_LOCAL_TOP = {
     paddingSub = SLIDE_TEXT_PADDING * SLIDE_TOP_TITLE_RATIO * SLIDE_SUBTITLE_RATIO,
 
     ymargin = 0.035,
+}
+
+local THEME_TIMEBARS = {
+    ["light"] = Resources.timebar_black,
+    ["dark"] = Resources.timebar_white,
+}
+
+local THEME_TIMEBAR_TICKS = {
+    ["light"] = resource.create_colored_texture(0,0,0,1),
+    ["dark"] = resource.create_colored_texture(1,1,1,1),
 }
 
 
@@ -164,11 +173,13 @@ local function setupTitle(self)
 end
 
 local function setupTimebar(self)
+    local timebar = THEME_TIMEBARS[CONFIG.theme]
+
     AddDrawCB(self, function(slide)
         local x = LOCAL_TIMEBAR_X_OFFSET
         local y1, y2 = LOCAL_TIMEBAR_Y_BEGIN, LOCAL_TIMEBAR_Y_END
         local w = LOCAL_TIMEBAR_WIDTH
-        tools.drawResource(Resources.timebar_white, x-w/2, y1, x+w/2, y2)
+        tools.drawResource(timebar, x-w/2, y1, x+w/2, y2)
     end)
 end
 
@@ -211,12 +222,12 @@ local function setupEvents(self, events, getFormatConfig)
         local x = LOCAL_TIMEBAR_X_OFFSET
         local dx = LOCAL_TIMEBAR_TICK_WITH
         local dy = LOCAL_TIMEBAR_TICK_HEIGHT
-        local fgcol = tools.getColorTex(CONFIG.foreground_color)
+        local timebarTick = THEME_TIMEBAR_TICKS[CONFIG.theme]
         AddDrawCB(self, function(slide)
             local y = y0
             for _, ev in ipairs(evs) do
                 local yt = y + (ev.fontsize*0.5)
-                tools.drawResource(fgcol, x-dx, yt-dy, x+dx, yt+dy)
+                tools.drawResource(timebarTick, x-dx, yt-dy, x+dx, yt+dy)
                 y = y + ev.height + ev.ymargin * expand
             end
         end)

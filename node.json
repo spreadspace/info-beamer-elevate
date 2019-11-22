@@ -31,12 +31,16 @@
         "type": "font",
         "default": "silkscreen.ttf"
     }, {
-        "title": "Logo",
+        "title": "Theme",
         "ui_width": 4,
-        "name": "logo",
-        "type": "resource",
-        "valid": ["image"],
-        "default": "logo-black.png"
+        "name": "theme",
+        "hint": "This selects the colors for logo, timebar, ...",
+        "type": "select",
+        "options": [
+            ["light", "use black logo, timebar, ..."],
+            ["dark", "use white logo, timebar, ..."]
+        ],
+        "default": "light"
     }, {
         "title": "Static Background",
         "ui_width": 4,
