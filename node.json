@@ -202,6 +202,86 @@
               "eis_id": "1",
               "id": "forum",
               "name": "FORUM STADTPARK"
+            },
+            {
+              "eis_id": "9",
+              "id": "forumsaloon",
+              "name": "FORUM SALOON"
+            },
+            {
+              "eis_id": "35",
+              "id": "forumprojekt",
+              "name": "FORUM PROJEKTRAUM"
+            },
+            {
+              "eis_id": "8",
+              "id": "forumkeller",
+              "name": "FORUM KELLER"
+            },
+            {
+              "eis_id": "36",
+              "id": "orpheum",
+              "name": "ORPHEUM"
+            },
+            {
+              "eis_id": "57",
+              "id": "orpheumfoyer",
+              "name": "ORPHEUM FOYER"
+            },
+            {
+              "eis_id": "50",
+              "id": "orpheumextra",
+              "name": "ORPHEUM EXTRA"
+            },
+            {
+              "eis_id": "34",
+              "id": "kunsthaus",
+              "name": "KUNSTHAUS SPACE04"
+            },
+            {
+              "eis_id": "48",
+              "id": "needle",
+              "name": "KUNSTHAUS NEEDLE"
+            },
+            {
+              "eis_id": "52",
+              "id": "mausoleum",
+              "name": "MAUSOLEUM"
+            },
+            {
+              "eis_id": "2",
+              "id": "dom",
+              "name": "DOM IM BERG"
+            },
+            {
+              "eis_id": "4",
+              "id": "tunnel",
+              "name": "TUNNEL"
+            },
+            {
+              "eis_id": "3",
+              "id": "dungeon",
+              "name": "DUNGEON"
+            },
+            {
+              "eis_id": "6",
+              "id": "parkhouse",
+              "name": "PARKHOUSE"
+            },
+            {
+              "eis_id": "56",
+              "id": "schlossberg",
+              "name": "SCHLOSSBERG"
+            },
+            {
+              "eis_id": "53",
+              "id": "stollen",
+              "name": "SCHLOSSBERGSTOLLEN"
+            },
+            {
+              "eis_id": "58",
+              "id": "schubertkino",
+              "name": "SCHUBERT KINO"
             }
         ]
     }, {
