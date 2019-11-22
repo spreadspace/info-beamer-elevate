@@ -18,8 +18,8 @@ local HEADER_TITLE_TEXT = "ELEVATE INFOSCREEN"
 local HEADER_TITLE_X = 0.15
 
 local THEME_LOGOS = {
-    ["light"] = Resources.logo_black,
-    ["dark"] = Resources.logo_white,
+    ["light"] = resource.load_image("logo_black.png"),
+    ["dark"] = resource.load_image("logo_white.png")
 }
 
 -- FOR TESTING --
@@ -231,8 +231,8 @@ function SlideDeck.new(schedule, iteration)
         iter = nil,
         current = nil
     }
-    setupHeader(self)
     setmetatable(self, SlideDeck)
+    setupHeader(self)
 
     local slides
     if schedule then

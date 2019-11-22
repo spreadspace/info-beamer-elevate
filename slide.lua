@@ -63,8 +63,8 @@ local EVENT_FORMAT_LOCAL_TOP = {
 }
 
 local THEME_TIMEBARS = {
-    ["light"] = Resources.timebar_black,
-    ["dark"] = Resources.timebar_white,
+    ["light"] = resource.load_image("timebar_black.png"),
+    ["dark"] = resource.load_image("timebar_white.png")
 }
 
 local THEME_TIMEBAR_TICKS = {
