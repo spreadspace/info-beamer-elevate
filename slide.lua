@@ -7,7 +7,11 @@ local SLIDE_X_MAX = 0.92
 local SLIDE_BODY_MINSPACE_TOP = 0.07
 local SLIDE_BODY_MINSPACE_BOTTOM = 0.07
 
+local SLIDE_TEXT_SIZE = 0.07
+local SLIDE_TEXT_LINESPACING = 0.01
 local SLIDE_TEXT_PADDING = 0.01
+local SLIDE_SUBTITLE_RATIO = 1/1.5
+local SLIDE_TOP_TITLE_RATIO = 1.3
 
 local LOCAL_TITLE_SIZE = 0.09
 local LOCAL_TIMEBAR_X_OFFSET = 0.115
@@ -30,30 +34,31 @@ local SPONSOR_Y_CENTER = 0.6
 local SPONSOR_MAX_W = 0.8
 local SPONSOR_MAX_H = 0.6
 
+
 local EVENT_FORMAT_DEFAULT = {
     font = CONFIG.font,
-    fontsize = 0.07,
-    linespacing = 0.01,
+    fontsize = SLIDE_TEXT_SIZE,
+    linespacing = SLIDE_TEXT_LINESPACING,
     padding = SLIDE_TEXT_PADDING,
 
     fontSub = CONFIG.font,
-    fontsizeSub = 0.045,
-    linespacingSub = 0,
-    paddingSub = SLIDE_TEXT_PADDING,
+    fontsizeSub = SLIDE_TEXT_SIZE * SLIDE_SUBTITLE_RATIO,
+    linespacingSub = SLIDE_TEXT_LINESPACING * SLIDE_SUBTITLE_RATIO,
+    paddingSub = SLIDE_TEXT_PADDING * SLIDE_SUBTITLE_RATIO,
 
     ymargin = 0.03,
 }
 
 local EVENT_FORMAT_LOCAL_TOP = {
     font = CONFIG.font,
-    fontsize = 0.094,
-    linespacing = 0.01,
-    padding = SLIDE_TEXT_PADDING,
+    fontsize = SLIDE_TEXT_SIZE * SLIDE_TOP_TITLE_RATIO,
+    linespacing = SLIDE_TEXT_LINESPACING * SLIDE_TOP_TITLE_RATIO,
+    padding = SLIDE_TEXT_PADDING * SLIDE_TOP_TITLE_RATIO,
 
     fontSub = CONFIG.font,
-    fontsizeSub = 0.06,
-    linespacingSub = 0,
-    paddingSub = SLIDE_TEXT_PADDING,
+    fontsizeSub = SLIDE_TEXT_SIZE * SLIDE_TOP_TITLE_RATIO * SLIDE_SUBTITLE_RATIO,
+    linespacingSub = SLIDE_TEXT_LINESPACING * SLIDE_TOP_TITLE_RATIO * SLIDE_SUBTITLE_RATIO,
+    paddingSub = SLIDE_TEXT_PADDING * SLIDE_TOP_TITLE_RATIO * SLIDE_SUBTITLE_RATIO,
 
     ymargin = 0.035,
 }
