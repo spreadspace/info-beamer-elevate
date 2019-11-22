@@ -1,4 +1,14 @@
 -------------------------------------------------------------------------------
+--- Constants (configuration)
+
+local DEFAULT_BG_COLOR = {rgba = function() return 0.5, 0.5, 0.5, 1 end}
+local DEFAULT_FG_COLOR = {rgba = function() return 1, 0, 0, 1 end}
+local DEFAULT_FONT = CONFIG.font
+local DEFAULT_TEXT = "UNKNOWN BACKGROUND STYLE"
+local DEFAULT_TEXTSIZE = 0.1
+
+
+-------------------------------------------------------------------------------
 --- Classes
 
 local Background = {}
@@ -8,10 +18,18 @@ Background.__index = Background
 -------------------------------------------------------------------------------
 --- Helper Functions
 
+local defaultBGcolTex = resource.create_colored_texture(DEFAULT_BG_COLOR.rgba())
+local defaultTextWidth = tools.textWidth(DEFAULT_FONT, DEFAULT_TEXT, DEFAULT_TEXTSIZE)
+local function drawBGDefault()
+    defaultBGcolTex:draw(0, 0, NATIVE_WIDTH, NATIVE_HEIGHT)
+    tools.drawText(DEFAULT_FONT, 0.5 - defaultTextWidth/2, 0.5 - DEFAULT_TEXTSIZE/2, DEFAULT_TEXT, DEFAULT_TEXTSIZE, DEFAULT_FG_COLOR)
+end
+
 local function drawBGSimple(res)
     -- we assume the background has the correct aspect ratio
     res:draw(0, 0, NATIVE_WIDTH, NATIVE_HEIGHT)
 end
+
 
 local function setupDraw(self, style)
     local fancymode = style:match("^fancy%-(.*)$")
@@ -67,6 +85,8 @@ function Background:draw()
     gl.ortho()
     if self._draw then
         self._draw()
+    else
+        drawBGDefault()
     end
 end
 
