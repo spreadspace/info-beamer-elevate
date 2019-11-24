@@ -1,4 +1,5 @@
-local UNKNOWN_LOCATION = { id = "unk", name = "Unknown location" }
+-------------------------------------------------------------------------------
+--- device state
 
 -- register self
 local device = rawget(_G, "device")
@@ -14,6 +15,10 @@ if not device then
     device.config = nil
     device.location = nil
 end
+
+
+-------------------------------------------------------------------------------
+--- wall-clock time
 
 -- returns current time and time passed since last update was received
 function device.getTime()
@@ -52,6 +57,10 @@ function device.updateTime(tm)
 end
 
 
+-------------------------------------------------------------------------------
+--- device specific configuration
+
+local UNKNOWN_LOCATION = { id = "unk", name = "Unknown location" }
 
 function device.getLocation()
     return device.location or UNKNOWN_LOCATION
@@ -87,6 +96,8 @@ if CONFIG then
     device.updateConfig()
 end
 
+
+-------------------------------------------------------------------------------
 
 print("device.lua loaded completely")
 return device

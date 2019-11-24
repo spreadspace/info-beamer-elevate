@@ -1,8 +1,24 @@
--- timerqueue module
--- for delayed function calls
+-------------------------------------------------------------------------------
+--- Class
 
 local TimerQueue = {}
 TimerQueue.__index = TimerQueue
+
+
+-------------------------------------------------------------------------------
+--- Constructor
+
+function TimerQueue.new()
+    local self = {
+        _tq_lock = 0,
+        _jobs = 0
+    }
+    return setmetatable(self, TimerQueue)
+end
+
+
+-------------------------------------------------------------------------------
+--- Member Functions
 
 function TimerQueue:push(delay, func, ...)
     if type(delay) ~= "number" then
@@ -36,7 +52,6 @@ function TimerQueue:_compact()
     end
 end
 
-
 -- re-entrant update function
 -- that means calling wait()/watch() in a TQ callback is allowed,
 -- and calling pushTQ() from a callback is no problem either.
@@ -66,8 +81,7 @@ function TimerQueue:update(dt)
     self:_compact()
 end
 
-function TimerQueue.new()
-    return setmetatable({ _tq_lock = 0, _jobs = 0 }, TimerQueue)
-end
+
+-------------------------------------------------------------------------------
 
 return TimerQueue

@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
---- Classes
+--- Class
 
 local SlideEvent = {}
 SlideEvent.__index = SlideEvent

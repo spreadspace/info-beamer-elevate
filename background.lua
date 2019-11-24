@@ -9,7 +9,7 @@ local DEFAULT_TEXTSIZE = 0.1
 
 
 -------------------------------------------------------------------------------
---- Classes
+--- Class
 
 local Background = {}
 Background.__index = Background
@@ -58,6 +58,7 @@ local function setupDraw(self, style)
 
     tools.debugPrint(1, "background style is now: " .. style)
 end
+
 
 -------------------------------------------------------------------------------
 --- Constructor
