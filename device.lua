@@ -23,24 +23,23 @@ end
 
 -- interpolates since last update received
 function device.getTimeString()
-    local off = sys.now() - device.lastTimeUpdate
     local h, m, s = device.timeH, device.timeM, device.timeS
-    local ds, dm, dh
     if not (h and m and s) then
         return "--:--"
     end
-    local rem
-    ds = math.floor(((s + off) % 60))
-    rem = (s + off) / 60
-    dm = math.floor((m + rem) % 60)
-    rem = (m + rem) / 60
-    dh = math.floor((h + rem) % 24)
 
-    return ("%02d:%02d"):format(dh, dm)
+    local overflow = sys.now() - device.lastTimeUpdate
+    local si = math.floor(((s + overflow) % 60))
+    overflow = (s + overflow) / 60
+    local mi = math.floor((m + overflow) % 60)
+    overflow = (m + overflow) / 60
+    local hi = math.floor((h + overflow) % 24)
+
+    return ("%02d:%02d"):format(hi, mi)
 end
 
 function device.updateTime(tm)
-    local now = sys.now()
+    local now = sys.now() -- this is relative to the start of info-beamer
     device.lastTimeUpdate = now
 
     local u, h, m, s = tm:match("([%d%.]+),(%d+),(%d+),([%d%.]+)")

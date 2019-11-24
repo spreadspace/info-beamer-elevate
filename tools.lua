@@ -68,8 +68,8 @@ function tools.textWidth(font, text, sz)
 end
 
 function tools.timeColonOffset(font, time, sz)
-    local hours, _ = time:match("(%d+):(%d+)")
-    if not hours then h = '--' end
+    local hours, _ = time:match("([-%d]+):([-%d]+)")
+    if not hours then hours = '--' end
 
     local wh = tools.textWidth(font, hours, sz)
     local wc = tools.textWidth(font, ":", sz)
