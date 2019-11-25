@@ -86,7 +86,7 @@ end)
 
 local debugInfoTextColor = {rgba = function() return 1, 1, 1, 1 end}
 local debugInfoBackground = resource.create_colored_texture(0.2, 0.2, 0.2, 0.7)
-local debugInfoSize = 0.02
+local debugInfoSize = 0.03
 local debugInfoPadding = 0.005
 local function drawDebugInfo(now, dt)
     local y = 1 - debugInfoSize - debugInfoPadding*2
@@ -95,7 +95,7 @@ local function drawDebugInfo(now, dt)
     local versionStr = "Version: " .. sys.VERSION .. ", Platform: " .. sys.PLATFORM
     tools.drawText(CONFIG.font, debugInfoPadding, y, versionStr, debugInfoSize, debugInfoTextColor)
 
-    local resolutionStr = DISPLAY_WIDTH .. "x" .. DISPLAY_HEIGHT .. " ( " .. NATIVE_WIDTH .. "x" .. NATIVE_HEIGHT .. " )"
+    local resolutionStr = math.floor(DISPLAY_WIDTH+0.5) .. "x" .. DISPLAY_HEIGHT .. " ( " .. NATIVE_WIDTH .. "x" .. NATIVE_HEIGHT .. " )"
     local w = tools.textWidth(CONFIG.font, resolutionStr, debugInfoSize)
     tools.drawText(CONFIG.font, 0.5 - w/2, y, resolutionStr, debugInfoSize, debugInfoTextColor)
 
