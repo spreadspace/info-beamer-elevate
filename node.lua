@@ -84,6 +84,27 @@ node.event("config_update", function()
     state.background:update(device.getBackgroundStyle())
 end)
 
+local debugInfoTextColor = {rgba = function() return 1, 1, 1, 1 end}
+local debugInfoBackground = resource.create_colored_texture(0.2, 0.2, 0.2, 0.7)
+local debugInfoSize = 0.02
+local debugInfoPadding = 0.005
+local function drawDebugInfo(now, dt)
+    local y = 1 - debugInfoSize - debugInfoPadding*2
+    tools.drawResource(debugInfoBackground, 0, y, 1, 1)
+    y = y + debugInfoPadding
+    local versionStr = "Version: " .. sys.VERSION .. ", Platform: " .. sys.PLATFORM
+    local w = tools.drawText(CONFIG.font, debugInfoPadding, y, versionStr, debugInfoSize, debugInfoTextColor)
+
+    local d = math.floor(now / (60*60*24))
+    local h = math.floor((now % (60*60*24)) / (60*60))
+    local m = math.floor((now % (60*60)) / 60)
+    local s = math.floor((now % 60))
+    local ms = math.floor((now - math.floor(now)) * 1000)
+    local timestr = string.format("Time: %ud %02u:%02u:%02u.%03u", d, h, m, s, ms)
+    w = tools.textWidth(CONFIG.font, timestr, debugInfoSize)
+    w = math.ceil(w * 30) / 30
+    tools.drawText(CONFIG.font, 1-w, y, timestr, debugInfoSize, debugInfoTextColor)
+end
 
 function node.render()
     -- for debug purposes
@@ -104,4 +125,5 @@ function node.render()
 
     state.background:draw()
     state.slidedeck:draw()
+    tools.debugDraw(5, drawDebugInfo, now, dt)
 end

@@ -340,7 +340,7 @@ function Slide:draw()
     for _, cb in ipairs(self._drawCBs) do
         cb(self)
     end
-    tools.debugDraw(5, drawGrid, self.type)
+    tools.debugDraw(6, drawGrid, self.type)
 end
 
 
