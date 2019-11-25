@@ -80,7 +80,15 @@ local resource_types = {
         }
         function video.ensure_loaded(opt)
             if not surface then
-                surface = util.videoplayer(value.asset_name, opt)
+                if opt.raw and sys.PLATFORM == "pi" then
+                    opt.file = value.asset_name
+                    surface = resource.load_video(opt)
+                    if opt.layer then
+                        surface:layer(opt.layer)
+                    end
+                else
+                    surface = util.videoplayer(value.asset_name, opt)
+                end
             end
             return surface
         end
@@ -93,7 +101,12 @@ local resource_types = {
             return video.ensure_loaded(opt)
         end
         function video.draw(...)
-            video.ensure_loaded():draw(...)
+            video.ensure_loaded()
+            if surface.place then
+                surface:place(...)
+            else
+                surface:draw(...)
+            end
         end
         function video.unload()
             if surface then

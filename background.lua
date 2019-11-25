@@ -34,7 +34,11 @@ local function setupDraw(self, style)
             image:draw(0, 0, NATIVE_WIDTH, NATIVE_HEIGHT) -- we assume the background has the correct aspect ratio
         end
     elseif style == "video" then
-        local opts = { loop=true }
+        local opts = {
+            loop=true,
+            raw=true,
+            layer=-1
+        }
         self._draw = function()
             local video = CONFIG.background_video.ensure_loaded(opts)
             -- video place only works on the raspi...
