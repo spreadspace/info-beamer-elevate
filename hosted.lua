@@ -82,6 +82,7 @@ local resource_types = {
             if not surface then
                 if opt.raw and sys.PLATFORM == "pi" then
                     opt.file = value.asset_name
+                    opt.looped = opt.loop
                     surface = resource.load_video(opt)
                     if opt.layer then
                         surface:layer(opt.layer)

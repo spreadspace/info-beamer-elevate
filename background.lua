@@ -27,11 +27,8 @@ end
 
 local function setupStaticBackground(self)
     local image = CONFIG.background_static
-    if not image.load() then
-        tools.debugPrint(0, "ERROR: loading image " .. image.asset_name .. " failed!")
-        return
-    end
-    tools.debugPrint(2, "background: successfully loaded image " .. image.asset_name)
+    tools.debugPrint(2, "background: loading image " .. image.asset_name)
+    image.load()
 
     self._draw = function()
         -- we assume the image already has the correct aspect ratio
@@ -39,7 +36,7 @@ local function setupStaticBackground(self)
     end
 
     self._cleanup = function()
-        tools.debugPrint(2, "background: unloaded image " .. image.asset_name)
+        tools.debugPrint(2, "background: unloading image " .. image.asset_name)
         image.unload()
     end
 
@@ -50,11 +47,8 @@ end
 
 local function setupVideoBackground(self)
     local video = CONFIG.background_video
-    if not video.load({ loop=true, raw=true, layer=-1 }) then
-        tools.debugPrint(0, "ERROR: loading video " .. video.asset_name .. " failed!")
-        return
-    end
-    tools.debugPrint(2, "background: successfully loaded video " .. video.asset_name)
+    tools.debugPrint(2, "background: loading video " .. video.asset_name)
+    video.load({ loop=true, raw=true, layer=-1 })
 
     self._draw = function()
         -- we assume the video already has the correct aspect ratio
@@ -62,8 +56,8 @@ local function setupVideoBackground(self)
     end
 
     self._cleanup = function()
+        tools.debugPrint(2, "background: unloading video " .. video.asset_name)
         video.unload()
-        tools.debugPrint(2, "background: unloaded video " .. video.asset_name)
     end
 
     self._updateNeeded = function()
