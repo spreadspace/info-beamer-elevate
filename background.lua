@@ -25,29 +25,62 @@ local function drawBGDefault()
     tools.drawText(DEFAULT_FONT, 0.5 - defaultTextWidth/2, 0.5 - DEFAULT_TEXTSIZE/2, DEFAULT_TEXT, DEFAULT_TEXTSIZE, DEFAULT_FG_COLOR)
 end
 
+local function setupStaticBackground(self)
+    local image = CONFIG.background_static
+    if not image.load() then
+        tools.debugPrint(0, "ERROR: loading image " .. image.asset_name .. " failed!")
+        return
+    end
+    tools.debugPrint(2, "background: successfully loaded image " .. image.asset_name)
 
-local function setupDraw(self, style)
+    self._draw = function()
+        -- we assume the image already has the correct aspect ratio
+        image.draw(0, 0, NATIVE_WIDTH, NATIVE_HEIGHT)
+    end
+
+    self._cleanup = function()
+        tools.debugPrint(2, "background: unloaded image " .. image.asset_name)
+        image.unload()
+    end
+
+    self._updateNeeded = function()
+        return image.asset_name ~= CONFIG.background_static.asset_name
+    end
+end
+
+local function setupVideoBackground(self)
+    local video = CONFIG.background_video
+    if not video.load({ loop=true, raw=true, layer=-1 }) then
+        tools.debugPrint(0, "ERROR: loading video " .. video.asset_name .. " failed!")
+        return
+    end
+    tools.debugPrint(2, "background: successfully loaded video " .. video.asset_name)
+
+    self._draw = function()
+        -- we assume the video already has the correct aspect ratio
+        video.draw(0, 0, NATIVE_WIDTH, NATIVE_HEIGHT)
+    end
+
+    self._cleanup = function()
+        video.unload()
+        tools.debugPrint(2, "background: unloaded video " .. video.asset_name)
+    end
+
+    self._updateNeeded = function()
+        return video.asset_name ~= CONFIG.background_video.asset_name
+    end
+end
+
+local function setupBackground(self, style)
+    self._draw = nil
+    self._cleanup = nil
+    self._updateNeeded = nil
+
     local fancymode = style:match("^fancy%-(.*)$")
     if style == "static" then
-        self._draw = function()
-            local image = CONFIG.background_static.ensure_loaded()
-            image:draw(0, 0, NATIVE_WIDTH, NATIVE_HEIGHT) -- we assume the background has the correct aspect ratio
-        end
+        setupStaticBackground(self)
     elseif style == "video" then
-        local opts = {
-            loop=true,
-            raw=true,
-            layer=-1
-        }
-        self._draw = function()
-            local video = CONFIG.background_video.ensure_loaded(opts)
-            -- video place only works on the raspi...
-            if video.place then
-                video:place(0, 0, NATIVE_WIDTH, NATIVE_HEIGHT)
-            else
-                video:draw(0, 0, NATIVE_WIDTH, NATIVE_HEIGHT)
-            end
-        end
+        setupVideoBackground(self)
     elseif fancymode then
         local fancy = require "fancy"
         fancy.fixaspect = tools.fixAspect
@@ -56,7 +89,6 @@ local function setupDraw(self, style)
         end
     else
         tools.debugPrint(1, "WARNING: invalid background style: " .. style)
-        self._draw = nil
         return
     end
 
@@ -70,9 +102,11 @@ end
 function Background.new(style)
     local self = {
         style = style,
-        _draw = nil
+        _draw = nil,
+        _cleanup = nil,
+        _check = nil
     }
-    if style then setupDraw(self, style) end
+    if style then setupBackground(self, style) end
     return setmetatable(self, Background)
 end
 
@@ -81,9 +115,16 @@ end
 --- Member Functions
 
 function Background:update(style)
-    if style ~= self.style then
-        setupDraw(self, style)
+    if style ~= self.style or (self._updateNeeded and self._updateNeeded()) then
+        self:cleanup()
+        setupBackground(self, style)
         self.style = style
+    end
+end
+
+function Background:cleanup()
+    if self._cleanup then
+        self._cleanup()
     end
 end
 

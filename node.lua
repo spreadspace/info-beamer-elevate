@@ -7,7 +7,7 @@ gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
 DISPLAY_ASPECT = 16 / 9
 DISPLAY_HEIGHT = HEIGHT
 DISPLAY_WIDTH = DISPLAY_HEIGHT * DISPLAY_ASPECT
-rawset(_G, "_DEBUG_", 5) -- <5 will only print to stdout, >= 5 also adds visual changes to the screen
+rawset(_G, "_DEBUG_", 2) -- <5 will only print to stdout, >= 5 also adds visual changes to the screen
 
 
 -- persistent state, survives file reloads
@@ -61,6 +61,7 @@ util.file_watch("background.lua", function(content)
     print("Reloading background.lua...")
     local x = assert(loadstring(content, "background.lua"))()
     Background = x
+    if state.background then state.background:cleanup() end
     state.background = Background.new(device.getBackgroundStyle())
 end)
 
@@ -111,6 +112,8 @@ local function drawDebugInfo(now, dt)
 end
 
 function node.render()
+    gl.clear(0,0,0,0)
+
     -- for debug purposes
     NATIVE_ASPECT = NATIVE_WIDTH / NATIVE_HEIGHT
     DISPLAY_HEIGHT = HEIGHT
