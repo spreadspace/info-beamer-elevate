@@ -7,7 +7,7 @@ gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
 DISPLAY_ASPECT = 16 / 9
 DISPLAY_HEIGHT = HEIGHT
 DISPLAY_WIDTH = DISPLAY_HEIGHT * DISPLAY_ASPECT
-rawset(_G, "_DEBUG_", 2) -- <5 will only print to stdout, >= 5 also adds visual changes to the screen
+rawset(_G, "_DEBUG_", 5) -- <5 will only print to stdout, >= 5 also adds visual changes to the screen
 
 
 -- persistent state, survives file reloads
@@ -93,7 +93,11 @@ local function drawDebugInfo(now, dt)
     tools.drawResource(debugInfoBackground, 0, y, 1, 1)
     y = y + debugInfoPadding
     local versionStr = "Version: " .. sys.VERSION .. ", Platform: " .. sys.PLATFORM
-    local w = tools.drawText(CONFIG.font, debugInfoPadding, y, versionStr, debugInfoSize, debugInfoTextColor)
+    tools.drawText(CONFIG.font, debugInfoPadding, y, versionStr, debugInfoSize, debugInfoTextColor)
+
+    local resolutionStr = DISPLAY_WIDTH .. "x" .. DISPLAY_HEIGHT .. " ( " .. NATIVE_WIDTH .. "x" .. NATIVE_HEIGHT .. " )"
+    local w = tools.textWidth(CONFIG.font, resolutionStr, debugInfoSize)
+    tools.drawText(CONFIG.font, 0.5 - w/2, y, resolutionStr, debugInfoSize, debugInfoTextColor)
 
     local d = math.floor(now / (60*60*24))
     local h = math.floor((now % (60*60*24)) / (60*60))
