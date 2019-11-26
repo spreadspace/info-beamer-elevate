@@ -112,8 +112,6 @@ local function drawDebugInfo(now, dt)
 end
 
 function node.render()
-    gl.clear(0,0,0,0)
-
     -- for debug purposes
     NATIVE_ASPECT = NATIVE_WIDTH / NATIVE_HEIGHT
     DISPLAY_HEIGHT = HEIGHT
@@ -130,6 +128,9 @@ function node.render()
        state.slidedeckIteration = state.slidedeckIteration + 1
     end
 
+    -- the raspi will play background videos on layer(-1) 
+    -- so let's make the gl surface transparent
+    gl.clear(0,0,0,0)
     state.background:draw()
     state.slidedeck:draw()
     tools.debugDraw(5, drawDebugInfo, now, dt)

@@ -20,14 +20,13 @@ end
 -------------------------------------------------------------------------------
 --- wall-clock time
 
--- returns current time and time passed since last update was received
-function device.getTime()
+function device.getWallClockTime()
     local now = sys.now()
     return device.baseTime + now, now - device.lastTimeUpdate
 end
 
 -- interpolates since last update received
-function device.getTimeString()
+function device.getWallClockTimeString()
     local h, m, s = device.timeH, device.timeM, device.timeS
     if not (h and m and s) then
         return "--:--"
@@ -53,7 +52,8 @@ function device.updateTime(tm)
     device.timeM = tonumber(m)
     device.timeS = tonumber(s)
 
-    tools.debugPrint(4, "updated base time: " .. device.baseTime .. ", it's now: " .. device.getTimeString() .. " (" ..  device.getTime() .. ")")
+    tools.debugPrint(4, "updated base time: " .. device.baseTime .. ", it's now: " ..
+                         device.getWallClockTimeString() .. " (" ..  device.getWallClockTime() .. ")")
 end
 
 

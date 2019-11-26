@@ -138,7 +138,7 @@ end
 local function _scheduleToSlides(schedule, iteration)
     local slides = {}
     local localEvents = {}
-    local ts = math.floor(device.getTime())
+    local ts = math.floor(device.getWallClockTime())
     local here = device.getLocation()
 
     local tracks = assert(CONFIG.tracks, "CONFIG.tracks missing")
@@ -195,7 +195,7 @@ local function setupHeader(self)
         local logoh, logow = HEADER_LOGO_H, HEADER_LOGO_W
 
         local timesize = HEADER_TIME_SIZE
-        local timestr = device.getTimeString()
+        local timestr = device.getWallClockTimeString()
         local timeco = tools.timeColonOffset(fontbold, timestr, timesize)
         local timex, timey = HEADER_TIME_CENTER_X - timeco, HEADER_Y_BEGIN
         local timepadding = HEADER_TEXT_PADDING
