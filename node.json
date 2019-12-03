@@ -217,6 +217,10 @@
                 "eis_id": "1",
                 "name": "FORUM STADTPARK"
             }, {
+                "id": "forumeg",
+                "eis_id": "7",
+                "name": "FORUM ERDGESCHOß"
+            }, {
                 "id": "forumsaloon",
                 "eis_id": "9",
                 "name": "FORUM SALOON"
@@ -249,6 +253,10 @@
                 "eis_id": "48",
                 "name": "KUNSTHAUS NEEDLE"
             }, {
+                "id": "esc",
+                "eis_id": "30",
+                "name": "ESC MEDIEN KUNST LABOR"
+            }, {
                 "id": "mausoleum",
                 "eis_id": "52",
                 "name": "MAUSOLEUM"
@@ -280,6 +288,14 @@
                 "id": "schubertkino",
                 "eis_id": "58",
                 "name": "SCHUBERT KINO"
+            }, {
+                "id": "mumuth",
+                "eis_id": "59",
+                "name": "MUMUTH"
+            }, {
+                "id": "literaturhaus",
+                "eis_id": "60",
+                "name": "LITERATURHAUS GRAZ"
             }
         ]
     }, {
