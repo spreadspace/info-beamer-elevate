@@ -38,7 +38,7 @@
         "default": [1,1,1,0]
     }, {
         "title": "Theme",
-        "ui_width": 4,
+        "ui_width": 3,
         "name": "theme",
         "hint": "This selects the colors for logo, timebar, ...",
         "type": "select",
@@ -49,7 +49,7 @@
         "default": "light"
     }, {
         "title": "Static Background",
-        "ui_width": 4,
+        "ui_width": 3,
         "name": "background_static",
         "hint": "This is only used if device background style is set to static",
         "type": "resource",
@@ -57,7 +57,7 @@
         "default": "empty.png"
     }, {
         "title": "Video Background",
-        "ui_width": 4,
+        "ui_width": 3,
         "name": "background_video",
         "hint": "This is only used if device background style is set to video",
         "type": "resource",
