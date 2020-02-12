@@ -109,7 +109,7 @@ class Waffel(object):
             'startts': self.dt_to_epoch(start),
             'end': end.astimezone(self.timezone).strftime('%H:%M'),
             'endts': self.dt_to_epoch(end),
-            'title': title.upper(),
+            'title': title,
             'subtitle': subtitle,
             'track': self.track_map.get(track_id),
         }

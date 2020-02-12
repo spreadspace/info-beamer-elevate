@@ -3,21 +3,21 @@
 
 local SLIDE_Y_BEGIN = 0.13
 local SLIDE_TITLE_X_OFFSET = 0.15
-local SLIDE_X_MAX = 0.92
+local SLIDE_X_MAX = 0.9
 local SLIDE_BODY_MINSPACE_TOP = 0.07
-local SLIDE_BODY_MINSPACE_BOTTOM = 0.07
+local SLIDE_BODY_MINSPACE_BOTTOM = 0.12
 
-local SLIDE_TEXT_SIZE = 0.07
-local SLIDE_TEXT_LINESPACING = 0.01
+local SLIDE_TEXT_SIZE = 0.05
+local SLIDE_TEXT_LINESPACING = 0
 local SLIDE_TEXT_PADDING = 0.01
 local SLIDE_SUBTITLE_RATIO = 1/1.5
-local SLIDE_TOP_TITLE_RATIO = 1.3
+local SLIDE_TOP_TITLE_RATIO = 1.7
 
 local LOCAL_TITLE_SIZE = 0.09
 local LOCAL_TIMEBAR_X_OFFSET = 0.115
 local LOCAL_TIMEBAR_Y_BEGIN = SLIDE_Y_BEGIN + 0.02
 local LOCAL_TIMEBAR_Y_END = 0.98
-local LOCAL_TIMEBAR_WIDTH = 0.006
+local LOCAL_TIMEBAR_WIDTH = 0.004
 local LOCAL_TIMEBAR_TICK_WITH = 0.018
 local LOCAL_TIMEBAR_TICK_HEIGHT = LOCAL_TIMEBAR_WIDTH/DISPLAY_ASPECT
 local LOCAL_EVENT_TIME_X_OFFSET = 0.21
@@ -49,7 +49,7 @@ local EVENT_FORMAT_DEFAULT = {
 }
 
 local EVENT_FORMAT_LOCAL_TOP = {
-    font = CONFIG.font,
+    font = CONFIG.font_bold,
     fontsize = SLIDE_TEXT_SIZE * SLIDE_TOP_TITLE_RATIO,
     linespacing = SLIDE_TEXT_LINESPACING * SLIDE_TOP_TITLE_RATIO,
     padding = SLIDE_TEXT_PADDING * SLIDE_TOP_TITLE_RATIO,
@@ -218,20 +218,20 @@ local function setupEvents(self, events, getFormatConfig)
         end
     end)
 
-    if self.type == "local" then
-        local x = LOCAL_TIMEBAR_X_OFFSET
-        local dx = LOCAL_TIMEBAR_TICK_WITH
-        local dy = LOCAL_TIMEBAR_TICK_HEIGHT
-        local timebarTick = THEME_TIMEBAR_TICKS[CONFIG.theme]
-        AddDrawCB(self, function(slide)
-            local y = y0
-            for _, ev in ipairs(evs) do
-                local yt = y + (ev.fontsize*0.5)
-                tools.drawResource(timebarTick, x-dx, yt-dy, x+dx, yt+dy)
-                y = y + ev.height + ev.ymargin * expand
-            end
-        end)
-    end
+    -- if self.type == "local" then
+    --     local x = LOCAL_TIMEBAR_X_OFFSET
+    --     local dx = LOCAL_TIMEBAR_TICK_WITH
+    --     local dy = LOCAL_TIMEBAR_TICK_HEIGHT
+    --     local timebarTick = THEME_TIMEBAR_TICKS[CONFIG.theme]
+    --     AddDrawCB(self, function(slide)
+    --         local y = y0
+    --         for _, ev in ipairs(evs) do
+    --             local yt = y + (ev.fontsize*0.5)
+    --             tools.drawResource(timebarTick, x-dx, yt-dy, x+dx, yt+dy)
+    --             y = y + ev.height + ev.ymargin * expand
+    --         end
+    --     end)
+    -- end
 end
 
 local function setupSponsor(self)

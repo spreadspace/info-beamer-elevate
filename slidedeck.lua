@@ -1,19 +1,19 @@
 -------------------------------------------------------------------------------
 --- Constants (configuration)
 
-local HEADER_Y_BEGIN = 0.05
+local HEADER_Y_BEGIN = 0.07
 
 local HEADER_TEXT_PADDING = 0.01
 
-local HEADER_LOGO_X = -0.005
-local HEADER_LOGO_Y = 0.01
-local HEADER_LOGO_H = 0.23
+local HEADER_LOGO_X = 0.007
+local HEADER_LOGO_Y = 0.04
+local HEADER_LOGO_H = 0.18
 local HEADER_LOGO_W = HEADER_LOGO_H/DISPLAY_ASPECT  -- the logo texture is square
 
-local HEADER_TIME_SIZE = 0.08
+local HEADER_TIME_SIZE = 0.05
 local HEADER_TIME_CENTER_X = 0.89
 
-local HEADER_TITLE_SIZE = 0.06
+local HEADER_TITLE_SIZE = 0.05
 local HEADER_TITLE_TEXT = "ELEVATE INFOSCREEN"
 local HEADER_TITLE_X = 0.15
 
@@ -196,7 +196,7 @@ local function setupHeader(self)
 
         local timesize = HEADER_TIME_SIZE
         local timestr = device.getWallClockTimeString()
-        local timeco = tools.timeColonOffset(fontbold, timestr, timesize)
+        local timeco = tools.timeColonOffset(font, timestr, timesize)
         local timex, timey = HEADER_TIME_CENTER_X - timeco, HEADER_Y_BEGIN
         local timepadding = HEADER_TEXT_PADDING
 
@@ -206,7 +206,7 @@ local function setupHeader(self)
         local titlepadding = HEADER_TEXT_PADDING
 
         tools.drawResource(logo, logox, logoy, logox+logow, logoy+logoh)
-        tools.drawText(fontbold, timex, timey, timestr, timesize, fgcol, bgcol, timepadding)
+        tools.drawText(font, timex, timey, timestr, timesize, fgcol, bgcol, timepadding)
         tools.drawText(font, titlex, titley, titlestr, titlesize, fgcol, bgcol, titlepadding)
     end
 end
