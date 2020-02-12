@@ -23,10 +23,10 @@ local THEME_LOGOS = {
 }
 
 -- FOR TESTING --
-local SHOW_LOCAL_EVENTS = true
+local SHOW_LOCAL_EVENTS = false
 local SHOW_REMOTE_EVENTS = true
 local SHOW_SPONSORS = true
-local SHOW_EMPTY_WHEN_NO_LOCAL = true
+local SHOW_EMPTY_WHEN_NO_LOCAL = false
 -----------------
 -- events on this location will be skipped in remote slides
 local PSEUDO_LOCATION_ID = "emc"

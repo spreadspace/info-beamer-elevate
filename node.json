@@ -7,12 +7,6 @@
         "title": "Appearance",
         "type": "section"
     }, {
-        "title": "Background color",
-        "ui_width": 3,
-        "name": "background_color",
-        "type": "color",
-        "default": [1,1,1,0]
-    }, {
         "title": "Foreground color",
         "ui_width": 3,
         "name": "foreground_color",
@@ -25,11 +19,23 @@
         "type": "font",
         "default": "silkscreen.ttf"
     }, {
+        "title": "Font Italic",
+        "ui_width": 3,
+        "name": "font_italic",
+        "type": "font",
+        "default": "silkscreen.ttf"
+    }, {
         "title": "Font Bold",
         "ui_width": 3,
         "name": "font_bold",
         "type": "font",
         "default": "silkscreen.ttf"
+    }, {
+        "title": "Background color",
+        "ui_width": 3,
+        "name": "background_color",
+        "type": "color",
+        "default": [1,1,1,0]
     }, {
         "title": "Theme",
         "ui_width": 4,

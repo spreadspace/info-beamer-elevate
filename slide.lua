@@ -24,6 +24,7 @@ local LOCAL_EVENT_TIME_X_OFFSET = 0.21
 local LOCAL_EVENT_TEXT_X_OFFSET = 0.3
 
 local REMOTE_TITLE_SIZE = 0.08
+local REMOTE_SUB_TITLE_SIZE = 0.08
 local REMOTE_EVENT_TIME_X_OFFSET = 0.21
 local REMOTE_EVENT_TEXT_X_OFFSET = 0.28
 
@@ -151,11 +152,14 @@ end
 
 local function setupTitle(self)
     local font = CONFIG.font_bold
+    local fontSub = CONFIG.font
     local fgcol = (self.track and self.track.foreground_color) or CONFIG.foreground_color
     local bgcol = (self.track and self.track.background_color) or CONFIG.background_color
 
     local title
     local titlesize
+    local subtitle = ""
+    local subtitlesize = 0
     if self.type == "sponsor" then
         title = SPONSOR_TITLE
         titlesize = SPONSOR_TITLE_SIZE
@@ -163,12 +167,24 @@ local function setupTitle(self)
         title = (self.location and self.location.name) or device.getLocation().name
         titlesize = LOCAL_TITLE_SIZE
     else
-        title = ("%s / %s"):format(self.location.name, self.track.name)
+        title = self.location.name
         titlesize = REMOTE_TITLE_SIZE
+        subtitle = self.track.name
+        subtitlesize = REMOTE_SUB_TITLE_SIZE
+    end
+
+    local subtitle_x
+    local subtitle_y
+    if subtitle ~= "" then
+        subtitle_x = SLIDE_TITLE_X_OFFSET + tools.textWidth(font, title .. " ", titlesize)
+        subtitle_y = SLIDE_Y_BEGIN + titlesize/2 - subtitlesize/2
     end
 
     AddDrawCB(self, function(slide)
         tools.drawText(font, SLIDE_TITLE_X_OFFSET, SLIDE_Y_BEGIN, title, titlesize, fgcol, bgcol, SLIDE_TEXT_PADDING)
+        if subtitle ~= "" then
+            tools.drawText(fontSub, subtitle_x, subtitle_y, subtitle, subtitlesize, fgcol, bgcol, SLIDE_TEXT_PADDING)
+        end
     end)
 end
 
