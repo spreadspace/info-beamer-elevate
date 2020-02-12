@@ -18,8 +18,9 @@ local LOCAL_TIMEBAR_X_OFFSET = 0.115
 local LOCAL_TIMEBAR_Y_BEGIN = SLIDE_Y_BEGIN + 0.02
 local LOCAL_TIMEBAR_Y_END = 0.98
 local LOCAL_TIMEBAR_WIDTH = 0.004
-local LOCAL_TIMEBAR_TICK_WITH = 0.018
-local LOCAL_TIMEBAR_TICK_HEIGHT = LOCAL_TIMEBAR_WIDTH/DISPLAY_ASPECT
+local LOCAL_TIMEBAR_TICK_HEIGHT = 0.012
+local LOCAL_TIMEBAR_TICK_WIDTH = LOCAL_TIMEBAR_TICK_HEIGHT/DISPLAY_ASPECT
+local LOCAL_TIMEBAR_TOP_TICK_RATIO = 1.42
 local LOCAL_EVENT_TIME_X_OFFSET = 0.21
 local LOCAL_EVENT_TEXT_X_OFFSET = 0.3
 
@@ -69,8 +70,8 @@ local THEME_TIMEBARS = {
 }
 
 local THEME_TIMEBAR_TICKS = {
-    ["light"] = resource.create_colored_texture(0,0,0,1),
-    ["dark"] = resource.create_colored_texture(1,1,1,1),
+    ["light"] = resource.load_image("timebar-tick_black.png"),
+    ["dark"] = resource.load_image("timebar-tick_white.png")
 }
 
 
@@ -234,20 +235,24 @@ local function setupEvents(self, events, getFormatConfig)
         end
     end)
 
-    -- if self.type == "local" then
-    --     local x = LOCAL_TIMEBAR_X_OFFSET
-    --     local dx = LOCAL_TIMEBAR_TICK_WITH
-    --     local dy = LOCAL_TIMEBAR_TICK_HEIGHT
-    --     local timebarTick = THEME_TIMEBAR_TICKS[CONFIG.theme]
-    --     AddDrawCB(self, function(slide)
-    --         local y = y0
-    --         for _, ev in ipairs(evs) do
-    --             local yt = y + (ev.fontsize*0.5)
-    --             tools.drawResource(timebarTick, x-dx, yt-dy, x+dx, yt+dy)
-    --             y = y + ev.height + ev.ymargin * expand
-    --         end
-    --     end)
-    -- end
+    if self.type == "local" then
+        local x = LOCAL_TIMEBAR_X_OFFSET
+        local timebarTick = THEME_TIMEBAR_TICKS[CONFIG.theme]
+        AddDrawCB(self, function(slide)
+            local y = y0
+            for i, ev in ipairs(evs) do
+                local dx = LOCAL_TIMEBAR_TICK_WIDTH
+                local dy = LOCAL_TIMEBAR_TICK_HEIGHT
+                if i == 1 then
+                    dx = dx * LOCAL_TIMEBAR_TOP_TICK_RATIO
+                    dy = dy * LOCAL_TIMEBAR_TOP_TICK_RATIO
+                end
+                local yt = y + (ev.fontsize*0.5)
+                tools.drawResource(timebarTick, x-dx, yt-dy, x+dx, yt+dy)
+                y = y + ev.height + ev.ymargin * expand
+            end
+        end)
+    end
 end
 
 local function setupSponsor(self)
