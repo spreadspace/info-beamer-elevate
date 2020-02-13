@@ -184,7 +184,7 @@
                 "name": "MUSIC"
             }, {
                 "id": "arts",
-                "eis_id": "campus",
+                "eis_id": "ART_art",
                 "name": "ARTS"
             }
         ]

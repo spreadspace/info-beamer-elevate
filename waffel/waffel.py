@@ -51,7 +51,7 @@ class Waffel(object):
         self.api_url = api_url
         self.year = year
         # tracks: Due to historic reasons music is named arts and arts is named
-        #         campus in EIS.
+        #         ART_art in EIS.
         self.track_map = {it['eis_id']: it['id'] for it in tracks}
         self.location_map = {it['eis_id']: it['id'] for it in locations}
         self.min_delta = min_delta
@@ -96,7 +96,7 @@ class Waffel(object):
             return False
         return True
 
-    def make_event(self, start, end, title, subtitle, track_id):
+    def make_event(self, start, end, title, subtitle, track):
         # "start":     start-time in given timezone as HH:MM
         # "startts":   start-time as unix epoch timestamp
         # "end":       end-time in given timezone as HH:MM
@@ -111,7 +111,7 @@ class Waffel(object):
             'endts': self.dt_to_epoch(end),
             'title': title,
             'subtitle': subtitle,
-            'track': self.track_map.get(track_id),
+            'track': track,
         }
 
     def get_events(self, now=datetime.utcnow().replace(tzinfo=dateutil.tz.gettz('UTC')), track=None):
@@ -128,6 +128,7 @@ class Waffel(object):
 
         ret = {}
         missing_locations = []
+        missing_tracks = {}
         for event in result:
             start = self.parse_date(event['begin'])
             end = self.parse_date(event['end'])
@@ -152,20 +153,26 @@ class Waffel(object):
                     app_end = self.parse_date(appearance['end'])
                     if not self.dt_within(now, app_start, app_end):
                         continue
+                    track = self.track_map.get(appearance['track'])
+                    if not track:
+                        missing_tracks[appearance['track']] = True
                     events.append(self.make_event(
                         app_start,
                         app_end,
                         appearance['name'],
                         appearance['name_add'],  # TODO: name_add ok? type could also be of interest.  # noqa
-                        appearance['track'],
+                        track,
                     ))
             else:
+                track = self.track_map.get(event['track'])
+                if not track:
+                    missing_tracks[event['track']] = True
                 events.append(self.make_event(
                     start,
                     end,
                     event['title'],
                     event['subtitle'],
-                    event['track'],
+                    track,
                 ))
 
             if not events:
@@ -190,6 +197,9 @@ class Waffel(object):
                     for it in set(missing_locations)
                 ])
             )
+
+        if missing_tracks:
+            logger.warn('The following tracks were not found in the track mapping: %s' % ', '.join(missing_tracks.keys()))
 
         return ret
 
