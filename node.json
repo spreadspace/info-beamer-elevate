@@ -302,6 +302,26 @@
                 "id": "literaturhaus",
                 "eis_id": "60",
                 "name": "LITERATURHAUS GRAZ"
+            }, {
+                "id": "rechbauerkino",
+                "eis_id": "64",
+                "name": "FILMZENTRUM IM RECHBAUERKINO"
+            }, {
+                "id": "schlossberglift",
+                "eis_id": "65",
+                "name": "SCHLOSSBERGLIFT"
+            }, {
+                "id": "hauptplatz",
+                "eis_id": "67",
+                "name": "HAUPTPLATZ"
+            }, {
+                "id": "mariahilferkirche",
+                "eis_id": "68",
+                "name": "MARIAHILFERKIRCHE"
+            }, {
+                "id": "cafewolf",
+                "eis_id": "69",
+                "name": "CAFE WOLF"
             }
         ]
     }, {
