@@ -153,7 +153,7 @@ end
 
 local function setupTitle(self)
     local font = CONFIG.font_bold
-    local fontSub = CONFIG.font
+    local fontSub = CONFIG.font_italic
     local fgcol = (self.track and self.track.foreground_color) or CONFIG.foreground_color
     local bgcol = (self.track and self.track.background_color) or CONFIG.background_color
 
