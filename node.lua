@@ -128,7 +128,7 @@ function node.render()
        state.slidedeckIteration = state.slidedeckIteration + 1
     end
 
-    -- the raspi will play background videos on layer(-1) 
+    -- the raspi will play background videos on layer(-1)
     -- so let's make the gl surface transparent
     gl.clear(0,0,0,0)
     state.background:draw()
