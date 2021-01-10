@@ -106,9 +106,8 @@ local function drawDebugInfo(now, dt)
     local s = math.floor((now % 60))
     local ms = math.floor((now - math.floor(now)) * 1000)
     local timestr = string.format("Time: %ud %02u:%02u:%02u.%03u", d, h, m, s, ms)
-    w = tools.textWidth(CONFIG.font, timestr, debugInfoSize)
-    w = math.ceil(w * 30) / 30
-    tools.drawText(CONFIG.font, 1-w, y, timestr, debugInfoSize, debugInfoTextColor)
+    w = tools.textWidth(CONFIG.font, string.format("Time: %ud 00:00:00.000", d), debugInfoSize)
+    tools.drawText(CONFIG.font, 1-w-0.01, y, timestr, debugInfoSize, debugInfoTextColor)
 end
 
 function node.render()
