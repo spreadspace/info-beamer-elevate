@@ -354,6 +354,10 @@
                 "id": "studiobuehneoper",
                 "eis_id": "81",
                 "name": "STUDIOBÜHNE OPER GRAZ"
+            }, {
+                "id": "heimatsaal",
+                "eis_id": "85",
+                "name": "Heimatsaal"
             }
         ]
     }, {
