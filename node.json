@@ -135,7 +135,7 @@
         "ui_width": 3,
         "name": "year",
         "type": "integer",
-        "default": 2021
+        "default": 2022
     }, {
         "title": "Tracks",
         "name": "tracks",
