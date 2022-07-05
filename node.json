@@ -219,6 +219,14 @@
                 "eis_id": "0",
                 "name": "MEDIA CHANNEL"
             }, {
+                "id": "heimatsaal",
+                "eis_id": "85",
+                "name": "Heimatsaal"
+            }, {
+                "id": "lesliehof",
+                "eis_id": "83",
+                "name": "LESLIEHOF"
+            }, {
                 "id": "forum",
                 "eis_id": "1",
                 "name": "FORUM STADTPARK"
@@ -331,10 +339,6 @@
                 "eis_id": "69",
                 "name": "CAFE WOLF"
             }, {
-                "id": "lesliehof",
-                "eis_id": "83",
-                "name": "LESLIEHOF"
-            }, {
                 "id": "volksgartenpark",
                 "eis_id": "78",
                 "name": "VOLKSGARTENPARK"
@@ -354,10 +358,6 @@
                 "id": "studiobuehneoper",
                 "eis_id": "81",
                 "name": "STUDIOBÜHNE OPER GRAZ"
-            }, {
-                "id": "heimatsaal",
-                "eis_id": "85",
-                "name": "Heimatsaal"
             }
         ]
     }, {

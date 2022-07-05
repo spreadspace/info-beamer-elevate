@@ -153,14 +153,14 @@ class Waffel(object):
                     app_end = self.parse_date(appearance['end'])
                     if not self.dt_within(now, app_start, app_end):
                         continue
-                    track = self.track_map.get(appearance['track'])
+                    track = self.track_map.get(event['track'])
                     if not track:
-                        missing_tracks[appearance['track']] = True
+                        missing_tracks[event['track']] = True
                     events.append(self.make_event(
                         app_start,
                         app_end,
                         appearance['name'],
-                        appearance['name_add'],  # TODO: name_add ok? type could also be of interest.  # noqa
+                        appearance['name_add'],
                         track,
                     ))
             else:
