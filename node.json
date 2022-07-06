@@ -291,6 +291,18 @@
                 "eis_id": "3",
                 "name": "DUNGEON"
             }, {
+                "id": "postgarage",
+                "eis_id": "80",
+                "name": "POSTGARAGE"
+            }, {
+                "id": "postgarage2",
+                "eis_id": "82",
+                "name": "POSTGARAGE 2ND FLOOR"
+            }, {
+                "id": "postgarage3",
+                "eis_id": "87",
+                "name": "POSTGARAGE 3RD FLOOR"
+            }, {
                 "id": "parkhouse",
                 "eis_id": "6",
                 "name": "PARKHOUSE"
@@ -298,6 +310,10 @@
                 "id": "kombuese",
                 "eis_id": "21",
                 "name": "KOMBÜSE"
+            }, {
+                "id": "Orangerie",
+                "eis_id": "88",
+                "name": "ORANGERIE"
             }, {
                 "id": "schlossberg",
                 "eis_id": "56",
