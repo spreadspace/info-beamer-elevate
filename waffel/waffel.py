@@ -156,11 +156,18 @@ class Waffel(object):
                     track = self.track_map.get(event['track'])
                     if not track:
                         missing_tracks[event['track']] = True
+                    labels = []
+                    if 'labels' in appearance:
+                        for label in appearance['labels']:
+                            labels.append(label['name'])
+                    subtitle = ', '.join(labels)
+                    if subtitle and 'country_code' in appearance and appearance['country_code']:
+                        subtitle += '/' + appearance['country_code']
                     events.append(self.make_event(
                         app_start,
                         app_end,
                         appearance['name'],
-                        appearance['name_add'],
+                        subtitle,
                         track,
                     ))
             else:
