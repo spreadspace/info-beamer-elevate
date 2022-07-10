@@ -163,6 +163,8 @@ class Waffel(object):
                     subtitle = ', '.join(labels)
                     if subtitle and 'country_code' in appearance and appearance['country_code']:
                         subtitle += '/' + appearance['country_code']
+                    if subtitle:
+                        subtitle = '(' + subtitle + ')'
                     events.append(self.make_event(
                         app_start,
                         app_end,
