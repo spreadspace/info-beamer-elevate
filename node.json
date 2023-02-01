@@ -374,6 +374,10 @@
                 "id": "studiobuehneoper",
                 "eis_id": "81",
                 "name": "STUDIOBÜHNE OPER GRAZ"
+            }, {
+                "id": "minoritensaal",
+                "eis_id": "89",
+                "name": "MINORITENSAAL"
             }
         ]
     }, {
