@@ -378,6 +378,18 @@
                 "id": "minoritensaal",
                 "eis_id": "89",
                 "name": "MINORITENSAAL"
+            }, {
+                "id": "forumaussen",
+                "eis_id": "90",
+                "name": "FORUM AUSSENBEREICH"
+            }, {
+                "id": "publicspace",
+                "eis_id": "25",
+                "name": "PUBLIC SPACE"
+            }, {
+                "id": "heimatsaalfoyer",
+                "eis_id": "91",
+                "name": "HEIMATSAAL FOYER"
             }
         ]
     }, {
