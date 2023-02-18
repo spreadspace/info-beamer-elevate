@@ -404,6 +404,12 @@
             "type": "resource",
             "valid": ["image"],
             "default": "empty.png"
+        },{
+            "title": "Schedule",
+            "ui_width": 12,
+            "name": "schedule",
+            "type": "schedule",
+            "default": "always"
         }]
     }, {
         "title": "Devices",
