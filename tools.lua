@@ -104,6 +104,18 @@ function tools.drawResource(res, x1, y1, x2, y2)
     gl.popMatrix()
 end
 
+function tools.isScheduleActive(schedule)
+    if type(schedule) == "string" then
+        if schedule == "always" then
+            return true
+        end
+        return false
+    end
+    -- TODO: implement this!
+    tools.debugPrint(4, "got complex schedule...")
+    return false
+end
+
 
 function tools.debugPrint(lvl, ...)
    if _DEBUG_ and _DEBUG_ >= lvl then
