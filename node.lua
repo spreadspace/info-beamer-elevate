@@ -7,7 +7,7 @@ gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
 DISPLAY_ASPECT = 16 / 9
 DISPLAY_HEIGHT = HEIGHT
 DISPLAY_WIDTH = DISPLAY_HEIGHT * DISPLAY_ASPECT
-rawset(_G, "_DEBUG_", 7) -- <5 will only print to stdout, >= 5 also adds visual changes to the screen
+rawset(_G, "_DEBUG_", 2) -- <5 will only print to stdout, >= 5 also adds visual changes to the screen
 
 
 -- persistent state, survives file reloads

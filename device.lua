@@ -63,11 +63,6 @@ end
 
 function device.updateTimestamps(date, ts)
     device.timestamps[date] = tonumber(ts)
-
-    tools.debugPrint(4, "current timetamps table:")
-    for d, t in pairs(device.timestamps) do
-        tools.debugPrint(4, " - " .. d .. ": " .. t)
-    end
 end
 
 
