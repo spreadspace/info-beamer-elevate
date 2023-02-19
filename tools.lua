@@ -111,8 +111,23 @@ function tools.isScheduleActive(schedule)
         end
         return false
     end
-    -- TODO: implement this!
-    tools.debugPrint(4, "got complex schedule...")
+    if schedule['repeat'].count ~= 1 then
+        tools.debugPrint(1, "WARNING: schedules with repeat.count > 1 are not supported!")
+        return false
+    end
+    local startts = device.getTimestampOfDate(schedule.start)
+    if startts == nil then
+        tools.debugPrint(1, "WARNING: no timestamp found for schedule start date: " .. schedule.start)
+        return false
+    end
+    local nowts = math.floor(device.getWallClockTime())
+    for _, span in ipairs(schedule.spans) do
+        local begints = startts + (span[1]*60)
+        local endts = startts + (span[2]*60)
+        if begints <= nowts and nowts <= endts then
+            return true
+        end
+    end
     return false
 end
 

@@ -11,6 +11,7 @@ if not device then
     device.timeM = nil
     device.timeS = nil
     device.lastTimeUpdate = 0
+    device.timestamps = {}
 
     device.config = nil
     device.location = nil
@@ -42,6 +43,10 @@ function device.getWallClockTimeString()
     return ("%02d:%02d"):format(hi, mi)
 end
 
+function device.getTimestampOfDate(date)
+    return device.timestamps[date]
+end
+
 function device.updateTime(tm)
     local now = sys.now() -- this is relative to the start of info-beamer
     device.lastTimeUpdate = now
@@ -54,6 +59,15 @@ function device.updateTime(tm)
 
     tools.debugPrint(4, "updated base time: " .. device.baseTime .. ", it's now: " ..
                          device.getWallClockTimeString() .. " (" ..  device.getWallClockTime() .. ")")
+end
+
+function device.updateTimestamps(date, ts)
+    device.timestamps[date] = tonumber(ts)
+
+    tools.debugPrint(4, "current timetamps table:")
+    for d, t in pairs(device.timestamps) do
+        tools.debugPrint(4, " - " .. d .. ": " .. t)
+    end
 end
 
 

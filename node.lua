@@ -53,6 +53,9 @@ util.data_mapper{
     ["clock/set"] = function(tm)
         device.updateTime(tm)
     end,
+    ["clock/timestamps/(.*)"] = function(date, ts)
+        device.updateTimestamps(date, ts)
+    end,
 }
 
 
