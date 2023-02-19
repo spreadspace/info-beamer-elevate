@@ -37,9 +37,11 @@ def send_clock(now, ts):
     NODE.send('/clock/set:%f,%d,%d,%d' % (ts, now.hour,  now.minute, now.second))
     config_timestamps = {}
     for sponsor in CONFIG['sponsors']:
-        startdate_string = sponsor['schedule']['start']
-        startdate = pytz.timezone(CONFIG['timezone']).localize(datetime.strptime(startdate_string, '%Y-%m-%d'))
-        config_timestamps[startdate_string] = timegm(startdate.astimezone(pytz.utc).timetuple())
+        schedule = sponsor['schedule']
+        if not isinstance(schedule, basestring):
+            startdate_string = schedule['start']
+            startdate = pytz.timezone(CONFIG['timezone']).localize(datetime.strptime(startdate_string, '%Y-%m-%d'))
+            config_timestamps[startdate_string] = timegm(startdate.astimezone(pytz.utc).timetuple())
 
     for datestring, timestamp in config_timestamps.items():
         NODE.send('/clock/timestamps/%s:%d' % (datestring, timestamp))
