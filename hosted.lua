@@ -163,6 +163,9 @@ local types = {
     ["date"] = function(value)
         return value
     end;
+    ["schedule"] = function(value)
+        return value
+    end;
     ["json"] = function(value)
         return value
     end;

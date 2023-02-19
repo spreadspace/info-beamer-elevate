@@ -113,6 +113,10 @@ def init_types():
     def date(value):
         return value
 
+    @type
+    def schedule(value):
+        return value
+
 init_types()
 
 def log(msg):

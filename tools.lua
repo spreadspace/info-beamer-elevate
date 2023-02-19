@@ -104,6 +104,33 @@ function tools.drawResource(res, x1, y1, x2, y2)
     gl.popMatrix()
 end
 
+function tools.isScheduleActive(schedule)
+    if type(schedule) == "string" then
+        if schedule == "always" then
+            return true
+        end
+        return false
+    end
+    if schedule['repeat'].count ~= 1 then
+        tools.debugPrint(1, "WARNING: schedules with repeat.count > 1 are not supported!")
+        return false
+    end
+    local startts = device.getTimestampOfDate(schedule.start)
+    if startts == nil then
+        tools.debugPrint(1, "WARNING: no timestamp found for schedule start date: " .. schedule.start)
+        return false
+    end
+    local nowts = math.floor(device.getWallClockTime())
+    for _, span in ipairs(schedule.spans) do
+        local begints = startts + (span[1]*60)
+        local endts = startts + (span[2]*60)
+        if begints <= nowts and nowts <= endts then
+            return true
+        end
+    end
+    return false
+end
+
 
 function tools.debugPrint(lvl, ...)
    if _DEBUG_ and _DEBUG_ >= lvl then

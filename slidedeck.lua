@@ -124,14 +124,18 @@ local function _generateSponsorSlides(slides, iteration)
     if not SHOW_SPONSORS or not CONFIG.sponsors then return end
 
     if iteration % (CONFIG.slide_sponsor_skip + 1) > 0 then
-        tools.debugPrint(3, "skipping sponsor slides for iteration " .. iteration)
+        tools.debugPrint(3, "..skipping sponsor slides for iteration " .. iteration)
         return
     end
 
     for _, sponsor in ipairs(CONFIG.sponsors) do
-        tools.debugPrint(3, "generating sponsor slide: " .. sponsor.image.filename)
-        local slide = Slide.newSponsor(sponsor)
-        table.insert(slides, slide)
+        if tools.isScheduleActive(sponsor.schedule) then
+            tools.debugPrint(3, "generating sponsor slide: " .. sponsor.image.filename)
+            local slide = Slide.newSponsor(sponsor)
+            table.insert(slides, slide)
+        else
+            tools.debugPrint(3, "..skipping currently inactive sponsor slide: " .. sponsor.image.filename)
+        end
     end
 end
 
