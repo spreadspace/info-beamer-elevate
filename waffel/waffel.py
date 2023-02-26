@@ -143,33 +143,47 @@ class Waffel(object):
                 continue
 
             events = []
-            if event['track'] in ('art',) and 'apps' in event:
+            if event['track'] in ('art',):
                 # a event in art (actually music) is a whole stage for a whole
                 # evening. each artist/slot appears in event['apps'] list.
                 # if there are any more tracks than 'art' which behave like
                 # this one, add it to the tuple above.
-                for appearance in event['apps']:
-                    app_start = self.parse_date(appearance['begin'])
-                    app_end = self.parse_date(appearance['end'])
-                    if not self.dt_within(now, app_start, app_end):
-                        continue
+                if 'apps' in event:
+                    for appearance in event['apps']:
+                        app_start = self.parse_date(appearance['begin'])
+                        app_end = self.parse_date(appearance['end'])
+                        if not self.dt_within(now, app_start, app_end):
+                            continue
+                        track = self.track_map.get(event['track'])
+                        if not track:
+                            missing_tracks[event['track']] = True
+                        labels = []
+                        if 'labels' in appearance:
+                            for label in appearance['labels']:
+                                labels.append(label['name'])
+                        subtitle = ', '.join(labels)
+                        if subtitle and 'country_code' in appearance and appearance['country_code']:
+                            subtitle += '/' + appearance['country_code']
+                        if subtitle:
+                            subtitle = '(' + subtitle + ')'
+                        events.append(self.make_event(
+                            app_start,
+                            app_end,
+                            appearance['name'],
+                            subtitle,
+                            track,
+                        ))
+                else:
+                    # at least in one case observerd so far there were no appearances linked to the event
+                    # in this case the 'presented_by' field contained the best fitting event title
                     track = self.track_map.get(event['track'])
                     if not track:
                         missing_tracks[event['track']] = True
-                    labels = []
-                    if 'labels' in appearance:
-                        for label in appearance['labels']:
-                            labels.append(label['name'])
-                    subtitle = ', '.join(labels)
-                    if subtitle and 'country_code' in appearance and appearance['country_code']:
-                        subtitle += '/' + appearance['country_code']
-                    if subtitle:
-                        subtitle = '(' + subtitle + ')'
                     events.append(self.make_event(
-                        app_start,
-                        app_end,
-                        appearance['name'],
-                        subtitle,
+                        start,
+                        end,
+                        event['presented_by'],
+                        '',
                         track,
                     ))
             else:

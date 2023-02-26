@@ -390,6 +390,10 @@
                 "id": "heimatsaalfoyer",
                 "eis_id": "91",
                 "name": "HEIMATSAAL FOYER"
+            }, {
+                "id": "gattoimmuseum",
+                "eis_id": "92",
+                "name": "GATTO IM MUSEUM"
             }
         ]
     }, {
