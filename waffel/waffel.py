@@ -211,14 +211,14 @@ class Waffel(object):
         for key in ret.keys():
             ret[key].sort(key=lambda it: it['startts'])
 
-        # some events of the discourse track have duplicates in the music track - filter them out
+        # some events of the discourse track have duplicates in other tracks - filter them out
         for location in ret:
             discourse_startts = [e['startts'] for e in ret[location] if e['track'] == 'discourse']
             if len(discourse_startts) == 0:
                 continue
             filtered = []
             for i in range(len(ret[location])):
-                if not ret[location][i]['track'] == 'music':
+                if ret[location][i]['track'] == 'discourse':
                     filtered.append(ret[location][i])
                     continue
                 if ret[location][i]['startts'] not in discourse_startts:
