@@ -54,7 +54,7 @@ def main():
     now, ts = current_time()
     last_animation_time_reset = now
     waffel = Waffel(CONFIG['eis_api_url'], CONFIG['year'], CONFIG['tracks'], CONFIG['locations'],
-                    max_delta=timedelta(hours=15), timezone=pytz.timezone(CONFIG['timezone']))
+                    max_delta=timedelta(hours=17), timezone=pytz.timezone(CONFIG['timezone']))
     while 1:
         now, ts = current_time()
         if now.year < 2000:
