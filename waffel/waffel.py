@@ -224,8 +224,30 @@ class Waffel(object):
                 if ret[location][i]['startts'] not in discourse_startts:
                     filtered.append(ret[location][i])
                     continue
-                # print("location '%s': dropping duplicate event '%s'" % (location, ret[location][i]['title'].encode('utf-8')))
+                # print("location '%s': dropping duplicate event '%s'" % (location.encode('utf8'), ret[location][i]['title'].encode('utf-8')))
             ret[location] = filtered
+
+        # merge concurrent music appearances
+        for location in ret:
+            merged = []
+            prevmusic = None
+            for i in range(len(ret[location])):
+                if ret[location][i]['track'] != 'music':
+                    merged.append(ret[location][i])
+                    continue
+                if not prevmusic:
+                    prevmusic = ret[location][i]
+                    continue
+                if prevmusic['startts'] == ret[location][i]['startts']:
+                    #print("location '%s': merging event '%s' with '%s'" % (location.encode('utf8'), ret[location][i]['title'].encode('utf8'), prevmusic['title'].encode('utf-8')))
+                    prevmusic['title'] = prevmusic['title'] + ' & ' + ret[location][i]['title']
+                    prevmusic['subtitle'] = ''  # prevmusic['subtitle'] + ' & ' + ret[location][i]['subtitle'] ### TODO: also merge subtitles??
+                else:
+                    merged.append(prevmusic)
+                    prevmusic = ret[location][i]
+            if prevmusic:
+                merged.append(prevmusic)
+            ret[location] = merged
 
         if missing_locations:
             logger.warn(
