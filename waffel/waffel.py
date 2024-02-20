@@ -249,6 +249,20 @@ class Waffel(object):
                 merged.append(prevmusic)
             ret[location] = merged
 
+        # some events (especial from arts track) have multiple 24hour slots - only show the first
+        for location in ret:
+            filtered = []
+            last_start = ""
+            last_title = ""
+            for i in range(len(ret[location])):
+                if ret[location][i]['start'] != last_start or ret[location][i]['title'] != last_title:
+                    filtered.append(ret[location][i])
+                    last_start = ret[location][i]['start']
+                    last_title = ret[location][i]['title']
+                    continue
+                #print("location '%s': dropping duplicate event '%s'" % (location.encode('utf8'), ret[location][i]['title'].encode('utf-8')))
+            ret[location] = filtered
+
         if missing_locations:
             logger.warn(
                 'The following locations were not found in the location'
