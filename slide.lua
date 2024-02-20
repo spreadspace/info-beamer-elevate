@@ -66,12 +66,14 @@ local EVENT_FORMAT_LOCAL_TOP = {
 
 local THEME_TIMEBARS = {
     ["light"] = resource.load_image("timebar_black.png"),
-    ["dark"] = resource.load_image("timebar_white.png")
+    ["dark"] = resource.load_image("timebar_white.png"),
+    ["custom"] = resource.load_image("timebar_custom.png")
 }
 
 local THEME_TIMEBAR_TICKS = {
     ["light"] = resource.load_image("timebar-tick_black.png"),
-    ["dark"] = resource.load_image("timebar-tick_white.png")
+    ["dark"] = resource.load_image("timebar-tick_white.png"),
+    ["custom"] = resource.load_image("timebar-tick_custom.png")
 }
 
 

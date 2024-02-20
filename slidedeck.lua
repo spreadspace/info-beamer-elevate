@@ -19,7 +19,8 @@ local HEADER_TITLE_X = 0.15
 
 local THEME_LOGOS = {
     ["light"] = resource.load_image("logo_black.png"),
-    ["dark"] = resource.load_image("logo_white.png")
+    ["dark"] = resource.load_image("logo_white.png"),
+    ["custom"] = resource.load_image("logo_custom.png")
 }
 
 -- FOR TESTING --

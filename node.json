@@ -45,6 +45,7 @@
         "options": [
             ["light", "use black logo, timebar, ..."],
             ["dark", "use white logo, timebar, ..."]
+            ["custom", "use custom logo, timebar, ..."]
         ],
         "default": "light"
     }, {
@@ -402,6 +403,10 @@
                 "id": "nonstopscheiner",
                 "eis_id": "93",
                 "name": "NONSTOP SCHEINER"
+            }, {
+                "id": "iemcube",
+                "eis_id": "94",
+                "name": "IEM CUBE"
             }
         ]
     }, {
