@@ -27,7 +27,7 @@ def __get_now_in_config_tz(now):
 
 def current_time():
     # now = datetime.utcnow().replace(tzinfo=pytz.utc)  # TODO: re-enable realtime
-    now = datetime(2024, 2, 28, 15, 0).replace(tzinfo=pytz.utc)
+    now = datetime(2024, 3, 1, 11, 30).replace(tzinfo=pytz.utc)
     timestamp = timegm(now.timetuple()) + now.microsecond / 1000000.
     return now, timestamp
 
@@ -55,7 +55,7 @@ def main():
     now, ts = current_time()
     last_animation_time_reset = now
     waffel = Waffel(CONFIG['eis_api_url'], CONFIG['year'], CONFIG['tracks'], CONFIG['locations'],
-                    max_delta=timedelta(hours=500), timezone=pytz.timezone(CONFIG['timezone']))  # TODO: set timedelta back to 15h
+                    max_delta=timedelta(hours=17), timezone=pytz.timezone(CONFIG['timezone']))  # TODO: set timedelta back to 15h
     while 1:
         now, ts = current_time()
         if now.year < 2000:
