@@ -29,6 +29,11 @@ local REMOTE_SUB_TITLE_SIZE = 0.08
 local REMOTE_EVENT_TIME_X_OFFSET = 0.21
 local REMOTE_EVENT_TEXT_X_OFFSET = 0.28
 
+local TOPIC_X_CENTER = 0.5
+local TOPIC_Y_CENTER = 0.55
+local TOPIC_MAX_W = 0.8
+local TOPIC_MAX_H = 0.7
+
 local SPONSOR_TITLE = "SPONSOR"
 local SPONSOR_TITLE_SIZE = 0.1
 local SPONSOR_X_CENTER = 0.5
@@ -119,7 +124,15 @@ local function drawGrid(type)
     drawLineH(BLUE, SLIDE_Y_BEGIN)
     drawLineV(BLUE, SLIDE_TITLE_X_OFFSET)
 
-    if type == "sponsor" then
+    if type == "topic" then
+        drawLineV(RED, TOPIC_X_CENTER - TOPIC_MAX_W/2)
+        drawLineV(RED, TOPIC_X_CENTER + TOPIC_MAX_W/2)
+        drawLineH(RED, TOPIC_Y_CENTER - TOPIC_MAX_H/2)
+        drawLineH(RED, TOPIC_Y_CENTER + TOPIC_MAX_H/2)
+
+        drawLineV(GREEN, TOPIC_X_CENTER)
+        drawLineH(GREEN, TOPIC_Y_CENTER)
+    elseif type == "sponsor" then
         drawLineV(RED, SPONSOR_X_CENTER - SPONSOR_MAX_W/2)
         drawLineV(RED, SPONSOR_X_CENTER + SPONSOR_MAX_W/2)
         drawLineH(RED, SPONSOR_Y_CENTER - SPONSOR_MAX_H/2)
@@ -257,6 +270,16 @@ local function setupEvents(self, events, getFormatConfig)
     end
 end
 
+local function setupTopic(self)
+    AddDrawCB(self, function(slide)
+        local img = slide.image.ensure_loaded()
+        local w, h = tools.ScreenPosToRel(img:size())
+        local scale = math.min(TOPIC_MAX_W / w, TOPIC_MAX_H / h)
+        w, h = w*scale, h*scale
+        tools.drawResource(img, TOPIC_X_CENTER - w/2, TOPIC_Y_CENTER - h/2, TOPIC_X_CENTER + w/2, TOPIC_Y_CENTER + h/2)
+    end)
+end
+
 local function setupSponsor(self)
     AddDrawCB(self, function(slide)
         local img = slide.image.ensure_loaded()
@@ -292,6 +315,10 @@ local function layoutremote(self)
     setupEvents(self, self.events, formatDefault)
 end
 
+local function layouttopic(self)
+    setupTopic(self)
+end
+
 local function layoutsponsor(self)
     setupTitle(self)
     setupSponsor(self)
@@ -300,6 +327,7 @@ end
 local layouts = {
     ["local"] = layoutlocal,
     ["remote"] = layoutremote,
+    ["topic"] = layouttopic,
     ["sponsor"] = layoutsponsor,
 }
 
@@ -341,6 +369,16 @@ function Slide.newRemote(track, location, events)
         events = assert(events),
         type = "remote",
         time = CONFIG.slide_time_remote,
+    }
+    return setmetatable(commonInit(self), Slide)
+end
+
+function Slide.newTopic(topic)
+    assert(topic)
+    local self = {
+        image = topic,
+        type = "topic",
+        time = CONFIG.slide_time_topic,
     }
     return setmetatable(commonInit(self), Slide)
 end

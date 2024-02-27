@@ -26,6 +26,7 @@ local THEME_LOGOS = {
 -- FOR TESTING --
 local SHOW_LOCAL_EVENTS = true
 local SHOW_REMOTE_EVENTS = true
+local SHOW_TOPIC = true
 local SHOW_SPONSORS = true
 local SHOW_EMPTY_WHEN_NO_LOCAL = false
 -----------------
@@ -121,6 +122,14 @@ local function _generateRemoteSlides(slides, events, tracks, locations)
     end
 end
 
+local function _generateTopicSlide(slides, iteration)
+    if not SHOW_TOPIC or CONFIG.topic.filename == "empty.png" then return end
+
+    tools.debugPrint(3, "generating topic slide: " .. CONFIG.topic.filename)
+    local slide = Slide.newTopic(CONFIG.topic)
+    table.insert(slides, slide)
+end
+
 local function _generateSponsorSlides(slides, iteration)
     if not SHOW_SPONSORS or not CONFIG.sponsors then return end
 
@@ -182,6 +191,7 @@ local function _scheduleToSlides(schedule, iteration)
 
     _generateLocalSlide(slides, localEvents, here)
     _generateRemoteSlides(slides, events, tracks, locations)
+    _generateTopicSlide(slides, iteration)
     _generateSponsorSlides(slides, iteration)
     tools.debugPrint(2, "generated " .. #slides .. " slides")
     return slides

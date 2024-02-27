@@ -107,6 +107,13 @@
         "hint": "How long to display other locations information in seconds",
         "default": 10
     }, {
+        "title": "Topic",
+        "ui_width": 4,
+        "name": "slide_time_topic",
+        "type": "duration",
+        "hint": "How long to display topic slide in seconds",
+        "default": 5
+    }, {
         "title": "Sponsors",
         "ui_width": 4,
         "name": "slide_time_sponsor",
@@ -137,6 +144,14 @@
         "name": "year",
         "type": "integer",
         "default": 2022
+    }, {
+        "title": "Topic",
+        "ui_width": 12,
+        "name": "topic",
+        "hint": "Image for this years topic",
+        "type": "resource",
+        "valid": ["image"],
+        "default": "empty.png"
     }, {
         "title": "Tracks",
         "name": "tracks",
