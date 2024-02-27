@@ -129,6 +129,19 @@
         "default": 0
     },
 
+
+    {
+        "title": "Festival Topic",
+        "type": "section"
+    }, {
+        "title": "Topic",
+        "name": "topic",
+        "hint": "Image for this years topic",
+        "type": "resource",
+        "valid": ["image"],
+        "default": "empty.png"
+    },
+
     {
         "title": "Scheduling",
         "type": "section"
@@ -144,17 +157,6 @@
         "name": "year",
         "type": "integer",
         "default": 2022
-    }
-    {
-        "title": "Festival Topic",
-        "type": "section"
-    }, {
-        "title": "Topic",
-        "name": "topic",
-        "hint": "Image for this years topic",
-        "type": "resource",
-        "valid": ["image"],
-        "default": "empty.png"
     }, {
         "title": "Tracks",
         "name": "tracks",
