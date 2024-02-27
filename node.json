@@ -144,9 +144,12 @@
         "name": "year",
         "type": "integer",
         "default": 2022
+    }
+    {
+        "title": "Festival Topic",
+        "type": "section"
     }, {
         "title": "Topic",
-        "ui_width": 12,
         "name": "topic",
         "hint": "Image for this years topic",
         "type": "resource",
