@@ -107,6 +107,13 @@
         "hint": "How long to display other locations information in seconds",
         "default": 10
     }, {
+        "title": "Topic",
+        "ui_width": 4,
+        "name": "slide_time_topic",
+        "type": "duration",
+        "hint": "How long to display topic slide in seconds",
+        "default": 5
+    }, {
         "title": "Sponsors",
         "ui_width": 4,
         "name": "slide_time_sponsor",
@@ -120,6 +127,19 @@
         "type": "integer",
         "hint": "Skip sponser slide every x iterations, 0 shows it in all iterations, 1 will skip every other iteration ...",
         "default": 0
+    },
+
+
+    {
+        "title": "Festival Topic",
+        "type": "section"
+    }, {
+        "title": "Topic",
+        "name": "topic",
+        "hint": "Image for this years topic",
+        "type": "resource",
+        "valid": ["image"],
+        "default": "empty.png"
     },
 
     {
