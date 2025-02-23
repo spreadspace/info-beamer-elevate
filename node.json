@@ -156,7 +156,7 @@
         "ui_width": 3,
         "name": "year",
         "type": "integer",
-        "default": 2022
+        "default": 2025
     }, {
         "title": "Tracks",
         "name": "tracks",
@@ -400,6 +400,10 @@
                 "eis_id": "89",
                 "name": "MINORITENSAAL"
             }, {
+                "eis_id": "20",
+                "id": "grminoritensaal",
+                "name": "GROSSER MINORITENSAAL"
+            }, {
                 "id": "forumaussen",
                 "eis_id": "90",
                 "name": "FORUM AUSSENBEREICH"
@@ -427,6 +431,18 @@
                 "id": "iemcube",
                 "eis_id": "94",
                 "name": "IEM CUBE"
+            }, {
+                "eis_id": "98",
+                "id": "listhalleb",
+                "name": "HELMUT LIST HALLE B"
+            }, {
+                "eis_id": "99",
+                "id": "listhalled",
+                "name": "HELMUT LIST HALLE D"
+            }, {
+                "eis_id": "100",
+                "id": "grngr",
+                "name": "GRNGR"
             }
         ]
     }, {
