@@ -372,6 +372,10 @@
                 "eis_id": "68",
                 "name": "MARIAHILFERKIRCHE"
             }, {
+                "id": "mariahilferplatz",
+                "eis_id": "103",
+                "name": "MARIAHILFERPLATZ"
+            }, {
                 "id": "cafewolf",
                 "eis_id": "69",
                 "name": "CAFE WOLF"
@@ -400,8 +404,8 @@
                 "eis_id": "89",
                 "name": "MINORITENSAAL"
             }, {
-                "eis_id": "20",
                 "id": "grminoritensaal",
+                "eis_id": "20",
                 "name": "GROSSER MINORITENSAAL"
             }, {
                 "id": "forumaussen",
@@ -432,16 +436,16 @@
                 "eis_id": "94",
                 "name": "IEM CUBE"
             }, {
-                "eis_id": "98",
                 "id": "listhalleb",
+                "eis_id": "98",
                 "name": "HELMUT LIST HALLE B"
             }, {
-                "eis_id": "99",
                 "id": "listhalled",
+                "eis_id": "99",
                 "name": "HELMUT LIST HALLE D"
             }, {
-                "eis_id": "100",
                 "id": "grngr",
+                "eis_id": "100",
                 "name": "GRNGR"
             }
         ]
