@@ -420,6 +420,10 @@
                 "eis_id": "91",
                 "name": "HEIMATSAAL FOYER"
             }, {
+                "id": "heimatsaalgarten",
+                "eis_id": "108",
+                "name": "GARTEN IM HEIMATSAAL"
+            }, {
                 "id": "gattoimmuseum",
                 "eis_id": "92",
                 "name": "GATTO IM MUSEUM"
@@ -436,6 +440,10 @@
                 "eis_id": "94",
                 "name": "IEM CUBE"
             }, {
+                "id": "listhalle",
+                "eis_id": "104",
+                "name": "HELMUT LIST HALLE"
+            }, {
                 "id": "listhalleb",
                 "eis_id": "98",
                 "name": "HELMUT LIST HALLE B"
@@ -447,6 +455,18 @@
                 "id": "grngr",
                 "eis_id": "100",
                 "name": "GRNGR"
+            }, {
+                "id": "ppc",
+                "eis_id": "105",
+                "name": "PPC"
+            }, {
+                "id": "ppc2nd",
+                "eis_id": "106",
+                "name": "PPC 2ND"
+            }, {
+                "id": "kultum",
+                "eis_id": "107",
+                "name": "KULTUM [IMCUBUS]"
             }
         ]
     }, {
